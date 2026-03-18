@@ -69,10 +69,8 @@ export function buildPrompt(
   if (style.stylistic_tone) parts.push(style.stylistic_tone + " style");
 
   if (style.composition) {
-    if (style.composition.element_count)
-      parts.push(style.composition.element_count);
-    if (style.composition.scene_density)
-      parts.push(style.composition.scene_density);
+    if (style.composition.element_count) parts.push(style.composition.element_count);
+    if (style.composition.scene_density) parts.push(style.composition.scene_density);
   }
 
   if (style.geometry) {
@@ -90,15 +88,12 @@ export function buildPrompt(
   }
 
   if (style.textures) {
-    if (style.textures.material_finish)
-      parts.push(style.textures.material_finish);
-    if (style.textures.surface_treatment)
-      parts.push(style.textures.surface_treatment);
+    if (style.textures.material_finish) parts.push(style.textures.material_finish);
+    if (style.textures.surface_treatment) parts.push(style.textures.surface_treatment);
   }
 
   if (style.render_quality) {
-    if (style.render_quality.resolution)
-      parts.push(style.render_quality.resolution);
+    if (style.render_quality.resolution) parts.push(style.render_quality.resolution);
     if (style.render_quality.edge_definition)
       parts.push(style.render_quality.edge_definition);
     if (style.render_quality.visual_clarity)
@@ -106,8 +101,7 @@ export function buildPrompt(
   }
 
   if (style.color_palette) {
-    if (style.color_palette.tone)
-      parts.push(`${style.color_palette.tone} tones`);
+    if (style.color_palette.tone) parts.push(`${style.color_palette.tone} tones`);
     if (style.color_palette.range) parts.push(style.color_palette.range);
   }
 
