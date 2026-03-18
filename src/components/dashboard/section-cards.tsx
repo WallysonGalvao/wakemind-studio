@@ -1,103 +1,78 @@
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { HardDrive, ImageIcon, Layers, Music } from "lucide-react";
 
-import { Badge } from "#/components/ui/badge";
 import {
   Card,
-  CardAction,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "#/components/ui/card";
+import type { AssetStats } from "#/types/asset";
 
-export function SectionCards() {
+interface SectionCardsProps {
+  stats: AssetStats;
+}
+
+export function SectionCards({ stats }: SectionCardsProps) {
   return (
     <div className="grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Total Assets</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            1,284
+            {stats.total}
           </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <TrendingUp />
-              +20.1%
-            </Badge>
-          </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Growing steadily <TrendingUp className="size-4" />
+            <Layers className="size-4" /> All generated assets
           </div>
-          <div className="text-muted-foreground">
-            Assets created in the last 6 months
-          </div>
+          <div className="text-muted-foreground">Images + sounds combined</div>
         </CardFooter>
       </Card>
 
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Active Challenges</CardDescription>
+          <CardDescription>Images Generated</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            12
+            {stats.images}
           </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <TrendingUp />
-              +4
-            </Badge>
-          </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            4 new since yesterday <TrendingUp className="size-4" />
+            <ImageIcon className="size-4" /> Image assets
           </div>
-          <div className="text-muted-foreground">
-            Active challenge modules
-          </div>
+          <div className="text-muted-foreground">Created via image generation</div>
         </CardFooter>
       </Card>
 
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Generation Credits</CardDescription>
+          <CardDescription>Sounds Generated</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            450
+            {stats.sounds}
           </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <TrendingDown />
-              -12%
-            </Badge>
-          </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Credits depleting <TrendingDown className="size-4" />
+            <Music className="size-4" /> Audio assets
           </div>
-          <div className="text-muted-foreground">Plan: Studio Pro</div>
+          <div className="text-muted-foreground">Created via sound generation</div>
         </CardFooter>
       </Card>
 
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Active Users</CardDescription>
+          <CardDescription>Storage Used</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            573
+            {stats.storageMb} MB
           </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <TrendingUp />
-              +12.5%
-            </Badge>
-          </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Strong user retention <TrendingUp className="size-4" />
+            <HardDrive className="size-4" /> Local storage
           </div>
-          <div className="text-muted-foreground">+201 since last hour</div>
+          <div className="text-muted-foreground">Stored in browser IndexedDB</div>
         </CardFooter>
       </Card>
     </div>

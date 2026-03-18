@@ -1,17 +1,17 @@
 export enum AchievementCategory {
-  PROGRESSION = 'PROGRESSION',
-  CONSISTENCY = 'CONSISTENCY',
-  MASTERY = 'MASTERY',
-  EXPLORATION = 'EXPLORATION',
-  SECRET = 'SECRET',
-  SOCIAL = 'SOCIAL',
+  PROGRESSION = "PROGRESSION",
+  CONSISTENCY = "CONSISTENCY",
+  MASTERY = "MASTERY",
+  EXPLORATION = "EXPLORATION",
+  SECRET = "SECRET",
+  SOCIAL = "SOCIAL",
 }
 
 export enum AchievementTier {
-  BRONZE = 'BRONZE',
-  SILVER = 'SILVER',
-  GOLD = 'GOLD',
-  PLATINUM = 'PLATINUM',
+  BRONZE = "BRONZE",
+  SILVER = "SILVER",
+  GOLD = "GOLD",
+  PLATINUM = "PLATINUM",
 }
 
 export interface AchievementDefinition {

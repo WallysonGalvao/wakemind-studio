@@ -1,10 +1,4 @@
-import {
-  CreditCard,
-  LogOut,
-  Bell,
-  UserCircle,
-  MoreVertical,
-} from "lucide-react";
+import { Bell, CreditCard, LogOut, MoreVertical, UserCircle } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "#/components/ui/avatar";
 import {

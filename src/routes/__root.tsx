@@ -1,12 +1,13 @@
-import * as React from "react";
-import { Outlet, createRootRoute } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { TanStackDevtools } from "@tanstack/react-devtools";
-import { SiteHeader } from "#/components/layout/header";
-import { AppSidebar } from "#/components/layout/app-sidebar";
-import { SidebarInset, SidebarProvider } from "#/components/ui/sidebar";
-
 import "../styles.css";
+
+import { TanStackDevtools } from "@tanstack/react-devtools";
+import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import * as React from "react";
+
+import { AppSidebar } from "#/components/layout/app-sidebar";
+import { SiteHeader } from "#/components/layout/header";
+import { SidebarInset, SidebarProvider } from "#/components/ui/sidebar";
 
 export const Route = createRootRoute({
   component: RootComponent,

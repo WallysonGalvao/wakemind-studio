@@ -1,6 +1,6 @@
 import { useMatches } from "@tanstack/react-router";
-import { Globe, Monitor, Smartphone } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { Globe, Monitor, Smartphone } from "lucide-react";
 
 import {
   Breadcrumb,

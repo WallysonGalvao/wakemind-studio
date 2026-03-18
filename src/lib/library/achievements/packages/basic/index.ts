@@ -1,6 +1,7 @@
-import { ACHIEVEMENT_REGISTRY } from "@/constants/achievements";
-import { MaterialSymbol } from "@/components/ui/material-symbol";
 import React from "react";
+
+import { MaterialSymbol } from "@/components/ui/material-symbol";
+import { ACHIEVEMENT_REGISTRY } from "@/constants/achievements";
 
 /**
  * Basic Achievement Package
@@ -11,7 +12,10 @@ export const BASIC_ACHIEVEMENT_PACKAGE = {
   id: "basic",
   name: "Basic Symbols",
   description: "Official Material Symbols icons used in the mobile app.",
-  renderIcon: (name: string, props?: { size?: number; color?: string; className?: string }) => {
+  renderIcon: (
+    name: string,
+    props?: { size?: number; color?: string; className?: string },
+  ) => {
     return React.createElement(MaterialSymbol, { name, ...props });
   },
   items: ACHIEVEMENT_REGISTRY.map((achievement) => ({
