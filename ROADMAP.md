@@ -1,0 +1,263 @@
+# Wakemind Studio — Roadmap
+
+> Documento vivo. Atualizar conforme decisões forem tomadas.
+
+---
+
+## Estado atual (Março 2026)
+
+| Rota / Feature                             | Status                       |
+| ------------------------------------------ | ---------------------------- |
+| Dashboard (KPIs + gráfico)                 | ✅ Implementado (dados mock) |
+| Geração de imagem (OpenAI)                 | ✅ Implementado              |
+| Biblioteca de conquistas (41 achievements) | ✅ Implementado              |
+| Settings (API key)                         | ✅ Implementado              |
+| Geração de som                             | 🚧 Placeholder               |
+| About                                      | 🚧 Placeholder               |
+| Backend / Auth                             | ❌ Não iniciado              |
+| Progresso de conquistas                    | ❌ Não iniciado              |
+| Sistema de créditos                        | ❌ Não iniciado              |
+
+---
+
+## Fase 1 — Fechar o MVP
+
+> **Objetivo:** ter todas as rotas com conteúdo real e a experiência básica funcionando do início ao fim.  
+> **Horizonte estimado:** curto prazo
+
+### 1.1 Sound Generation (`/generate/sound`)
+
+Implementar a geração de áudio seguindo o mesmo padrão arquitetural do `generate/image.tsx`:
+
+- Criar `src/services/openai/sound.ts` (ou ElevenLabs como provider alternativo)
+- Criar `src/lib/library/sound/presets.ts` com presets de estilo (ambient, 8-bit, SFX, etc.)
+- Rota com campos: nome, descrição, preset de estilo, duração, formato (mp3/wav)
+- Preview no browser com `<audio>` nativo
+- Download do arquivo gerado
+
+**Decisão pendente:** OpenAI TTS, ElevenLabs, fal.ai ou outro provider?
+
+---
+
+### 1.2 About Page
+
+Substituir o placeholder genérico por uma página útil:
+
+- O que é o Wakemind Studio e para quem é
+- Como usar (geração de assets + sistema de conquistas)
+- Links para documentação externa e providers (OpenAI, etc.)
+- Créditos e versão
+
+---
+
+### 1.3 Biblioteca de Assets Gerados
+
+Atualmente a geração de imagens não persiste nada após o download. Criar uma galeria local:
+
+- Salvar assets gerados em **IndexedDB** (imagem em base64 + metadados: nome, prompt, modelo, data)
+- Rota `/library` unificada com tabs: **Conquistas** | **Assets**
+- Cards com preview, nome, formato e botão de download/exclusão
+- Filtros por tipo (imagem/som) e data
+
+---
+
+### 1.4 Dashboard com Dados Reais
+
+Desacoplar os dados hardcoded:
+
+- Extrair mock data para `src/data/dashboard.ts` (interim)
+- Definir as interfaces dos KPIs (pronto para conectar a qualquer backend futuro)
+- Atualizar o gráfico de visitantes para um gráfico de **assets gerados por dia** (mais relevante para o produto)
+- Adicionar cartão de **conquistas desbloqueadas** ao dashboard
+
+---
+
+## Fase 2 — Sistema de Conquistas Vivo
+
+> **Objetivo:** fazer o sistema de conquistas funcionar de ponta a ponta — tracking, unlock, feedback visual.  
+> **Horizonte estimado:** médio prazo
+
+### 2.1 Progress Engine
+
+- `src/lib/achievements/engine.ts`: funções puras para calcular progresso e determinar unlocks
+- Persistência via IndexedDB ou localStorage (chave por usuário/sessão)
+- Eventos tipados: `ASSET_GENERATED`, `SESSION_STARTED`, `STREAK_UPDATED`, etc.
+- Hook `useAchievements()` consumível nas páginas
+
+### 2.2 Achievement Detail
+
+- Modal ou página `/library/achievement/:id` com:
+  - Ícone em tamanho grande
+  - Descrição completa dos requisitos
+  - Barra de progresso atual vs. meta
+  - Status: `locked` / `in-progress` / `unlocked` / `secret`
+  - Data de unlock (quando aplicável)
+
+### 2.3 Notificações de Unlock
+
+- Integrar `sonner` (já instalado) para toasts de conquista desbloqueada
+- Toast com ícone da conquista, nome e tier
+- Som de notificação opcional (integrar com geração de som quando disponível)
+
+### 2.4 Export de Pacote
+
+- Exportar o pacote de conquistas em JSON padronizado
+- Útil para importar em app mobile ou compartilhar configurações entre projetos
+- Botão "Export Package" na aba de conquistas da biblioteca
+
+---
+
+## Fase 3 — Autenticação & Backend
+
+> **Objetivo:** sair do modo localStorage-only; ter usuários, dados persistidos e API key segura.  
+> **Horizonte estimado:** médio prazo
+
+### 3.1 Autenticação
+
+**Provider sugerido:** Supabase Auth (ou Clerk)
+
+- Login com email/senha e OAuth (Google)
+- Sessão persistida; `nav-user.tsx` já tem o slot de avatar/email pronto
+- Rota `/login` e proteção de rotas autenticadas
+
+### 3.2 Proxy de API Key
+
+Em vez de armazenar a OpenAI key no browser do usuário:
+
+- Backend Edge Function (Supabase ou Cloudflare Worker) que faz a chamada à OpenAI
+- O cliente envia apenas o prompt + opções; o servidor injeta a key
+- Remove a necessidade de cada usuário ter sua própria key
+- Habilita rate limiting e consumo de créditos por conta
+
+### 3.3 Perfis & Progresso Sincronizado
+
+- Progresso de conquistas salvo no banco, não no browser
+- Histórico de assets gerados por usuário
+- Configurações sincronizadas entre dispositivos
+
+### 3.4 Dashboard Real
+
+Com backend:
+
+- KPIs vindos de queries reais (assets gerados, conquistas desbloqueadas, créditos consumidos)
+- Gráfico mostrando atividade real do usuário (geração por dia, streaks)
+- Dados da tabela (`data.json`) substituídos por listagem de atividade real
+
+---
+
+## Fase 4 — Monetização & Escala
+
+> **Objetivo:** ativar o modelo de negócio que já está desenhado no código.  
+> **Horizonte estimado:** longo prazo
+
+### 4.1 Sistema de Créditos
+
+O dashboard já exibe "Generation Credits (450)" como KPI — implementar de fato:
+
+- Cada geração de imagem/som consome créditos
+- Créditos associados a um plano mensal
+- UI de saldo no header ou sidebar
+- Alerta quando créditos estão baixos
+
+### 4.2 Premium Achievements
+
+19 das 41 conquistas já estão marcadas como `isPremium: true`. Implementar o gate:
+
+- Conquistas premium visíveis na biblioteca mas marcadas com badge "Pro"
+- Progresso bloqueado para plano gratuito
+- CTA para upgrade ao tentar desbloquear
+
+### 4.3 Planos de Assinatura
+
+| Plano      | Créditos/mês | Achievements     | Assets salvos |
+| ---------- | ------------ | ---------------- | ------------- |
+| Free       | 50           | 22 (não-premium) | 20            |
+| Studio Pro | 500          | 41 (todos)       | Ilimitado     |
+| Team       | Custom       | 41 + white-label | Ilimitado     |
+
+### 4.4 Marketplace de Assets
+
+- Usuários podem publicar assets gerados para a comunidade
+- Curadoria por categoria (ícones, sons, backgrounds)
+- Download gratuito de assets da comunidade (consome créditos ou não?)
+
+### 4.5 Multi-Provider de Geração
+
+- Abstrair o provider em `src/services/generation/` com interface comum
+- Suporte a: OpenAI, Stability AI, fal.ai (imagem); OpenAI TTS, ElevenLabs (som)
+- Usuário escolhe o provider nas Settings por categoria
+
+---
+
+## Fase 5 — Mobile & Companion App
+
+> **Objetivo:** conectar o Studio ao app mobile que usa o sistema de conquistas.  
+> **Horizonte estimado:** longo prazo
+
+### 5.1 Contexto
+
+O sistema de conquistas (wake-ups, alarmes, streaks) fortemente sugere a existência de um app mobile companion. O Studio seria a interface de **criação e gestão**, e o app seria a interface de **execução e unlock**.
+
+### 5.2 Sincronização Studio ↔ App
+
+- Assets gerados no Studio ficam disponíveis no app (via CDN ou Supabase Storage)
+- Conquistas desbloqueadas no app aparecem no Studio com timestamp e dados do evento
+- Webhooks ou Realtime (Supabase) para atualização ao vivo
+
+### 5.3 SDK de Conquistas
+
+O `BASIC_ACHIEVEMENT_PACKAGE` já é uma estrutura exportável. Evoluir para:
+
+- Pacote npm `@wakemind/achievements` consumível no app mobile
+- Contrato de tipos compartilhado entre Studio e app
+- Versionamento de pacotes de conquistas (v1, v2, custom)
+
+---
+
+## Decisões em Aberto
+
+| Decisão                          | Opções                                       | Impacto         |
+| -------------------------------- | -------------------------------------------- | --------------- |
+| Backend provider                 | Supabase, Firebase, custom Node/Bun          | Fase 3 inteira  |
+| Sound generation provider        | OpenAI TTS, ElevenLabs, fal.ai               | Fase 1.1        |
+| O app mobile já existe?          | Sim → priorizar SDK; Não → Fase 5 mais longa | Fase 5          |
+| Persistência local (pré-backend) | IndexedDB vs localStorage                    | Fases 1.3 e 2.1 |
+| Modelo de créditos               | Por geração, por mês, por plano              | Fase 4.1        |
+
+---
+
+## Arquitetura Atual (referência)
+
+```
+src/
+├── routes/                        # File-based routing (TanStack Router)
+│   ├── __root.tsx                 # Layout: sidebar + header
+│   ├── index.tsx                  # Dashboard ✅
+│   ├── about.tsx                  # Placeholder
+│   ├── library.tsx                # Conquistas ✅
+│   ├── settings.tsx               # API key ✅
+│   └── generate/
+│       ├── image.tsx              # Geração de imagem ✅
+│       └── sound.tsx              # Placeholder
+├── services/
+│   └── openai/
+│       └── image.ts               # Chamada à API (axios)
+├── lib/library/
+│   ├── achievements/packages/     # Pacotes de conquistas
+│   └── image/styles.ts            # Config de estilo e buildPrompt
+├── hooks/
+│   ├── use-settings.ts            # Leitura/escrita de config (localStorage)
+│   └── use-mobile.tsx
+├── constants/achievements.ts      # 41 conquistas definidas
+├── types/achievements.ts          # Enums e tipos
+└── components/
+    ├── dashboard/                 # KPIs, gráfico, tabela
+    ├── layout/                    # Sidebar, header, nav-user
+    └── ui/                        # 20+ componentes shadcn/ui
+```
+
+**Stack principal:** React 19 · TanStack Router · Tailwind CSS v4 · Radix UI · Recharts · axios · Zod · sonner · Vite 7
+
+---
+
+_Última atualização: Março 2026_
