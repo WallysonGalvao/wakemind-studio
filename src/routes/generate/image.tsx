@@ -1,6 +1,6 @@
 import * as React from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { Download, ImageIcon, Loader2, Settings2, Wand2 } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Download, ImageIcon, Loader2, Wand2 } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
@@ -18,230 +18,25 @@ import {
   CardHeader,
   CardTitle,
 } from "#/components/ui/card";
+import { useSettings } from "#/hooks/use-settings";
+import {
+  generateImage,
+  type GenerateImageOptions,
+} from "#/services/openai/image";
+import {
+  DEFAULT_STYLE_CONFIG,
+  buildPrompt,
+  type StyleConfig,
+} from "#/lib/library/image/styles";
 
 export const Route = createFileRoute("/generate/image")({
   component: GenerateImagePage,
 });
 
-// ─── Style config ────────────────────────────────────────────────────────────
-
-const DEFAULT_STYLE_CONFIG = {
-  icon_style: {
-    perspective: "soft isometric (slight tilt, friendly angle)",
-    geometry: {
-      proportions: "1:1 square canvas, generous breathing room around object",
-      element_arrangement:
-        "single centered main object, optional tiny secondary detail for context",
-    },
-    composition: {
-      element_count: "1–2 objects only",
-      scene_density: "minimal, calm, uncluttered",
-    },
-    lighting: {
-      type: "soft diffuse daylight",
-      light_source: "top-left or top-center, evenly spread",
-      shadow: "very soft grounding shadow, close to object",
-      highlighting: "subtle highlights, no sharp specular shine",
-    },
-    textures: {
-      material_finish: "soft matte, lightly handcrafted feel",
-      surface_treatment:
-        "stylized, cozy realism (faint grain lines, soft fabric, gentle food texture)",
-    },
-    render_quality: {
-      resolution: "high-resolution stylized 3D or painterly render",
-      edge_definition: "soft edges, no hard outlines",
-      visual_clarity: "clear silhouette, instantly readable at small sizes",
-    },
-    color_palette: {
-      tone: "warm, natural, comforting",
-      range: "earthy pastels and muted naturals (no neon, no harsh contrast)",
-    },
-    background: {
-      color: "transparent",
-    },
-    stylistic_tone: "cozy, wholesome, calm, handcrafted, storybook-farm",
-    constraints: {
-      avoid: [
-        "photorealism",
-        "plastic shine",
-        "hard shadows",
-        "busy scenes",
-        "text or labels",
-        "background elements",
-      ],
-    },
-  },
-};
-
-// ─── Prompt builder (port of image-creation/lib/styles.ts) ───────────────────
-
-type StyleConfig = typeof DEFAULT_STYLE_CONFIG;
-
-function buildPrompt(
-  styleConfig: StyleConfig,
-  name: string,
-  description?: string,
-): string {
-  const style = styleConfig.icon_style;
-  const parts: string[] = [];
-
-  parts.push(description ? description : `An icon for ${name}`);
-
-  if (style.perspective) parts.push(style.perspective);
-  if (style.stylistic_tone) parts.push(style.stylistic_tone + " style");
-
-  if (style.composition) {
-    if (style.composition.element_count)
-      parts.push(style.composition.element_count);
-    if (style.composition.scene_density)
-      parts.push(style.composition.scene_density);
-  }
-
-  if (style.geometry) {
-    if (style.geometry.proportions) parts.push(style.geometry.proportions);
-    if (style.geometry.element_arrangement)
-      parts.push(style.geometry.element_arrangement);
-  }
-
-  if (style.lighting) {
-    if (style.lighting.type) parts.push(style.lighting.type);
-    if (style.lighting.light_source)
-      parts.push(`light from ${style.lighting.light_source}`);
-    if (style.lighting.shadow) parts.push(style.lighting.shadow);
-    if (style.lighting.highlighting) parts.push(style.lighting.highlighting);
-  }
-
-  if (style.textures) {
-    if (style.textures.material_finish)
-      parts.push(style.textures.material_finish);
-    if (style.textures.surface_treatment)
-      parts.push(style.textures.surface_treatment);
-  }
-
-  if (style.render_quality) {
-    if (style.render_quality.resolution)
-      parts.push(style.render_quality.resolution);
-    if (style.render_quality.edge_definition)
-      parts.push(style.render_quality.edge_definition);
-    if (style.render_quality.visual_clarity)
-      parts.push(style.render_quality.visual_clarity);
-  }
-
-  if (style.color_palette) {
-    if (style.color_palette.tone)
-      parts.push(`${style.color_palette.tone} tones`);
-    if (style.color_palette.range) parts.push(style.color_palette.range);
-  }
-
-  const bgColor = style.background?.color;
-  if (bgColor) {
-    if (bgColor.toLowerCase() === "transparent") {
-      parts.push("transparent background, no background");
-    } else {
-      parts.push(`${bgColor} background`);
-    }
-  }
-
-  if (style.constraints?.avoid?.length) {
-    parts.push(`avoid: ${style.constraints.avoid.join(", ")}`);
-  }
-
-  return parts.join(", ");
-}
-
-// ─── OpenAI image generation ─────────────────────────────────────────────────
-
-type GenerateOptions = {
-  model: string;
-  size: string;
-  quality: string;
-  format: string;
-  background: string;
-};
-
-async function generateImageFromOpenAI(
-  apiKey: string,
-  prompt: string,
-  options: GenerateOptions,
-): Promise<{ b64: string; format: string }> {
-  const body: Record<string, unknown> = {
-    model: options.model,
-    prompt,
-    n: 1,
-    size: options.size,
-  };
-
-  if (options.model === "dall-e-3") {
-    body.quality = options.quality;
-  }
-
-  if (options.model === "gpt-image-1") {
-    body.output_format = options.format;
-    if (options.background === "transparent") {
-      body.background = "transparent";
-    }
-  }
-
-  const response = await fetch("https://api.openai.com/v1/images/generations", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(
-      (err as { error?: { message?: string } }).error?.message ??
-        `API error ${response.status}`,
-    );
-  }
-
-  const data = (await response.json()) as {
-    data: Array<{ b64_json?: string; url?: string }>;
-  };
-
-  const imageData = data.data[0];
-
-  if (imageData.b64_json) {
-    return { b64: imageData.b64_json, format: options.format };
-  }
-
-  if (imageData.url) {
-    // Proxy not available – fetch URL and convert to b64 via blob
-    const imgRes = await fetch(imageData.url);
-    const blob = await imgRes.blob();
-    const b64 = await blobToBase64(blob);
-    return { b64, format: options.format };
-  }
-
-  throw new Error("No image data received from API");
-}
-
-function blobToBase64(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      // strip "data:...;base64," prefix
-      resolve(result.split(",")[1]);
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-}
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
-const LOCAL_API_KEY = "wakemind_openai_api_key";
-
 function GenerateImagePage() {
-  const [apiKey, setApiKey] = React.useState(
-    () => localStorage.getItem(LOCAL_API_KEY) ?? "",
-  );
+  const { settings } = useSettings();
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [styleJson, setStyleJson] = React.useState(
@@ -263,10 +58,6 @@ function GenerateImagePage() {
     name: string;
   } | null>(null);
 
-  function saveApiKey() {
-    localStorage.setItem(LOCAL_API_KEY, apiKey);
-  }
-
   function parseStyleConfig(): StyleConfig | null {
     try {
       const parsed = JSON.parse(styleJson);
@@ -279,8 +70,8 @@ function GenerateImagePage() {
   }
 
   async function handleGenerate() {
-    if (!apiKey) {
-      setError("Please enter your OpenAI API key.");
+    if (!settings.openaiApiKey) {
+      setError("No OpenAI API key configured. Please add it in Settings.");
       return;
     }
     if (!name.trim()) {
@@ -302,18 +93,18 @@ function GenerateImagePage() {
     setResult(null);
 
     try {
-      const { b64, format: fmt } = await generateImageFromOpenAI(
-        apiKey,
+      const options: GenerateImageOptions = {
+        model,
+        size,
+        quality,
+        format,
+        background,
+      };
+      const { b64, format: fmt } = await generateImage(
+        settings.openaiApiKey,
         prompt,
-        {
-          model,
-          size,
-          quality,
-          format,
-          background,
-        },
+        options,
       );
-
       setResult({ b64, format: fmt, prompt, name: name.trim() });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unknown error");
@@ -352,36 +143,22 @@ function GenerateImagePage() {
         </p>
       </div>
 
+      {!settings.openaiApiKey && (
+        <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-300">
+          No OpenAI API key set.{" "}
+          <Link
+            to="/settings"
+            className="underline underline-offset-2 font-medium"
+          >
+            Go to Settings
+          </Link>{" "}
+          to add one.
+        </div>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
         {/* ── Left column: form ── */}
         <div className="flex flex-col gap-4">
-          {/* API Key */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Settings2 className="size-4" />
-                API Key
-              </CardTitle>
-              <CardDescription>
-                Your OpenAI key is stored only in this browser (localStorage).
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-2">
-                <Input
-                  type="password"
-                  placeholder="sk-..."
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  className="font-mono text-sm"
-                />
-                <Button variant="outline" size="sm" onClick={saveApiKey}>
-                  Save
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Asset info */}
           <Card>
             <CardHeader className="pb-3">
