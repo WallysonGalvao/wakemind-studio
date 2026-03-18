@@ -1,0 +1,59 @@
+import { AchievementCategory, AchievementTier, type AchievementDefinition } from '@/types/achievements';
+
+export const ACHIEVEMENT_REGISTRY: AchievementDefinition[] = [
+  // PROGRESSION
+  { id: 'first_wake', category: AchievementCategory.PROGRESSION, tier: AchievementTier.BRONZE, icon: 'wb_twilight', isSecret: false, target: 1, useSkiaIcon: false },
+  { id: 'alarm_10', category: AchievementCategory.PROGRESSION, tier: AchievementTier.BRONZE, icon: 'emoji_events', isSecret: false, target: 10, useSkiaIcon: false },
+  { id: 'alarm_25', category: AchievementCategory.PROGRESSION, tier: AchievementTier.BRONZE, icon: 'grade', isSecret: false, target: 25, useSkiaIcon: false },
+  { id: 'alarm_50', category: AchievementCategory.PROGRESSION, tier: AchievementTier.SILVER, icon: 'emoji_events', isSecret: false, target: 50, use3DIcon: false },
+  { id: 'alarm_100', category: AchievementCategory.PROGRESSION, tier: AchievementTier.GOLD, icon: 'emoji_events', isSecret: false, isPremium: true, target: 100, use3DIcon: false },
+  { id: 'alarm_250', category: AchievementCategory.PROGRESSION, tier: AchievementTier.GOLD, icon: 'military_tech', isSecret: false, isPremium: true, target: 250 },
+  { id: 'alarm_365', category: AchievementCategory.PROGRESSION, tier: AchievementTier.PLATINUM, icon: 'workspace_premium', isSecret: false, isPremium: true, target: 365 },
+  { id: 'alarm_500', category: AchievementCategory.PROGRESSION, tier: AchievementTier.PLATINUM, icon: 'stars', isSecret: false, isPremium: true, target: 500 },
+  { id: 'alarm_1000', category: AchievementCategory.PROGRESSION, tier: AchievementTier.PLATINUM, icon: 'diamond', isSecret: false, isPremium: true, target: 1000 },
+  { id: 'alarm_2500', category: AchievementCategory.PROGRESSION, tier: AchievementTier.PLATINUM, icon: 'auto_awesome', isSecret: false, isPremium: true, target: 2500 },
+
+  // CONSISTENCY
+  { id: 'streak_3', category: AchievementCategory.CONSISTENCY, tier: AchievementTier.BRONZE, icon: 'local_fire_department', isSecret: false, target: 3, useSkiaIcon: false },
+  { id: 'streak_7', category: AchievementCategory.CONSISTENCY, tier: AchievementTier.SILVER, icon: 'local_fire_department', isSecret: false, target: 7, useSkiaIcon: false },
+  { id: 'streak_14', category: AchievementCategory.CONSISTENCY, tier: AchievementTier.SILVER, icon: 'whatshot', isSecret: false, target: 14, useSkiaIcon: false },
+  { id: 'streak_30', category: AchievementCategory.CONSISTENCY, tier: AchievementTier.GOLD, icon: 'local_fire_department', isSecret: false, target: 30 },
+  { id: 'streak_60', category: AchievementCategory.CONSISTENCY, tier: AchievementTier.GOLD, icon: 'flare', isSecret: false, isPremium: true, target: 60 },
+  { id: 'streak_100', category: AchievementCategory.CONSISTENCY, tier: AchievementTier.PLATINUM, icon: 'local_fire_department', isSecret: false, isPremium: true, target: 100 },
+  { id: 'streak_180', category: AchievementCategory.CONSISTENCY, tier: AchievementTier.PLATINUM, icon: 'rocket_launch', isSecret: false, isPremium: true, target: 180 },
+  { id: 'streak_365', category: AchievementCategory.CONSISTENCY, tier: AchievementTier.PLATINUM, icon: 'workspace_premium', isSecret: false, isPremium: true, target: 365 },
+  { id: 'perfect_month', category: AchievementCategory.CONSISTENCY, tier: AchievementTier.GOLD, icon: 'shield', isSecret: false, isPremium: true, target: 30 },
+
+  // MASTERY
+  { id: 'perfect_score', category: AchievementCategory.MASTERY, tier: AchievementTier.GOLD, icon: 'stars', isSecret: false, isPremium: true, target: 1, useSkiaIcon: false },
+  { id: 'avg_score_90', category: AchievementCategory.MASTERY, tier: AchievementTier.GOLD, icon: 'psychology', isSecret: false, isPremium: true, target: 90 },
+  { id: 'avg_score_95', category: AchievementCategory.MASTERY, tier: AchievementTier.PLATINUM, icon: 'workspace_premium', isSecret: false, isPremium: true, target: 95 },
+  { id: 'speed_10s', category: AchievementCategory.MASTERY, tier: AchievementTier.SILVER, icon: 'bolt', isSecret: false, target: 10000, useSkiaIcon: false },
+  { id: 'speed_5s', category: AchievementCategory.MASTERY, tier: AchievementTier.GOLD, icon: 'bolt', isSecret: false, isPremium: true, target: 5000, useSkiaIcon: false },
+  { id: 'speed_3s', category: AchievementCategory.MASTERY, tier: AchievementTier.GOLD, icon: 'flash_on', isSecret: false, isPremium: true, target: 3000 },
+  { id: 'speed_1s', category: AchievementCategory.MASTERY, tier: AchievementTier.PLATINUM, icon: 'electric_bolt', isSecret: false, isPremium: true, target: 1000 },
+  { id: 'no_fail_week', category: AchievementCategory.MASTERY, tier: AchievementTier.GOLD, icon: 'verified', isSecret: false, isPremium: true, target: 7 },
+  { id: 'no_fail_month', category: AchievementCategory.MASTERY, tier: AchievementTier.PLATINUM, icon: 'verified_user', isSecret: false, isPremium: true, target: 30 },
+  { id: 'hard_master', category: AchievementCategory.MASTERY, tier: AchievementTier.PLATINUM, icon: 'military_tech', isSecret: false, isPremium: true, target: 50 },
+  { id: 'hard_specialist', category: AchievementCategory.MASTERY, tier: AchievementTier.PLATINUM, icon: 'shield_with_house', isSecret: false, isPremium: true, target: 100 },
+
+  // EXPLORATION
+  { id: 'all_challenges', category: AchievementCategory.EXPLORATION, tier: AchievementTier.BRONZE, icon: 'explore', isSecret: false, target: 3 },
+  { id: 'challenge_variety', category: AchievementCategory.EXPLORATION, tier: AchievementTier.BRONZE, icon: 'diversity_3', isSecret: false, target: 10 },
+  { id: 'all_difficulties', category: AchievementCategory.EXPLORATION, tier: AchievementTier.SILVER, icon: 'tune', isSecret: false, target: 3 },
+  { id: 'difficulty_balanced', category: AchievementCategory.EXPLORATION, tier: AchievementTier.SILVER, icon: 'balance', isSecret: false, target: 25 },
+  { id: 'math_specialist', category: AchievementCategory.EXPLORATION, tier: AchievementTier.SILVER, icon: 'calculate', isSecret: false, target: 50 },
+  { id: 'memory_master', category: AchievementCategory.EXPLORATION, tier: AchievementTier.SILVER, icon: 'psychology', isSecret: false, target: 50 },
+  { id: 'logic_specialist', category: AchievementCategory.EXPLORATION, tier: AchievementTier.SILVER, icon: 'extension', isSecret: false, target: 50 },
+  { id: 'ultimate_explorer', category: AchievementCategory.EXPLORATION, tier: AchievementTier.PLATINUM, icon: 'public', isSecret: false, isPremium: true, target: 100 },
+
+  // SECRET
+  { id: 'early_riser', category: AchievementCategory.SECRET, tier: AchievementTier.SILVER, icon: 'wb_twilight', isSecret: true, target: 1 },
+  { id: 'weekend_warrior', category: AchievementCategory.SECRET, tier: AchievementTier.BRONZE, icon: 'celebration', isSecret: true, target: 10 },
+  { id: 'comeback_kid', category: AchievementCategory.SECRET, tier: AchievementTier.SILVER, icon: 'restore', isSecret: true, target: 30 },
+  { id: 'night_owl', category: AchievementCategory.SECRET, tier: AchievementTier.BRONZE, icon: 'bedtime', isSecret: true, target: 1 },
+  { id: 'perfect_timing', category: AchievementCategory.SECRET, tier: AchievementTier.SILVER, icon: 'schedule', isSecret: true, target: 7 },
+  { id: 'marathon_month', category: AchievementCategory.SECRET, tier: AchievementTier.GOLD, icon: 'directions_run', isSecret: true, isPremium: true, target: 50 },
+  { id: 'zen_master', category: AchievementCategory.SECRET, tier: AchievementTier.SILVER, icon: 'self_improvement', isSecret: true, target: 7 },
+  { id: 'lucky_seven', category: AchievementCategory.SECRET, tier: AchievementTier.BRONZE, icon: 'casino', isSecret: true, target: 1 },
+];
