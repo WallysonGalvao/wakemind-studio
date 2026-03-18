@@ -11,3 +11,12 @@ dist-ssr
 .vinxi
 __unconfig*
 todos.json
+
+# Yarn (Berry)
+.yarn/cache/*
+.yarn/install-state.gz
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
