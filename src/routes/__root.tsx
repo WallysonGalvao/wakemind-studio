@@ -1,7 +1,8 @@
+import * as React from "react";
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import { Header } from "#/components/layout/header";
+import { SiteHeader } from "#/components/layout/header";
 import { AppSidebar } from "#/components/layout/app-sidebar";
 import { SidebarInset, SidebarProvider } from "#/components/ui/sidebar";
 
@@ -13,14 +14,25 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <Header />
-        <main className="flex-1">
-          <Outlet />
-        </main>
-      </SidebarInset>
+    <>
+      <SidebarProvider
+        style={
+          {
+            "--sidebar-width": "18rem",
+            "--header-height": "3rem",
+          } as React.CSSProperties
+        }
+      >
+        <AppSidebar variant="inset" />
+        <SidebarInset>
+          <SiteHeader />
+          <div className="flex flex-1 flex-col overflow-auto">
+            <div className="@container/main flex flex-1 flex-col gap-2">
+              <Outlet />
+            </div>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
 
       <TanStackDevtools
         config={{
@@ -33,6 +45,6 @@ function RootComponent() {
           },
         ]}
       />
-    </SidebarProvider>
+    </>
   );
 }
