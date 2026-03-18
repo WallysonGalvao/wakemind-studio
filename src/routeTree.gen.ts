@@ -9,9 +9,23 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as LibraryRouteImport } from './routes/library'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GenerateSoundRouteImport } from './routes/generate/sound'
+import { Route as GenerateImageRouteImport } from './routes/generate/image'
 
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryRoute = LibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -22,35 +36,94 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GenerateSoundRoute = GenerateSoundRouteImport.update({
+  id: '/generate/sound',
+  path: '/generate/sound',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GenerateImageRoute = GenerateImageRouteImport.update({
+  id: '/generate/image',
+  path: '/generate/image',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/library': typeof LibraryRoute
+  '/settings': typeof SettingsRoute
+  '/generate/image': typeof GenerateImageRoute
+  '/generate/sound': typeof GenerateSoundRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/library': typeof LibraryRoute
+  '/settings': typeof SettingsRoute
+  '/generate/image': typeof GenerateImageRoute
+  '/generate/sound': typeof GenerateSoundRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/library': typeof LibraryRoute
+  '/settings': typeof SettingsRoute
+  '/generate/image': typeof GenerateImageRoute
+  '/generate/sound': typeof GenerateSoundRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/library'
+    | '/settings'
+    | '/generate/image'
+    | '/generate/sound'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about'
-  id: '__root__' | '/' | '/about'
+  to:
+    | '/'
+    | '/about'
+    | '/library'
+    | '/settings'
+    | '/generate/image'
+    | '/generate/sound'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/library'
+    | '/settings'
+    | '/generate/image'
+    | '/generate/sound'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  LibraryRoute: typeof LibraryRoute
+  SettingsRoute: typeof SettingsRoute
+  GenerateImageRoute: typeof GenerateImageRoute
+  GenerateSoundRoute: typeof GenerateSoundRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library': {
+      id: '/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof LibraryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -65,12 +138,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/generate/sound': {
+      id: '/generate/sound'
+      path: '/generate/sound'
+      fullPath: '/generate/sound'
+      preLoaderRoute: typeof GenerateSoundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/generate/image': {
+      id: '/generate/image'
+      path: '/generate/image'
+      fullPath: '/generate/image'
+      preLoaderRoute: typeof GenerateImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  LibraryRoute: LibraryRoute,
+  SettingsRoute: SettingsRoute,
+  GenerateImageRoute: GenerateImageRoute,
+  GenerateSoundRoute: GenerateSoundRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

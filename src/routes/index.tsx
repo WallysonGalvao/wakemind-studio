@@ -1,87 +1,251 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  ArrowUpRight,
+  CreditCard,
+  Users,
+  Activity,
+  ArrowRight,
+  ImageIcon,
+  Sparkles,
+  Music,
+} from "lucide-react";
 
-export const Route = createFileRoute('/')({ component: App })
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "#/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "#/components/ui/table";
+import { Badge } from "#/components/ui/badge";
+import { Button } from "#/components/ui/button";
+import { Progress } from "#/components/ui/progress";
 
-function App() {
+export const Route = createFileRoute("/")({
+  component: Dashboard,
+});
+
+const recentGenerations = [
+  {
+    name: "Advanced Calculus",
+    type: "Challenge",
+    status: "Ready",
+    date: "2026-03-18",
+  },
+  {
+    name: "Memory Simon 01",
+    type: "Challenge",
+    status: "Ready",
+    date: "2026-03-17",
+  },
+  {
+    name: "Night Owl Badge",
+    type: "Icon",
+    status: "Synced",
+    date: "2026-03-17",
+  },
+  {
+    name: "Logic Sequence",
+    type: "Challenge",
+    status: "Draft",
+    date: "2026-03-16",
+  },
+  {
+    name: "Early Riser 2026",
+    type: "Scene",
+    status: "Synced",
+    date: "2026-03-15",
+  },
+] as const;
+
+function statusVariant(status: string) {
+  switch (status) {
+    case "Synced":
+      return "bg-emerald-100 text-emerald-700 hover:bg-emerald-100";
+    case "Ready":
+      return "bg-blue-100 text-blue-700 hover:bg-blue-100";
+    default:
+      return "bg-muted text-muted-foreground hover:bg-muted";
+  }
+}
+
+function Dashboard() {
   return (
-    <main className="page-wrap px-4 pb-8 pt-14">
-      <section className="island-shell rise-in relative overflow-hidden rounded-[2rem] px-6 py-10 sm:px-10 sm:py-14">
-        <div className="pointer-events-none absolute -left-20 -top-24 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(79,184,178,0.32),transparent_66%)]" />
-        <div className="pointer-events-none absolute -bottom-20 -right-20 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(47,106,74,0.18),transparent_66%)]" />
-        <p className="island-kicker mb-3">TanStack Start Base Template</p>
-        <h1 className="display-title mb-5 max-w-3xl text-4xl leading-[1.02] font-bold tracking-tight text-[var(--sea-ink)] sm:text-6xl">
-          Start simple, ship quickly.
-        </h1>
-        <p className="mb-8 max-w-2xl text-base text-[var(--sea-ink-soft)] sm:text-lg">
-          This base starter intentionally keeps things light: two routes, clean
-          structure, and the essentials you need to build from scratch.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <a
-            href="/about"
-            className="rounded-full border border-[rgba(50,143,151,0.3)] bg-[rgba(79,184,178,0.14)] px-5 py-2.5 text-sm font-semibold text-[var(--lagoon-deep)] no-underline transition hover:-translate-y-0.5 hover:bg-[rgba(79,184,178,0.24)]"
-          >
-            About This Starter
-          </a>
-          <a
-            href="https://tanstack.com/router"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-full border border-[rgba(23,58,64,0.2)] bg-white/50 px-5 py-2.5 text-sm font-semibold text-[var(--sea-ink)] no-underline transition hover:-translate-y-0.5 hover:border-[rgba(23,58,64,0.35)]"
-          >
-            Router Guide
-          </a>
-        </div>
-      </section>
+    <div className="flex flex-col gap-4 p-4 md:gap-8 md:p-8">
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Assets</CardTitle>
+            <ImageIcon className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">1,284</div>
+            <p className="text-xs text-muted-foreground">
+              +20.1% from last month
+            </p>
+          </CardContent>
+        </Card>
 
-      <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          [
-            'Type-Safe Routing',
-            'Routes and links stay in sync across every page.',
-          ],
-          [
-            'Server Functions',
-            'Call server code from your UI without creating API boilerplate.',
-          ],
-          [
-            'Streaming by Default',
-            'Ship progressively rendered responses for faster experiences.',
-          ],
-          [
-            'Tailwind Native',
-            'Design quickly with utility-first styling and reusable tokens.',
-          ],
-        ].map(([title, desc], index) => (
-          <article
-            key={title}
-            className="island-shell feature-card rise-in rounded-2xl p-5"
-            style={{ animationDelay: `${index * 90 + 80}ms` }}
-          >
-            <h2 className="mb-2 text-base font-semibold text-[var(--sea-ink)]">
-              {title}
-            </h2>
-            <p className="m-0 text-sm text-[var(--sea-ink-soft)]">{desc}</p>
-          </article>
-        ))}
-      </section>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Active Challenges
+            </CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">+12</div>
+            <p className="text-xs text-muted-foreground">+4 since yesterday</p>
+          </CardContent>
+        </Card>
 
-      <section className="island-shell mt-8 rounded-2xl p-6">
-        <p className="island-kicker mb-2">Quick Start</p>
-        <ul className="m-0 list-disc space-y-2 pl-5 text-sm text-[var(--sea-ink-soft)]">
-          <li>
-            Edit <code>src/routes/index.tsx</code> to customize the home page.
-          </li>
-          <li>
-            Update <code>src/components/Header.tsx</code> and{' '}
-            <code>src/components/Footer.tsx</code> for brand links.
-          </li>
-          <li>
-            Add routes in <code>src/routes</code> and tweak visual tokens in{' '}
-            <code>src/styles.css</code>.
-          </li>
-        </ul>
-      </section>
-    </main>
-  )
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Generation Credits
+            </CardTitle>
+            <CreditCard className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">450</div>
+            <p className="text-xs text-muted-foreground">Plan: Studio Pro</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">+573</div>
+            <p className="text-xs text-muted-foreground">
+              +201 since last hour
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
+        {/* Recent Generations */}
+        <Card className="xl:col-span-2">
+          <CardHeader className="flex flex-row items-center">
+            <div className="grid gap-2">
+              <CardTitle>Recent Generations</CardTitle>
+              <CardDescription>
+                Latest AI assets created for WakeMind.
+              </CardDescription>
+            </div>
+            <Button asChild size="sm" className="ml-auto gap-1">
+              <Link to="/library">
+                View All
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Asset</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Date</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {recentGenerations.map((row, i) => (
+                  <TableRow key={i} className="cursor-pointer">
+                    <TableCell className="font-medium">{row.name}</TableCell>
+                    <TableCell>{row.type}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className={statusVariant(row.status)}
+                      >
+                        {row.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right text-muted-foreground">
+                      {row.date}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Quick Create */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Create</CardTitle>
+            <CardDescription>Start a new generation session.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <Link
+                to="/generate/image"
+                className="flex items-center gap-4 rounded-lg border p-3 hover:bg-muted transition-colors"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Sparkles size={20} />
+                </div>
+                <div className="flex-1 space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    New Illustration
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Challenge art for app modules.
+                  </p>
+                </div>
+                <ArrowRight size={16} className="text-muted-foreground" />
+              </Link>
+
+              <Link
+                to="/generate/sound"
+                className="flex items-center gap-4 rounded-lg border p-3 hover:bg-muted transition-colors"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-500/10 text-purple-600">
+                  <Music size={20} />
+                </div>
+                <div className="flex-1 space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    New Audio Tone
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Generate AI-based alarm tones.
+                  </p>
+                </div>
+                <ArrowRight size={16} className="text-muted-foreground" />
+              </Link>
+            </div>
+
+            <div className="rounded-lg bg-muted/50 p-4 border border-dashed">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
+                Sync Progress
+              </h4>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Assets to Sync</span>
+                  <span className="font-bold text-foreground">14</span>
+                </div>
+                <Progress value={65} className="h-1.5" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
 }
