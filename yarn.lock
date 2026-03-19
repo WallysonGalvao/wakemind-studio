@@ -752,6 +752,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hookform/resolvers@npm:^5.2.2":
+  version: 5.2.2
+  resolution: "@hookform/resolvers@npm:5.2.2"
+  dependencies:
+    "@standard-schema/utils": ^0.3.0
+  peerDependencies:
+    react-hook-form: ^7.55.0
+  checksum: 131b1c4c763949164825634058fbe126041f1375622fddcb4f833af57e89665a2672474c778e604583d7447cff8252ab7df460240269e91eb5683646a3c9bebb
+  languageName: node
+  linkType: hard
+
 "@humanfs/core@npm:^0.19.1":
   version: 0.19.1
   resolution: "@humanfs/core@npm:0.19.1"
@@ -2185,6 +2196,75 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@standard-schema/utils@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@standard-schema/utils@npm:0.3.0"
+  checksum: 7084f875d322792f2e0a5904009434c8374b9345b09ba89828b68fd56fa3c2b366d35bf340d9e8c72736ef01793c2f70d350c372ed79845dc3566c58d34b4b51
+  languageName: node
+  linkType: hard
+
+"@supabase/auth-js@npm:2.99.3":
+  version: 2.99.3
+  resolution: "@supabase/auth-js@npm:2.99.3"
+  dependencies:
+    tslib: 2.8.1
+  checksum: 02c72374ff527c0df5ae38296f1c1362f24756fd13ed0ef879c586d1d94d766a277df37bc097a1bca43de0948f8708cbeb631d54bbb8f78dc6cdce2cc952c9f1
+  languageName: node
+  linkType: hard
+
+"@supabase/functions-js@npm:2.99.3":
+  version: 2.99.3
+  resolution: "@supabase/functions-js@npm:2.99.3"
+  dependencies:
+    tslib: 2.8.1
+  checksum: 193195f2b4fc397c69da86fd6e6fa90de16163c204c257fe84b099022ffa21a8199d918da8b075844e41b7fe77f7aba1583a44d3e8a5842e22e042f5dbcf66f1
+  languageName: node
+  linkType: hard
+
+"@supabase/postgrest-js@npm:2.99.3":
+  version: 2.99.3
+  resolution: "@supabase/postgrest-js@npm:2.99.3"
+  dependencies:
+    tslib: 2.8.1
+  checksum: 99be40a4614577b71c73d533cfba89fe23596b5b3a581064249d7ee66650aedb8bc085be406ec5654825b83b2aead4dd40da8b75af146331d68a8661208fd839
+  languageName: node
+  linkType: hard
+
+"@supabase/realtime-js@npm:2.99.3":
+  version: 2.99.3
+  resolution: "@supabase/realtime-js@npm:2.99.3"
+  dependencies:
+    "@types/phoenix": ^1.6.6
+    "@types/ws": ^8.18.1
+    tslib: 2.8.1
+    ws: ^8.18.2
+  checksum: bdf4c7fd996fb6d0e4a761be4770851d97317b685f593b28d8a9126647606ae84b7f1acb4516bcd2469fbf610e0542a7e455f96575209ea82d91a66b54ea9029
+  languageName: node
+  linkType: hard
+
+"@supabase/storage-js@npm:2.99.3":
+  version: 2.99.3
+  resolution: "@supabase/storage-js@npm:2.99.3"
+  dependencies:
+    iceberg-js: ^0.8.1
+    tslib: 2.8.1
+  checksum: 7ea4323bc58b8dab9e3358465584a42a25c925baf1bf9abac5308a2fb666004e888df98e388d52ad530773af91d9150edccb475f1d0ca0470ee98b107a789982
+  languageName: node
+  linkType: hard
+
+"@supabase/supabase-js@npm:^2.99.3":
+  version: 2.99.3
+  resolution: "@supabase/supabase-js@npm:2.99.3"
+  dependencies:
+    "@supabase/auth-js": 2.99.3
+    "@supabase/functions-js": 2.99.3
+    "@supabase/postgrest-js": 2.99.3
+    "@supabase/realtime-js": 2.99.3
+    "@supabase/storage-js": 2.99.3
+  checksum: 0c103d16e9b9b816b9ea5ef6ff94062266f25b6d97f15bef483839ff45a619daba128c1c414519aae1c9241aeb511d22317b306b240ea87c4e41947b922d681a
+  languageName: node
+  linkType: hard
+
 "@tailwindcss/node@npm:4.2.2":
   version: 4.2.2
   resolution: "@tailwindcss/node@npm:4.2.2"
@@ -2854,12 +2934,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:*":
+  version: 25.5.0
+  resolution: "@types/node@npm:25.5.0"
+  dependencies:
+    undici-types: ~7.18.0
+  checksum: ea0908794d5c011f4f2b5d2e93737ae047ff4a9fd1ec6da27e13a1f976d8d0e029830ddf2d4177e00a2601307e8bbc06e7b4cb3e29e889489d42dd44b49c796a
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:^22.10.2":
   version: 22.19.15
   resolution: "@types/node@npm:22.19.15"
   dependencies:
     undici-types: ~6.21.0
   checksum: 6e78cdb6cec95770432aceff75b349610b2a8c6e3b661fa6643afa199e49b2ada081546b74c79f3b1bd922fbf5e1b52f7714f6d9d8d275d2083578821328d33c
+  languageName: node
+  linkType: hard
+
+"@types/phoenix@npm:^1.6.6":
+  version: 1.6.7
+  resolution: "@types/phoenix@npm:1.6.7"
+  checksum: 768b6ceb1661eae1e276d7af851c91cfee228e21d9ccbdd110c76ccda01e94661fd7bfd6ea93c7acbb30c2bc516608ae960fd0db4bb7e7f8372f4f862efe0900
   languageName: node
   linkType: hard
 
@@ -2878,6 +2974,15 @@ __metadata:
   dependencies:
     csstype: ^3.2.2
   checksum: ddd330292abf2dc2cfa65188e1c5f67cc6e90f8d8ffb088f753a38db9d123f942c23d324a6b7e8027ff04f22b395492150f54b9b520b6cbec1e8841e669f2c19
+  languageName: node
+  linkType: hard
+
+"@types/ws@npm:^8.18.1":
+  version: 8.18.1
+  resolution: "@types/ws@npm:8.18.1"
+  dependencies:
+    "@types/node": "*"
+  checksum: 0331b14cde388e2805af66cad3e3f51857db8e68ed91e5b99750915e96fe7572e58296dc99999331bbcf08f0ff00a227a0bb214e991f53c2a5aca7b0e71173fa
   languageName: node
   linkType: hard
 
@@ -3435,11 +3540,11 @@ __metadata:
   linkType: hard
 
 "baseline-browser-mapping@npm:^2.9.0":
-  version: 2.10.8
-  resolution: "baseline-browser-mapping@npm:2.10.8"
+  version: 2.10.9
+  resolution: "baseline-browser-mapping@npm:2.10.9"
   bin:
     baseline-browser-mapping: dist/cli.cjs
-  checksum: 5ccd712b8190b919e0873ee2d09e9c5d5b646c89db2e16337ab86379ba1a40deb71ada6f388282dd88c0f8a6ec167d02044587095a51cd18848bfea647123c4f
+  checksum: cb3f0cac874b8ae059a1a6590fa5a7327b8af82951ffd6aebaef496add406247c8b854d69679826cda0f41792c0971e74260f6a67cc7242f9c27bb0c9a3d36fd
   languageName: node
   linkType: hard
 
@@ -5047,6 +5152,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"iceberg-js@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "iceberg-js@npm:0.8.1"
+  checksum: 679e52f82a285b3e1da69bfb7c6c54af95067ca56293299b4ffcc196329a4f2eeb1502fe55c0b44cc80e9eb1bf34001b76ee9f0e13268a753d0cfe8d27072e56
+  languageName: node
+  linkType: hard
+
 "iconv-lite@npm:^0.7.2":
   version: 0.7.2
   resolution: "iconv-lite@npm:0.7.2"
@@ -6521,6 +6633,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-hook-form@npm:^7.71.2":
+  version: 7.71.2
+  resolution: "react-hook-form@npm:7.71.2"
+  peerDependencies:
+    react: ^16.8.0 || ^17 || ^18 || ^19
+  checksum: 45406f7182674d82d66acf3721d18957e0bc647f6b7b284e160b7caccf2f44a03a40d627660692f9c485e312022f057364c30e77be151f72dbc135470fb99fcb
+  languageName: node
+  linkType: hard
+
 "react-is@npm:^16.13.1":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
@@ -7562,7 +7683,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.8.1":
+"tslib@npm:2.8.1, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.8.1":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: e4aba30e632b8c8902b47587fd13345e2827fa639e7c3121074d5ee0880723282411a8838f830b55100cbe4517672f84a2472667d355b81e8af165a55dc6203a
@@ -7705,6 +7826,13 @@ __metadata:
   version: 6.21.0
   resolution: "undici-types@npm:6.21.0"
   checksum: 46331c7d6016bf85b3e8f20c159d62f5ae471aba1eb3dc52fff35a0259d58dcc7d592d4cc4f00c5f9243fa738a11cfa48bd20203040d4a9e6bc25e807fab7ab3
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~7.18.0":
+  version: 7.18.2
+  resolution: "undici-types@npm:7.18.2"
+  checksum: 23da306c8366574adec305b06a8519ab5c7d09e3f5d16c1a98709a34fae17da09ec95198f30f86c00055e02efa8bfcc843e84e8aebeb9b8d6bb3e06afccae07a
   languageName: node
   linkType: hard
 
@@ -7991,6 +8119,7 @@ __metadata:
     "@dnd-kit/sortable": ^10.0.0
     "@dnd-kit/utilities": ^3.2.2
     "@eslint/js": ^10.0.1
+    "@hookform/resolvers": ^5.2.2
     "@radix-ui/react-avatar": ^1.1.11
     "@radix-ui/react-checkbox": ^1.3.3
     "@radix-ui/react-collapsible": ^1.1.12
@@ -8006,6 +8135,7 @@ __metadata:
     "@radix-ui/react-toggle": ^1.1.10
     "@radix-ui/react-toggle-group": ^1.1.11
     "@radix-ui/react-tooltip": ^1.2.8
+    "@supabase/supabase-js": ^2.99.3
     "@tailwindcss/typography": ^0.5.16
     "@tailwindcss/vite": ^4.1.18
     "@tanstack/devtools-vite": latest
@@ -8037,6 +8167,7 @@ __metadata:
     prettier-plugin-tailwindcss: ^0.7.2
     react: ^19.2.0
     react-dom: ^19.2.0
+    react-hook-form: ^7.71.2
     react-resizable-panels: ^4.7.3
     recharts: 2.15.4
     sonner: ^2.0.7
@@ -8205,7 +8336,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.18.3":
+"ws@npm:^8.18.2, ws@npm:^8.18.3":
   version: 8.19.0
   resolution: "ws@npm:8.19.0"
   peerDependencies:

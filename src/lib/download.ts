@@ -1,3 +1,4 @@
+import { getDownloadUrl } from "@/services/supabase/assets";
 import type { GeneratedAsset } from "@/types/asset";
 
 const MIME_MAP: Record<string, string> = {
@@ -7,12 +8,25 @@ const MIME_MAP: Record<string, string> = {
   jpg: "image/jpeg",
 };
 
-export function downloadAsset(asset: GeneratedAsset) {
-  const a = document.createElement("a");
-  a.href = `data:${asset.mimeType};base64,${asset.imageData}`;
+export async function downloadAsset(asset: GeneratedAsset) {
   const ext = asset.mimeType.split("/")[1] ?? "png";
-  a.download = `${asset.name.toLowerCase().replace(/\s+/g, "_")}.${ext}`;
-  a.click();
+  const fileName = `${asset.name.toLowerCase().replace(/\s+/g, "_")}.${ext}`;
+
+  // Prefer signed download URL from Storage; fall back to imageUrl if available
+  try {
+    const url = await getDownloadUrl(asset.storagePath, fileName);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    a.click();
+  } catch {
+    if (asset.imageUrl) {
+      const a = document.createElement("a");
+      a.href = asset.imageUrl;
+      a.download = fileName;
+      a.click();
+    }
+  }
 }
 
 export function downloadBase64(b64: string, format: string, name: string) {

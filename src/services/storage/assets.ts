@@ -18,16 +18,11 @@ export async function deleteAsset(id: string): Promise<void> {
 export function computeStats(assets: GeneratedAsset[]): AssetStats {
   const images = assets.filter((a) => a.type === "image").length;
   const sounds = assets.filter((a) => a.type === "sound").length;
-  // Rough storage estimate: base64 chars × 0.75 = bytes
-  const totalBytes = assets.reduce(
-    (sum, a) => sum + Math.ceil(a.imageData.length * 0.75),
-    0,
-  );
   return {
     total: assets.length,
     images,
     sounds,
-    storageMb: Math.round((totalBytes / 1024 / 1024) * 100) / 100,
+    storageMb: 0,
   };
 }
 

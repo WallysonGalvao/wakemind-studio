@@ -57,7 +57,7 @@ export function AssetDetailDialog({
             <div className="flex flex-col gap-6 p-6">
               <div className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-xl border border-border bg-muted/50">
                 <img
-                  src={`data:${asset.mimeType};base64,${asset.imageData}`}
+                  src={asset.imageUrl ?? ""}
                   alt={asset.name}
                   className="max-h-full max-w-full object-contain"
                 />

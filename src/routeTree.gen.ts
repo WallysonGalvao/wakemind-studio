@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -20,6 +21,11 @@ import { Route as GenerateImageRouteImport } from './routes/generate/image'
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LibraryRoute = LibraryRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/library': typeof LibraryRoute
+  '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
   '/generate/image': typeof GenerateImageRoute
   '/generate/sound': typeof GenerateSoundRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/library': typeof LibraryRoute
+  '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
   '/generate/image': typeof GenerateImageRoute
   '/generate/sound': typeof GenerateSoundRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/library': typeof LibraryRoute
+  '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
   '/generate/image': typeof GenerateImageRoute
   '/generate/sound': typeof GenerateSoundRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/library'
+    | '/login'
     | '/settings'
     | '/generate/image'
     | '/generate/sound'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/library'
+    | '/login'
     | '/settings'
     | '/generate/image'
     | '/generate/sound'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/library'
+    | '/login'
     | '/settings'
     | '/generate/image'
     | '/generate/sound'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   LibraryRoute: typeof LibraryRoute
+  LoginRoute: typeof LoginRoute
   SettingsRoute: typeof SettingsRoute
   GenerateImageRoute: typeof GenerateImageRoute
   GenerateSoundRoute: typeof GenerateSoundRoute
@@ -128,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/library': {
@@ -179,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   LibraryRoute: LibraryRoute,
+  LoginRoute: LoginRoute,
   SettingsRoute: SettingsRoute,
   GenerateImageRoute: GenerateImageRoute,
   GenerateSoundRoute: GenerateSoundRoute,

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { ImageIcon, Package } from "lucide-react";
 import * as React from "react";
 
@@ -18,9 +18,8 @@ import {
 } from "@/components/ui/select";
 import { BUILT_IN_PACKAGES } from "@/constants/packages";
 import { useGeneration } from "@/hooks/use-generation";
-import { useSettings } from "@/hooks/use-settings";
 import { downloadBase64 } from "@/lib/download";
-import { getAllCustomPackages } from "@/services/storage/packages";
+import { getAllCustomPackages } from "@/services/supabase/packages";
 import type { AchievementPackage } from "@/types/achievements";
 
 export const Route = createFileRoute("/generate/image")({
@@ -34,7 +33,6 @@ export const Route = createFileRoute("/generate/image")({
 function GenerateImagePage() {
   const { customPackages } = Route.useLoaderData();
   const PACKAGES: AchievementPackage[] = [...BUILT_IN_PACKAGES, ...customPackages];
-  const { settings } = useSettings();
   const [packageId, setPackageId] = React.useState<string>("");
   const [name, setName] = React.useState("");
 
@@ -53,7 +51,7 @@ function GenerateImagePage() {
     if (!name.trim()) {
       return;
     }
-    await gen.generate(settings.openaiApiKey, name.trim(), packageId);
+    await gen.generate(name.trim(), packageId);
   }
 
   function handleDownload() {
@@ -69,16 +67,6 @@ function GenerateImagePage() {
           Generate game assets using the OpenAI image generation API.
         </p>
       </div>
-
-      {!settings.openaiApiKey && (
-        <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-300">
-          No OpenAI API key set.{" "}
-          <Link to="/settings" className="font-medium underline underline-offset-2">
-            Go to Settings
-          </Link>{" "}
-          to add one.
-        </div>
-      )}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
         {/* ── Left column: form ── */}

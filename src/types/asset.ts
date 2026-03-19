@@ -8,7 +8,8 @@ export interface GeneratedAsset {
   model: string;
   prompt: string;
   settings: Record<string, unknown>;
-  imageData: string; // base64-encoded file content
+  storagePath: string; // path in Supabase Storage: {userId}/{assetId}.{format}
+  imageUrl?: string; // runtime field: signed URL populated on load (not persisted)
   mimeType: string; // e.g. "image/png"
   createdAt: number; // Date.now()
 }

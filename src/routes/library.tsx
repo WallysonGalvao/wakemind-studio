@@ -20,8 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BUILT_IN_PACKAGES } from "@/constants/packages";
-import { getAllAssets } from "@/services/storage/assets";
-import { deletePackage, getAllCustomPackages } from "@/services/storage/packages";
+import { getAllAssets } from "@/services/supabase/assets";
+import { deletePackage, getAllCustomPackages } from "@/services/supabase/packages";
 import type { AchievementPackage } from "@/types/achievements";
 import type { GeneratedAsset } from "@/types/asset";
 

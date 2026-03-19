@@ -1,8 +1,9 @@
 import * as React from "react";
 
 import { buildPrompt, type StyleConfig } from "@/lib/library/image/styles";
-import { generateImage } from "@/services/openai/image";
-import { saveAsset } from "@/services/storage/assets";
+import { supabase } from "@/lib/supabase";
+import { saveAsset, uploadAssetFile } from "@/services/supabase/assets";
+import { generateImageViaEdge } from "@/services/supabase/generate-image";
 import type { GeneratedAsset } from "@/types/asset";
 import {
   DEFAULT_GENERATION_OPTIONS,
@@ -56,15 +57,9 @@ export function useGeneration({ initialStyleConfig }: UseGenerationProps = {}) {
   }
 
   async function generate(
-    apiKey: string,
     name: string,
     packageId?: string,
   ): Promise<GeneratedAsset | null> {
-    if (!apiKey) {
-      setError("No OpenAI API key configured. Please add it in Settings.");
-      return null;
-    }
-
     const styleConfig = parseStyleConfig();
     if (!styleConfig) return null;
 
@@ -75,11 +70,20 @@ export function useGeneration({ initialStyleConfig }: UseGenerationProps = {}) {
     setResult(null);
 
     try {
-      const { b64, format: fmt } = await generateImage(apiKey, prompt, options);
+      const { b64, format: fmt } = await generateImageViaEdge(prompt, options);
       setResult({ b64, format: fmt, prompt, name });
 
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const assetId = crypto.randomUUID();
+      const mimeType = `image/${fmt}`;
+      const storagePath = await uploadAssetFile(user.id, assetId, b64, mimeType, fmt);
+
       const asset: GeneratedAsset = {
-        id: crypto.randomUUID(),
+        id: assetId,
         name,
         type: "image",
         packageId,
@@ -91,8 +95,9 @@ export function useGeneration({ initialStyleConfig }: UseGenerationProps = {}) {
           format: options.format,
           background: options.background,
         },
-        imageData: b64,
-        mimeType: `image/${fmt}`,
+        storagePath,
+        imageUrl: `data:${mimeType};base64,${b64}`, // immediate preview
+        mimeType,
         createdAt: Date.now(),
       };
       await saveAsset(asset);

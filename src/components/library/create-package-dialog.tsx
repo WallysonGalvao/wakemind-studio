@@ -1,5 +1,7 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
-import * as React from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod/v4";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { ACHIEVEMENT_REGISTRY } from "@/constants/achievements";
 import { PACKAGE_COLOR_PRESETS } from "@/constants/packages";
 import { cn } from "@/lib/utils";
-import { savePackage } from "@/services/storage/packages";
+import { savePackage } from "@/services/supabase/packages";
 import type { AchievementPackage } from "@/types/achievements";
 
 interface CreatePackageDialogProps {
@@ -23,39 +25,40 @@ interface CreatePackageDialogProps {
   onCreated: () => void;
 }
 
+const createPackageSchema = z.object({
+  name: z.string().min(1, "Package name is required").max(50, "Name is too long"),
+  description: z.string().max(200, "Description is too long").optional(),
+  color: z.string().min(1),
+});
+
+type CreatePackageFields = z.infer<typeof createPackageSchema>;
+
 export function CreatePackageDialog({
   open,
   onOpenChange,
   onCreated,
 }: CreatePackageDialogProps) {
-  const [name, setName] = React.useState("");
-  const [description, setDescription] = React.useState("");
-  const [color, setColor] = React.useState<string>(PACKAGE_COLOR_PRESETS[0]);
-  const [saving, setSaving] = React.useState(false);
-  const [error, setError] = React.useState("");
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    reset,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<CreatePackageFields>({
+    resolver: zodResolver(createPackageSchema),
+    defaultValues: { name: "", description: "", color: PACKAGE_COLOR_PRESETS[0] },
+  });
 
-  function reset() {
-    setName("");
-    setDescription("");
-    setColor(PACKAGE_COLOR_PRESETS[0]);
-    setError("");
-  }
+  const selectedColor = watch("color");
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!name.trim()) {
-      setError("Package name is required.");
-      return;
-    }
-
-    setSaving(true);
-    setError("");
-
+  async function onSubmit({ name, description, color }: CreatePackageFields) {
     try {
       const pkg: AchievementPackage = {
         id: crypto.randomUUID(),
         name: name.trim(),
-        description: description.trim(),
+        description: description?.trim() ?? "",
         color,
         isBuiltIn: false,
         createdAt: Date.now(),
@@ -72,9 +75,9 @@ export function CreatePackageDialog({
       onOpenChange(false);
       onCreated();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create package.");
-    } finally {
-      setSaving(false);
+      setError("root", {
+        message: err instanceof Error ? err.message : "Failed to create package.",
+      });
     }
   }
 
@@ -94,15 +97,22 @@ export function CreatePackageDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-4"
+          noValidate
+        >
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="pkg-name">Name *</Label>
             <Input
               id="pkg-name"
               placeholder="e.g. Fantasy Icons, Pixel Items…"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              aria-invalid={!!errors.name}
+              {...register("name")}
             />
+            {errors.name && (
+              <p className="text-xs text-destructive">{errors.name.message}</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -110,9 +120,12 @@ export function CreatePackageDialog({
             <Input
               id="pkg-desc"
               placeholder="Brief description of this package"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              aria-invalid={!!errors.description}
+              {...register("description")}
             />
+            {errors.description && (
+              <p className="text-xs text-destructive">{errors.description.message}</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -124,23 +137,25 @@ export function CreatePackageDialog({
                   type="button"
                   className={cn(
                     "size-8 rounded-lg border-2 transition-all",
-                    color === preset
+                    selectedColor === preset
                       ? "scale-110 border-foreground"
                       : "border-transparent hover:scale-105",
                   )}
                   style={{ backgroundColor: preset }}
-                  onClick={() => setColor(preset)}
+                  onClick={() => setValue("color", preset)}
                   aria-label={`Color ${preset}`}
                 />
               ))}
             </div>
           </div>
 
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {errors.root && (
+            <p className="text-sm text-destructive">{errors.root.message}</p>
+          )}
 
-          <Button type="submit" disabled={saving} className="mt-2">
+          <Button type="submit" disabled={isSubmitting} className="mt-2">
             <Plus className="size-4" />
-            {saving ? "Creating…" : "Create Package"}
+            {isSubmitting ? "Creating…" : "Create Package"}
           </Button>
         </form>
       </DialogContent>

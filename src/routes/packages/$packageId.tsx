@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ImageIcon } from "lucide-react";
 import * as React from "react";
 
@@ -22,11 +22,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TIER_COLORS } from "@/constants/achievements";
 import { BUILT_IN_PACKAGES, getPackageById } from "@/constants/packages";
 import { useGeneration } from "@/hooks/use-generation";
-import { useSettings } from "@/hooks/use-settings";
 import { downloadAsset, downloadBase64 } from "@/lib/download";
 import { cn } from "@/lib/utils";
-import { deleteAsset, getAllAssets } from "@/services/storage/assets";
-import { getAllCustomPackages } from "@/services/storage/packages";
+import { deleteAsset, getAllAssets } from "@/services/supabase/assets";
+import { getAllCustomPackages } from "@/services/supabase/packages";
 import type { AchievementPackageItem } from "@/types/achievements";
 import { type AchievementTier } from "@/types/achievements";
 import type { GeneratedAsset } from "@/types/asset";
@@ -49,7 +48,6 @@ export const Route = createFileRoute("/packages/$packageId")({
 function PackageDetailPage() {
   const { pkg, pkgAssets, allPackages } = Route.useLoaderData();
   const router = useRouter();
-  const { settings } = useSettings();
   const [selectedAsset, setSelectedAsset] = React.useState<GeneratedAsset | null>(null);
   const [selectedAchievement, setSelectedAchievement] =
     React.useState<AchievementPackageItem | null>(null);
@@ -78,11 +76,7 @@ function PackageDetailPage() {
 
   async function handleGenerate() {
     if (!selectedAchievement) return;
-    const saved = await gen.generate(
-      settings.openaiApiKey,
-      selectedAchievement.id,
-      pkg.id,
-    );
+    const saved = await gen.generate(selectedAchievement.id, pkg.id);
     if (saved) await router.invalidate();
   }
 
@@ -161,16 +155,6 @@ function PackageDetailPage() {
         {/* ── Right panel: Generation config + Preview ── */}
         <ResizablePanel defaultSize={45} minSize={25}>
           <div className="flex h-full flex-col overflow-auto">
-            {!settings.openaiApiKey && (
-              <div className="m-4 mb-0 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-300">
-                No OpenAI API key set.{" "}
-                <Link to="/settings" className="font-medium underline underline-offset-2">
-                  Go to Settings
-                </Link>{" "}
-                to add one.
-              </div>
-            )}
-
             <div className="flex flex-col gap-4 p-4">
               {/* Selected achievement + Preview */}
               {selectedAchievement ? (

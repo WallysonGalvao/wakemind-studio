@@ -74,37 +74,15 @@ Desacoplar os dados hardcoded:
 
 ---
 
-## Fase 2 — Sistema de Conquistas Vivo
+## Fase 2 — Configuração & Exportação de Conquistas
 
-> **Objetivo:** fazer o sistema de conquistas funcionar de ponta a ponta — tracking, unlock, feedback visual.  
+> **Objetivo:** aprofundar as ferramentas de visualização e exportação de pacotes — o Studio é responsável pela _criação_ e configuração; o tracking e unlock acontecem no app mobile.  
 > **Horizonte estimado:** médio prazo
 
-### 2.1 Progress Engine
-
-- `src/lib/achievements/engine.ts`: funções puras para calcular progresso e determinar unlocks
-- Persistência via IndexedDB ou localStorage (chave por usuário/sessão)
-- Eventos tipados: `ASSET_GENERATED`, `SESSION_STARTED`, `STREAK_UPDATED`, etc.
-- Hook `useAchievements()` consumível nas páginas
-
-### 2.2 Achievement Detail
-
-- Modal ou página `/library/achievement/:id` com:
-  - Ícone em tamanho grande
-  - Descrição completa dos requisitos
-  - Barra de progresso atual vs. meta
-  - Status: `locked` / `in-progress` / `unlocked` / `secret`
-  - Data de unlock (quando aplicável)
-
-### 2.3 Notificações de Unlock
-
-- Integrar `sonner` (já instalado) para toasts de conquista desbloqueada
-- Toast com ícone da conquista, nome e tier
-- Som de notificação opcional (integrar com geração de som quando disponível)
-
-### 2.4 Export de Pacote
+### 2.1 Export de Pacote
 
 - Exportar o pacote de conquistas em JSON padronizado
-- Útil para importar em app mobile ou compartilhar configurações entre projetos
+- Útil para importar no app mobile ou compartilhar configurações entre projetos
 - Botão "Export Package" na aba de conquistas da biblioteca
 
 ---
@@ -218,13 +196,13 @@ O `BASIC_ACHIEVEMENT_PACKAGE` já é uma estrutura exportável. Evoluir para:
 
 ## Decisões em Aberto
 
-| Decisão                          | Opções                              | Impacto         |
-| -------------------------------- | ----------------------------------- | --------------- |
-| Backend provider                 | Supabase, Firebase, custom Node/Bun | Fase 3 inteira  |
-| Sound generation provider        | OpenAI TTS, ElevenLabs, fal.ai      | Fase 1.1        |
-| ~~O app mobile já existe?~~      | ✅ Sim — `wakemind` repo confirmado | Fase 5 elevada  |
-| Persistência local (pré-backend) | IndexedDB vs localStorage           | Fases 1.3 e 2.1 |
-| Modelo de créditos               | Por geração, por mês, por plano     | Fase 4.1        |
+| Decisão                          | Opções                              | Impacto        |
+| -------------------------------- | ----------------------------------- | -------------- |
+| Backend provider                 | Supabase, Firebase, custom Node/Bun | Fase 3 inteira |
+| Sound generation provider        | OpenAI TTS, ElevenLabs, fal.ai      | Fase 1.1       |
+| ~~O app mobile já existe?~~      | ✅ Sim — `wakemind` repo confirmado | Fase 5 elevada |
+| Persistência local (pré-backend) | IndexedDB vs localStorage           | Fase 1.3       |
+| Modelo de créditos               | Por geração, por mês, por plano     | Fase 4.1       |
 
 ---
 

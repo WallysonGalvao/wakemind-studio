@@ -8,7 +8,7 @@ import {
   computeStats,
   deleteAsset,
   getAllAssets,
-} from "@/services/storage/assets";
+} from "@/services/supabase/assets";
 
 export const Route = createFileRoute("/")({
   loader: async () => {

@@ -8,6 +8,7 @@ import {
   Settings,
   Zap,
 } from "lucide-react";
+import * as React from "react";
 
 import { NavUser } from "@/components/layout/nav-user";
 import {
@@ -22,6 +23,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/hooks/use-auth";
 
 const navMain = [
   { label: "Dashboard", icon: LayoutDashboard, to: "/" as const },
@@ -35,15 +37,16 @@ const navSecondary = [
   { label: "Get Help", icon: HelpCircle, to: "/about" as const },
 ];
 
-const user = {
-  name: "WakeMind User",
-  email: "user@wakemind.io",
-};
-
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
+  const { user } = useAuth();
 
+  const navUser = {
+    name: user?.user_metadata?.full_name ?? user?.email?.split("@")[0] ?? "WakeMind User",
+    email: user?.email ?? "",
+    avatarUrl: (user?.user_metadata?.avatar_url as string | undefined) ?? "",
+  };
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -125,7 +128,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
 
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser user={navUser} />
       </SidebarFooter>
     </Sidebar>
   );

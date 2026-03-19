@@ -1,21 +1,49 @@
 import "../styles.css";
 
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import {
+  createRootRoute,
+  Outlet,
+  redirect,
+  useRouterState,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import * as React from "react";
 
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AuthProvider } from "@/hooks/use-auth";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createRootRoute({
+  beforeLoad: async ({ location }) => {
+    if (location.pathname === "/login") return;
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) throw redirect({ to: "/login" });
+  },
   component: RootComponent,
 });
 
 function RootComponent() {
+  const { location } = useRouterState();
+
+  if (location.pathname === "/login") {
+    return (
+      <AuthProvider>
+        <Outlet />
+        <TanStackDevtools
+          config={{ position: "bottom-right" }}
+          plugins={[{ name: "TanStack Router", render: <TanStackRouterDevtoolsPanel /> }]}
+        />
+      </AuthProvider>
+    );
+  }
+
   return (
-    <>
+    <AuthProvider>
       <SidebarProvider
         style={
           {
@@ -36,16 +64,9 @@ function RootComponent() {
       </SidebarProvider>
 
       <TanStackDevtools
-        config={{
-          position: "bottom-right",
-        }}
-        plugins={[
-          {
-            name: "TanStack Router",
-            render: <TanStackRouterDevtoolsPanel />,
-          },
-        ]}
+        config={{ position: "bottom-right" }}
+        plugins={[{ name: "TanStack Router", render: <TanStackRouterDevtoolsPanel /> }]}
       />
-    </>
+    </AuthProvider>
   );
 }

@@ -487,7 +487,7 @@ function TableCellViewer({ item }: { item: GeneratedAsset }) {
         <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
           {item.type === "image" && (
             <img
-              src={`data:${item.mimeType};base64,${item.imageData}`}
+              src={item.imageUrl ?? ""}
               alt={item.name}
               className="w-full rounded-lg border object-contain"
             />

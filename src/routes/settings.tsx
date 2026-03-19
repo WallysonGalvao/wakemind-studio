@@ -1,8 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { KeyRound, Save } from "lucide-react";
-import * as React from "react";
+import { UserCircle } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,31 +8,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useSettings } from "@/hooks/use-settings";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
 });
 
 function SettingsPage() {
-  const { settings, update } = useSettings();
-  const [apiKeyDraft, setApiKeyDraft] = React.useState(settings.openaiApiKey);
-  const [saved, setSaved] = React.useState(false);
-
-  function handleSave() {
-    update({ openaiApiKey: apiKeyDraft });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  }
+  const { user } = useAuth();
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Manage your account and integration preferences.
+          Manage your account preferences.
         </p>
       </div>
 
@@ -42,39 +30,19 @@ function SettingsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <KeyRound className="size-4" />
-              OpenAI API Key
+              <UserCircle className="size-4" />
+              Account
             </CardTitle>
             <CardDescription>
-              Used for image and sound generation. Stored only in this browser
-              (localStorage) — never sent to any server other than OpenAI.
+              Signed in as{" "}
+              <span className="font-medium text-foreground">{user?.email}</span>. Image
+              generation is powered by OpenAI via the WakeMind backend.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="openai-api-key">API Key</Label>
-                <Input
-                  id="openai-api-key"
-                  type="password"
-                  placeholder="sk-..."
-                  value={apiKeyDraft}
-                  onChange={(e) => {
-                    setApiKeyDraft(e.target.value);
-                    setSaved(false);
-                  }}
-                  className="font-mono text-sm"
-                />
-              </div>
-              <Button
-                onClick={handleSave}
-                variant={saved ? "secondary" : "default"}
-                className="self-start"
-              >
-                <Save className="mr-2 size-4" />
-                {saved ? "Saved!" : "Save Key"}
-              </Button>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              More account settings coming soon.
+            </p>
           </CardContent>
         </Card>
       </div>

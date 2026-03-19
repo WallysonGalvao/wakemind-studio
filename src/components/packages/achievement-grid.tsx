@@ -21,7 +21,7 @@ interface AchievementGridProps {
   selectedId: string | null;
   onSelect: (item: AchievementPackageItem) => void;
   onViewAsset: (asset: GeneratedAsset) => void;
-  onDownloadAsset: (asset: GeneratedAsset) => void;
+  onDownloadAsset: (asset: GeneratedAsset) => void | Promise<void>;
   findAsset: (achievementId: string) => GeneratedAsset | undefined;
 }
 

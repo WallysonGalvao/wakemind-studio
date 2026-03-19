@@ -14,7 +14,7 @@ interface AssetGridProps {
   assets: GeneratedAsset[];
   onSelect: (asset: GeneratedAsset) => void;
   onDelete: (id: string) => void;
-  onDownload: (asset: GeneratedAsset) => void;
+  onDownload: (asset: GeneratedAsset) => void | Promise<void>;
 }
 
 export function AssetGrid({ assets, onSelect, onDelete, onDownload }: AssetGridProps) {
@@ -40,7 +40,7 @@ export function AssetGrid({ assets, onSelect, onDelete, onDownload }: AssetGridP
               >
                 <div className="flex aspect-square w-full items-center justify-center bg-muted/50">
                   <img
-                    src={`data:${asset.mimeType};base64,${asset.imageData}`}
+                    src={asset.imageUrl ?? ""}
                     alt={asset.name}
                     className="max-h-full max-w-full object-contain p-2"
                   />
