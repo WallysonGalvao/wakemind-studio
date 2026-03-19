@@ -406,3 +406,14 @@ export const ACHIEVEMENT_REGISTRY: AchievementDefinition[] = [
     target: 1,
   },
 ];
+
+export const TIER_COLORS: Record<AchievementTier, string> = {
+  [AchievementTier.BRONZE]:
+    "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-900/50",
+  [AchievementTier.SILVER]:
+    "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800/50 dark:text-slate-300 dark:border-slate-800",
+  [AchievementTier.GOLD]:
+    "bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-900/50",
+  [AchievementTier.PLATINUM]:
+    "bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-900/50",
+};
