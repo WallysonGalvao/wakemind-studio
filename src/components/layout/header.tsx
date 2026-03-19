@@ -1,12 +1,14 @@
-import { useMatches } from "@tanstack/react-router";
+import { Link, useMatches } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import { Globe, Monitor, Smartphone } from "lucide-react";
 
 import {
   Breadcrumb,
   BreadcrumbItem,
+  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
+  BreadcrumbSeparator,
 } from "#/components/ui/breadcrumb";
 import { Button } from "#/components/ui/button";
 import {
@@ -59,6 +61,13 @@ export function SiteHeader() {
   const currentPath = currentMatch?.pathname ?? "/";
   const pageLabel = routeLabels[currentPath] ?? "Page";
 
+  // Detect package detail pages: /packages/$packageId
+  const isPackageDetail = currentPath.startsWith("/packages/");
+  const packageName =
+    isPackageDetail && currentMatch?.loaderData
+      ? (currentMatch.loaderData as { pkg?: { name?: string } }).pkg?.name
+      : undefined;
+
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
       <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
@@ -69,9 +78,23 @@ export function SiteHeader() {
         />
         <Breadcrumb>
           <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbPage>{pageLabel}</BreadcrumbPage>
-            </BreadcrumbItem>
+            {isPackageDetail ? (
+              <>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to="/library">Library</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{packageName ?? "Package"}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </>
+            ) : (
+              <BreadcrumbItem>
+                <BreadcrumbPage>{pageLabel}</BreadcrumbPage>
+              </BreadcrumbItem>
+            )}
           </BreadcrumbList>
         </Breadcrumb>
         <div className="ml-auto flex items-center gap-2">

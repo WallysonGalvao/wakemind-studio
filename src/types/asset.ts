@@ -4,6 +4,7 @@ export interface GeneratedAsset {
   id: string;
   name: string;
   type: AssetType;
+  packageId?: string; // which asset package this belongs to
   model: string;
   prompt: string;
   settings: Record<string, unknown>;

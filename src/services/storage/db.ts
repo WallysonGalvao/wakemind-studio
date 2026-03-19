@@ -1,6 +1,7 @@
 const DB_NAME = "wakemind-db";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 export const ASSETS_STORE = "assets";
+export const PACKAGES_STORE = "packages";
 
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -9,6 +10,9 @@ function openDB(): Promise<IDBDatabase> {
       const db = req.result;
       if (!db.objectStoreNames.contains(ASSETS_STORE)) {
         db.createObjectStore(ASSETS_STORE, { keyPath: "id" });
+      }
+      if (!db.objectStoreNames.contains(PACKAGES_STORE)) {
+        db.createObjectStore(PACKAGES_STORE, { keyPath: "id" });
       }
     };
     req.onsuccess = () => resolve(req.result);

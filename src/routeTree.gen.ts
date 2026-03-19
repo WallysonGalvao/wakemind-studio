@@ -13,6 +13,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PackagesPackageIdRouteImport } from './routes/packages/$packageId'
 import { Route as GenerateSoundRouteImport } from './routes/generate/sound'
 import { Route as GenerateImageRouteImport } from './routes/generate/image'
 
@@ -36,6 +37,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PackagesPackageIdRoute = PackagesPackageIdRouteImport.update({
+  id: '/packages/$packageId',
+  path: '/packages/$packageId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GenerateSoundRoute = GenerateSoundRouteImport.update({
   id: '/generate/sound',
   path: '/generate/sound',
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/generate/image': typeof GenerateImageRoute
   '/generate/sound': typeof GenerateSoundRoute
+  '/packages/$packageId': typeof PackagesPackageIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/generate/image': typeof GenerateImageRoute
   '/generate/sound': typeof GenerateSoundRoute
+  '/packages/$packageId': typeof PackagesPackageIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,6 +79,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/generate/image': typeof GenerateImageRoute
   '/generate/sound': typeof GenerateSoundRoute
+  '/packages/$packageId': typeof PackagesPackageIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,6 +90,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/generate/image'
     | '/generate/sound'
+    | '/packages/$packageId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -89,6 +99,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/generate/image'
     | '/generate/sound'
+    | '/packages/$packageId'
   id:
     | '__root__'
     | '/'
@@ -97,6 +108,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/generate/image'
     | '/generate/sound'
+    | '/packages/$packageId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -106,6 +118,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   GenerateImageRoute: typeof GenerateImageRoute
   GenerateSoundRoute: typeof GenerateSoundRoute
+  PackagesPackageIdRoute: typeof PackagesPackageIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -138,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/packages/$packageId': {
+      id: '/packages/$packageId'
+      path: '/packages/$packageId'
+      fullPath: '/packages/$packageId'
+      preLoaderRoute: typeof PackagesPackageIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/generate/sound': {
       id: '/generate/sound'
       path: '/generate/sound'
@@ -162,6 +182,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   GenerateImageRoute: GenerateImageRoute,
   GenerateSoundRoute: GenerateSoundRoute,
+  PackagesPackageIdRoute: PackagesPackageIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

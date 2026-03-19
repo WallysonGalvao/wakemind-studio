@@ -2,6 +2,8 @@
 
 > Documento vivo. Atualizar conforme decisões forem tomadas.
 
+**Wakemind Studio** é a ferramenta de criação e gestão do ecossistema Wakemind. Permite que desenvolvedores e criadores gerem assets de imagem e som com qualidade de jogo usando IA, gerenciem uma biblioteca de ícones de conquistas e configurem os blocos de construção do sistema de recompensas que roda dentro do app mobile Wakemind. O Studio é a interface de _criação_; o app é a interface de _execução_.
+
 ---
 
 ## Estado atual (Março 2026)
@@ -13,7 +15,7 @@
 | Biblioteca de conquistas (41 achievements) | ✅ Implementado              |
 | Settings (API key)                         | ✅ Implementado              |
 | Geração de som                             | 🚧 Placeholder               |
-| About                                      | 🚧 Placeholder               |
+| About                                      | ✅ Implementado              |
 | Backend / Auth                             | ❌ Não iniciado              |
 | Progresso de conquistas                    | ❌ Não iniciado              |
 | Sistema de créditos                        | ❌ Não iniciado              |
@@ -39,14 +41,14 @@ Implementar a geração de áudio seguindo o mesmo padrão arquitetural do `gene
 
 ---
 
-### 1.2 About Page
+### ~~1.2 About Page~~ ✅
 
-Substituir o placeholder genérico por uma página útil:
+Página implementada com:
 
-- O que é o Wakemind Studio e para quem é
-- Como usar (geração de assets + sistema de conquistas)
-- Links para documentação externa e providers (OpenAI, etc.)
-- Créditos e versão
+- Hero: descrição do produto e para quem é, com link para Settings
+- How to use: cards para Generate Image, Generate Sound (coming soon) e Library
+- Providers: OpenAI (imagem) com link externo; Sound Provider (coming soon)
+- Stack: badges com as tecnologias do projeto
 
 ---
 
@@ -192,11 +194,11 @@ O dashboard já exibe "Generation Credits (450)" como KPI — implementar de fat
 ## Fase 5 — Mobile & Companion App
 
 > **Objetivo:** conectar o Studio ao app mobile que usa o sistema de conquistas.  
-> **Horizonte estimado:** longo prazo
+> **Horizonte estimado:** médio prazo (o app mobile já existe — ver repos `wakemind` e `wakemindapp`)
 
 ### 5.1 Contexto
 
-O sistema de conquistas (wake-ups, alarmes, streaks) fortemente sugere a existência de um app mobile companion. O Studio seria a interface de **criação e gestão**, e o app seria a interface de **execução e unlock**.
+O app mobile companion **já existe** (`github.com/WallysonGalvao/wakemind`). O Studio é a interface de **criação e gestão**; o app é a interface de **execução e unlock**. Isso eleva a prioridade do SDK de conquistas (5.3) e da sincronização (5.2) — não são nice-to-haves, são parte central do produto.
 
 ### 5.2 Sincronização Studio ↔ App
 
@@ -216,13 +218,13 @@ O `BASIC_ACHIEVEMENT_PACKAGE` já é uma estrutura exportável. Evoluir para:
 
 ## Decisões em Aberto
 
-| Decisão                          | Opções                                       | Impacto         |
-| -------------------------------- | -------------------------------------------- | --------------- |
-| Backend provider                 | Supabase, Firebase, custom Node/Bun          | Fase 3 inteira  |
-| Sound generation provider        | OpenAI TTS, ElevenLabs, fal.ai               | Fase 1.1        |
-| O app mobile já existe?          | Sim → priorizar SDK; Não → Fase 5 mais longa | Fase 5          |
-| Persistência local (pré-backend) | IndexedDB vs localStorage                    | Fases 1.3 e 2.1 |
-| Modelo de créditos               | Por geração, por mês, por plano              | Fase 4.1        |
+| Decisão                          | Opções                              | Impacto         |
+| -------------------------------- | ----------------------------------- | --------------- |
+| Backend provider                 | Supabase, Firebase, custom Node/Bun | Fase 3 inteira  |
+| Sound generation provider        | OpenAI TTS, ElevenLabs, fal.ai      | Fase 1.1        |
+| ~~O app mobile já existe?~~      | ✅ Sim — `wakemind` repo confirmado | Fase 5 elevada  |
+| Persistência local (pré-backend) | IndexedDB vs localStorage           | Fases 1.3 e 2.1 |
+| Modelo de créditos               | Por geração, por mês, por plano     | Fase 4.1        |
 
 ---
 
@@ -233,7 +235,7 @@ src/
 ├── routes/                        # File-based routing (TanStack Router)
 │   ├── __root.tsx                 # Layout: sidebar + header
 │   ├── index.tsx                  # Dashboard ✅
-│   ├── about.tsx                  # Placeholder
+│   ├── about.tsx                  # About ✅
 │   ├── library.tsx                # Conquistas ✅
 │   ├── settings.tsx               # API key ✅
 │   └── generate/

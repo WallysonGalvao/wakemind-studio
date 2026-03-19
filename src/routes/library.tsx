@@ -1,106 +1,211 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { Plus, Search } from "lucide-react";
+import * as React from "react";
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BASIC_ACHIEVEMENT_PACKAGE } from "@/lib/library/achievements/packages/basic";
-import { cn } from "@/lib/utils";
-import { AchievementTier } from "@/types/achievements";
+import { CreatePackageDialog } from "#/components/library/create-package-dialog";
+import { Badge } from "#/components/ui/badge";
+import { Input } from "#/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "#/components/ui/select";
+import { BUILT_IN_PACKAGES } from "#/constants/packages";
+import { getAllAssets } from "#/services/storage/assets";
+import { getAllCustomPackages } from "#/services/storage/packages";
+import type { AchievementPackage } from "#/types/achievements";
+import type { GeneratedAsset } from "#/types/asset";
 
 export const Route = createFileRoute("/library")({
+  loader: async () => {
+    const [assets, customPackages] = await Promise.all([
+      getAllAssets(),
+      getAllCustomPackages(),
+    ]);
+    return { assets, customPackages };
+  },
   component: LibraryPage,
 });
 
-const TIER_COLORS = {
-  [AchievementTier.BRONZE]:
-    "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-900/50",
-  [AchievementTier.SILVER]:
-    "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800/50 dark:text-slate-300 dark:border-slate-800",
-  [AchievementTier.GOLD]:
-    "bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-900/50",
-  [AchievementTier.PLATINUM]:
-    "bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-900/50",
-};
+type SortOption = "last-edited" | "name" | "assets";
+
+function getLastEdited(pkg: AchievementPackage, assets: GeneratedAsset[]): number {
+  if (!pkg.isBuiltIn && pkg.createdAt > 0) {
+    const pkgAssets = assets.filter((a) => a.packageId === pkg.id);
+    const latestAsset = pkgAssets.length > 0 ? pkgAssets[0]!.createdAt : 0;
+    return Math.max(pkg.createdAt, latestAsset);
+  }
+  const pkgAssets = assets.filter((a) => a.packageId === pkg.id);
+  return pkgAssets.length > 0 ? pkgAssets[0]!.createdAt : 0;
+}
+
+function formatRelativeDate(ts: number): string {
+  if (ts === 0) return "";
+  const diff = Date.now() - ts;
+  const minutes = Math.floor(diff / 60_000);
+  if (minutes < 1) return "Edited just now";
+  if (minutes < 60) return `Edited ${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `Edited ${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `Edited ${days}d ago`;
+  return `Edited ${new Date(ts).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}`;
+}
 
 function LibraryPage() {
-  const packages = [BASIC_ACHIEVEMENT_PACKAGE];
+  const { assets, customPackages } = Route.useLoaderData();
+  const router = useRouter();
+  const [search, setSearch] = React.useState("");
+  const [sort, setSort] = React.useState<SortOption>("last-edited");
+  const [createOpen, setCreateOpen] = React.useState(false);
+
+  const allPackages = React.useMemo(
+    () => [...BUILT_IN_PACKAGES, ...customPackages],
+    [customPackages],
+  );
+
+  const filtered = React.useMemo(() => {
+    let pkgs = allPackages;
+
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      pkgs = pkgs.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q),
+      );
+    }
+
+    pkgs.sort((a, b) => {
+      switch (sort) {
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "assets": {
+          const countA = assets.filter((x) => x.packageId === a.id).length;
+          const countB = assets.filter((x) => x.packageId === b.id).length;
+          return countB - countA;
+        }
+        case "last-edited":
+        default:
+          return getLastEdited(b, assets) - getLastEdited(a, assets);
+      }
+    });
+
+    return pkgs;
+  }, [allPackages, search, sort, assets]);
 
   return (
-    <div className="flex h-full flex-col gap-6 overflow-hidden p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Library</h1>
-          <p className="text-muted-foreground">
-            Manage and preview achievement icon packages.
-          </p>
-        </div>
+    <div className="flex h-full flex-col gap-6 overflow-auto p-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Library</h1>
+        <p className="text-muted-foreground">
+          Browse achievement icon packages and generated assets.
+        </p>
       </div>
 
-      <Tabs defaultValue="basic" className="flex min-h-0 flex-1 flex-col gap-6">
-        <TabsList className="w-fit">
-          {packages.map((pkg) => (
-            <TabsTrigger key={pkg.id} value={pkg.id}>
-              {pkg.name}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      {/* Search + Sort */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative max-w-sm flex-1">
+          <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search packages…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <Select value={sort} onValueChange={(v) => setSort(v as SortOption)}>
+          <SelectTrigger className="w-44">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="last-edited">Last edited</SelectItem>
+            <SelectItem value="name">Name</SelectItem>
+            <SelectItem value="assets">Asset count</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-        {packages.map((pkg) => (
-          <TabsContent
-            key={pkg.id}
-            value={pkg.id}
-            className="min-h-0 flex-1 data-[state=inactive]:hidden"
-          >
-            <div className="flex h-full flex-col gap-4">
-              <div className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
-                <div>
-                  <h2 className="text-lg font-semibold">{pkg.name}</h2>
-                  <p className="text-sm text-muted-foreground">{pkg.description}</p>
-                </div>
-                <Badge variant="outline">{pkg.items.length} Achievements</Badge>
+      {/* Card grid */}
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        {/* Create new package card */}
+        <button
+          type="button"
+          className="group flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border bg-card/50 p-6 transition-colors hover:border-primary/40 hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          style={{ minHeight: 220 }}
+          onClick={() => setCreateOpen(true)}
+        >
+          <div className="flex size-12 items-center justify-center rounded-full border-2 border-dashed border-muted-foreground/30 transition-colors group-hover:border-primary/50">
+            <Plus className="size-6 text-muted-foreground transition-colors group-hover:text-primary" />
+          </div>
+          <span className="text-sm font-medium text-muted-foreground transition-colors group-hover:text-foreground">
+            Create new package
+          </span>
+        </button>
+
+        {/* Package cards */}
+        {filtered.map((pkg) => {
+          const assetCount = assets.filter((a) => a.packageId === pkg.id).length;
+          const lastEdited = getLastEdited(pkg, assets);
+
+          return (
+            <Link
+              key={pkg.id}
+              to="/packages/$packageId"
+              params={{ packageId: pkg.id }}
+              className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            >
+              {/* Color area */}
+              <div
+                className="relative flex aspect-[4/3] items-center justify-center"
+                style={{
+                  background: `linear-gradient(135deg, ${pkg.color}, ${pkg.color}cc)`,
+                }}
+              >
+                <span className="text-4xl font-bold text-white/80 drop-shadow-sm select-none">
+                  {pkg.name
+                    .split(" ")
+                    .map((w) => w[0])
+                    .join("")
+                    .slice(0, 2)
+                    .toUpperCase()}
+                </span>
+                {!pkg.isBuiltIn && (
+                  <Badge
+                    variant="secondary"
+                    className="absolute top-2 right-2 bg-white/20 text-[10px] text-white backdrop-blur-sm"
+                  >
+                    Custom
+                  </Badge>
+                )}
               </div>
 
-              <div className="flex-1 overflow-auto rounded-md border border-border bg-card/50">
-                <div className="grid grid-cols-2 gap-4 p-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
-                  {pkg.items.map((item) => (
-                    <Card
-                      key={item.id}
-                      className="group transition-shadow hover:shadow-md"
-                    >
-                      <CardHeader className="flex flex-col items-center justify-center gap-3 p-4">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-muted/50 transition-colors group-hover:bg-primary/5">
-                          {pkg.renderIcon(item.iconName, {
-                            size: 32,
-                            className:
-                              "text-foreground group-hover:text-primary transition-colors",
-                          })}
-                        </div>
-                        <div className="space-y-1 text-center">
-                          <p
-                            className="w-full truncate text-xs leading-tight font-medium"
-                            title={item.id}
-                          >
-                            {item.id}
-                          </p>
-                          <Badge
-                            variant="secondary"
-                            className={cn(
-                              "h-4 px-1 text-[10px] tracking-wider uppercase",
-                              TIER_COLORS[item.tier as AchievementTier],
-                            )}
-                          >
-                            {item.tier}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                    </Card>
-                  ))}
+              {/* Info area */}
+              <div className="flex flex-col gap-1 p-3">
+                <div className="flex items-center gap-2">
+                  <p className="flex-1 truncate text-sm font-semibold">{pkg.name}</p>
+                  {assetCount > 0 && (
+                    <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">
+                      {assetCount}
+                    </Badge>
+                  )}
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  {lastEdited > 0 ? formatRelativeDate(lastEdited) : pkg.description}
+                </p>
               </div>
-            </div>
-          </TabsContent>
-        ))}
-      </Tabs>
+            </Link>
+          );
+        })}
+      </div>
+
+      <CreatePackageDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        onCreated={() => router.invalidate()}
+      />
     </div>
   );
 }

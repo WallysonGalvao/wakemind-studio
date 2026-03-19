@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Download, ImageIcon, Loader2, Wand2 } from "lucide-react";
+import { Download, ImageIcon, Loader2, Package, Wand2 } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "#/components/ui/button";
@@ -19,35 +19,48 @@ import {
   SelectTrigger,
   SelectValue,
 } from "#/components/ui/select";
+import { BUILT_IN_PACKAGES } from "#/constants/packages";
 import { useSettings } from "#/hooks/use-settings";
-import {
-  buildPrompt,
-  DEFAULT_STYLE_CONFIG,
-  type StyleConfig,
-} from "#/lib/library/image/styles";
+import { buildPrompt, type StyleConfig } from "#/lib/library/image/styles";
 import { generateImage, type GenerateImageOptions } from "#/services/openai/image";
 import { saveAsset } from "#/services/storage/assets";
+import { getAllCustomPackages } from "#/services/storage/packages";
+import type { AchievementPackage } from "#/types/achievements";
 import type { GeneratedAsset } from "#/types/asset";
 
 export const Route = createFileRoute("/generate/image")({
+  loader: async () => {
+    const customPackages = await getAllCustomPackages();
+    return { customPackages };
+  },
   component: GenerateImagePage,
 });
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 function GenerateImagePage() {
+  const { customPackages } = Route.useLoaderData();
+  const PACKAGES: AchievementPackage[] = [...BUILT_IN_PACKAGES, ...customPackages];
   const { settings } = useSettings();
+  const [packageId, setPackageId] = React.useState<string>("");
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const [styleJson, setStyleJson] = React.useState(
-    JSON.stringify(DEFAULT_STYLE_CONFIG, null, 2),
-  );
+  const [styleJson, setStyleJson] = React.useState("");
   const [styleError, setStyleError] = React.useState("");
   const [model, setModel] = React.useState("gpt-image-1");
   const [size, setSize] = React.useState("1024x1024");
   const [quality, setQuality] = React.useState<"standard" | "hd">("standard");
   const [format, setFormat] = React.useState("png");
   const [background, setBackground] = React.useState("transparent");
+
+  function handlePackageChange(id: string) {
+    setPackageId(id);
+    const pkg = PACKAGES.find((p) => p.id === id);
+    if (pkg) {
+      setStyleJson(JSON.stringify(pkg.styleConfig, null, 2));
+      setStyleError("");
+    }
+  }
 
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
@@ -72,6 +85,10 @@ function GenerateImagePage() {
   async function handleGenerate() {
     if (!settings.openaiApiKey) {
       setError("No OpenAI API key configured. Please add it in Settings.");
+      return;
+    }
+    if (!packageId) {
+      setError("Please select an asset package before generating.");
       return;
     }
     if (!name.trim()) {
@@ -107,6 +124,7 @@ function GenerateImagePage() {
         id: crypto.randomUUID(),
         name: name.trim(),
         type: "image",
+        packageId,
         model,
         prompt,
         settings: { size, quality, format, background },
@@ -172,6 +190,22 @@ function GenerateImagePage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="package">Package *</Label>
+                <Select value={packageId} onValueChange={handlePackageChange}>
+                  <SelectTrigger id="package">
+                    <Package className="size-4 text-muted-foreground" />
+                    <SelectValue placeholder="Select a package…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PACKAGES.map((pkg) => (
+                      <SelectItem key={pkg.id} value={pkg.id}>
+                        {pkg.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="name">Name *</Label>
                 <Input
@@ -286,9 +320,7 @@ function GenerateImagePage() {
             <CardHeader className="pb-3">
               <CardTitle className="text-base">Style Config</CardTitle>
               <CardDescription>
-                JSON style definition — same format as the{" "}
-                <code className="rounded bg-muted px-1 text-xs">*.json</code> files in
-                image-creation.
+                Pre-filled from the selected package. Edit freely to override.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -296,6 +328,7 @@ function GenerateImagePage() {
                 rows={16}
                 className="flex w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-xs shadow-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 value={styleJson}
+                placeholder="Select a package above to load its style config…"
                 onChange={(e) => {
                   setStyleJson(e.target.value);
                   setStyleError("");
