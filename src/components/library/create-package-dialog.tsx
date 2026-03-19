@@ -11,6 +11,7 @@ import {
 } from "#/components/ui/dialog";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
+import { ACHIEVEMENT_REGISTRY } from "#/constants/achievements";
 import { PACKAGE_COLOR_PRESETS } from "#/constants/packages";
 import { cn } from "#/lib/utils";
 import { savePackage } from "#/services/storage/packages";
@@ -59,7 +60,12 @@ export function CreatePackageDialog({
         isBuiltIn: false,
         createdAt: Date.now(),
         styleConfig: {},
-        items: [],
+        items: ACHIEVEMENT_REGISTRY.map((a) => ({
+          id: a.id,
+          iconName: a.icon,
+          tier: a.tier,
+          category: a.category,
+        })),
       };
       await savePackage(pkg);
       reset();
