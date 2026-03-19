@@ -13,7 +13,6 @@ export const ACHIEVEMENT_REGISTRY: AchievementDefinition[] = [
     icon: "wb_twilight",
     isSecret: false,
     target: 1,
-    useSkiaIcon: false,
   },
   {
     id: "alarm_10",
@@ -22,7 +21,6 @@ export const ACHIEVEMENT_REGISTRY: AchievementDefinition[] = [
     icon: "emoji_events",
     isSecret: false,
     target: 10,
-    useSkiaIcon: false,
   },
   {
     id: "alarm_25",
@@ -31,7 +29,6 @@ export const ACHIEVEMENT_REGISTRY: AchievementDefinition[] = [
     icon: "grade",
     isSecret: false,
     target: 25,
-    useSkiaIcon: false,
   },
   {
     id: "alarm_50",
@@ -40,7 +37,6 @@ export const ACHIEVEMENT_REGISTRY: AchievementDefinition[] = [
     icon: "emoji_events",
     isSecret: false,
     target: 50,
-    use3DIcon: false,
   },
   {
     id: "alarm_100",
@@ -50,7 +46,6 @@ export const ACHIEVEMENT_REGISTRY: AchievementDefinition[] = [
     isSecret: false,
     isPremium: true,
     target: 100,
-    use3DIcon: false,
   },
   {
     id: "alarm_250",
@@ -106,7 +101,6 @@ export const ACHIEVEMENT_REGISTRY: AchievementDefinition[] = [
     icon: "local_fire_department",
     isSecret: false,
     target: 3,
-    useSkiaIcon: false,
   },
   {
     id: "streak_7",
@@ -115,7 +109,6 @@ export const ACHIEVEMENT_REGISTRY: AchievementDefinition[] = [
     icon: "local_fire_department",
     isSecret: false,
     target: 7,
-    useSkiaIcon: false,
   },
   {
     id: "streak_14",
@@ -124,7 +117,6 @@ export const ACHIEVEMENT_REGISTRY: AchievementDefinition[] = [
     icon: "whatshot",
     isSecret: false,
     target: 14,
-    useSkiaIcon: false,
   },
   {
     id: "streak_30",
@@ -189,7 +181,6 @@ export const ACHIEVEMENT_REGISTRY: AchievementDefinition[] = [
     isSecret: false,
     isPremium: true,
     target: 1,
-    useSkiaIcon: false,
   },
   {
     id: "avg_score_90",
@@ -216,7 +207,6 @@ export const ACHIEVEMENT_REGISTRY: AchievementDefinition[] = [
     icon: "bolt",
     isSecret: false,
     target: 10000,
-    useSkiaIcon: false,
   },
   {
     id: "speed_5s",
@@ -226,7 +216,6 @@ export const ACHIEVEMENT_REGISTRY: AchievementDefinition[] = [
     isSecret: false,
     isPremium: true,
     target: 5000,
-    useSkiaIcon: false,
   },
   {
     id: "speed_3s",

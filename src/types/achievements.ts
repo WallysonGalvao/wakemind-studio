@@ -24,8 +24,6 @@ export interface AchievementDefinition {
   isSecret: boolean;
   isPremium?: boolean;
   target: number;
-  useSkiaIcon?: boolean;
-  use3DIcon?: boolean;
 }
 
 export interface AchievementPackageItem {
