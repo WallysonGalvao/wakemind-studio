@@ -1,4 +1,5 @@
 import { getDownloadUrl } from "@/services/supabase/assets";
+import type { AchievementPackage } from "@/types/achievements";
 import type { GeneratedAsset } from "@/types/asset";
 
 const MIME_MAP: Record<string, string> = {
@@ -27,6 +28,27 @@ export async function downloadAsset(asset: GeneratedAsset) {
       a.click();
     }
   }
+}
+
+export function exportPackage(pkg: AchievementPackage): void {
+  const {
+    renderIcon: _renderIcon,
+    isBuiltIn: _isBuiltIn,
+    createdAt: _createdAt,
+    ...rest
+  } = pkg;
+  const payload = {
+    version: "1.0",
+    exportedAt: new Date().toISOString(),
+    package: rest,
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${pkg.name.toLowerCase().replace(/\s+/g, "_")}_package.json`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 export function downloadBase64(b64: string, format: string, name: string) {

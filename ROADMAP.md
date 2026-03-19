@@ -41,39 +41,6 @@ Implementar a geração de áudio seguindo o mesmo padrão arquitetural do `gene
 
 ---
 
-### ~~1.2 About Page~~ ✅
-
-Página implementada com:
-
-- Hero: descrição do produto e para quem é, com link para Settings
-- How to use: cards para Generate Image, Generate Sound (coming soon) e Library
-- Providers: OpenAI (imagem) com link externo; Sound Provider (coming soon)
-- Stack: badges com as tecnologias do projeto
-
----
-
-### 1.3 Biblioteca de Assets Gerados
-
-Atualmente a geração de imagens não persiste nada após o download. Criar uma galeria local:
-
-- Salvar assets gerados em **IndexedDB** (imagem em base64 + metadados: nome, prompt, modelo, data)
-- Rota `/library` unificada com tabs: **Conquistas** | **Assets**
-- Cards com preview, nome, formato e botão de download/exclusão
-- Filtros por tipo (imagem/som) e data
-
----
-
-### 1.4 Dashboard com Dados Reais
-
-Desacoplar os dados hardcoded:
-
-- Extrair mock data para `src/data/dashboard.ts` (interim)
-- Definir as interfaces dos KPIs (pronto para conectar a qualquer backend futuro)
-- Atualizar o gráfico de visitantes para um gráfico de **assets gerados por dia** (mais relevante para o produto)
-- Adicionar cartão de **conquistas desbloqueadas** ao dashboard
-
----
-
 ## Fase 2 — Configuração & Exportação de Conquistas
 
 > **Objetivo:** aprofundar as ferramentas de visualização e exportação de pacotes — o Studio é responsável pela _criação_ e configuração; o tracking e unlock acontecem no app mobile.  

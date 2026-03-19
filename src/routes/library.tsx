@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { ExternalLink, Plus, Search, Trash2 } from "lucide-react";
+import { Download, ExternalLink, Plus, Search, Trash2 } from "lucide-react";
 import * as React from "react";
 
 import { CreatePackageDialog } from "@/components/library/create-package-dialog";
@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BUILT_IN_PACKAGES } from "@/constants/packages";
+import { exportPackage } from "@/lib/download";
 import { getAllAssets } from "@/services/supabase/assets";
 import { deletePackage, getAllCustomPackages } from "@/services/supabase/packages";
 import type { AchievementPackage } from "@/types/achievements";
@@ -224,6 +225,10 @@ function LibraryPage() {
                     <ExternalLink className="size-4" />
                     Open
                   </Link>
+                </ContextMenuItem>
+                <ContextMenuItem onClick={() => exportPackage(pkg)}>
+                  <Download className="size-4" />
+                  Export JSON
                 </ContextMenuItem>
                 <ContextMenuSeparator />
                 <ContextMenuItem

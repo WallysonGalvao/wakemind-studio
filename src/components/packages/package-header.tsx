@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Download } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,15 @@ interface PackageHeaderProps {
   pkg: AchievementPackage;
   achievementCount: number;
   assetCount: number;
+  onExport?: () => void;
 }
 
-export function PackageHeader({ pkg, achievementCount, assetCount }: PackageHeaderProps) {
+export function PackageHeader({
+  pkg,
+  achievementCount,
+  assetCount,
+  onExport,
+}: PackageHeaderProps) {
   return (
     <div className="flex items-start gap-4 border-b p-4">
       <Button variant="ghost" size="icon" asChild className="mt-0.5 shrink-0">
@@ -43,6 +49,12 @@ export function PackageHeader({ pkg, achievementCount, assetCount }: PackageHead
             <Badge variant="outline">{achievementCount} Achievements</Badge>
           )}
           <Badge variant="secondary">{assetCount} Assets</Badge>
+          {onExport && (
+            <Button variant="outline" size="sm" onClick={onExport}>
+              <Download className="size-4" />
+              Export JSON
+            </Button>
+          )}
         </div>
       </div>
     </div>

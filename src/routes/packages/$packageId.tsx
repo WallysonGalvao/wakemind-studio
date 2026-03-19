@@ -22,7 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TIER_COLORS } from "@/constants/achievements";
 import { BUILT_IN_PACKAGES, getPackageById } from "@/constants/packages";
 import { useGeneration } from "@/hooks/use-generation";
-import { downloadAsset, downloadBase64 } from "@/lib/download";
+import { downloadAsset, downloadBase64, exportPackage } from "@/lib/download";
 import { cn } from "@/lib/utils";
 import { deleteAsset, getAllAssets } from "@/services/supabase/assets";
 import { getAllCustomPackages } from "@/services/supabase/packages";
@@ -93,6 +93,7 @@ function PackageDetailPage() {
         pkg={pkg}
         achievementCount={pkg.items.length}
         assetCount={pkgAssets.length}
+        onExport={() => exportPackage(pkg)}
       />
 
       <ResizablePanelGroup direction="horizontal" className="min-h-0 flex-1">
