@@ -1,8 +1,8 @@
 import { Download, ImageIcon, Loader2 } from "lucide-react";
 
-import { Button } from "#/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "#/components/ui/card";
-import type { GenerationResult } from "#/types/generation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { GenerationResult } from "@/types/generation";
 
 interface GenerationPreviewProps {
   result: GenerationResult | null;

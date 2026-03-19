@@ -1,14 +1,14 @@
 import * as React from "react";
 
-import { buildPrompt, type StyleConfig } from "#/lib/library/image/styles";
-import { generateImage } from "#/services/openai/image";
-import { saveAsset } from "#/services/storage/assets";
-import type { GeneratedAsset } from "#/types/asset";
+import { buildPrompt, type StyleConfig } from "@/lib/library/image/styles";
+import { generateImage } from "@/services/openai/image";
+import { saveAsset } from "@/services/storage/assets";
+import type { GeneratedAsset } from "@/types/asset";
 import {
   DEFAULT_GENERATION_OPTIONS,
   type GenerationOptions,
   type GenerationResult,
-} from "#/types/generation";
+} from "@/types/generation";
 
 interface UseGenerationProps {
   initialStyleConfig?: Record<string, unknown>;

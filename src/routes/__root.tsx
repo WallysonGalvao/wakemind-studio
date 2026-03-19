@@ -5,9 +5,9 @@ import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import * as React from "react";
 
-import { AppSidebar } from "#/components/layout/app-sidebar";
-import { SiteHeader } from "#/components/layout/header";
-import { SidebarInset, SidebarProvider } from "#/components/ui/sidebar";
+import { AppSidebar } from "@/components/layout/app-sidebar";
+import { SiteHeader } from "@/components/layout/header";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export const Route = createRootRoute({
   component: RootComponent,

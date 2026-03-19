@@ -2,17 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { KeyRound, Save } from "lucide-react";
 import * as React from "react";
 
-import { Button } from "#/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "#/components/ui/card";
-import { Input } from "#/components/ui/input";
-import { Label } from "#/components/ui/label";
-import { useSettings } from "#/hooks/use-settings";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useSettings } from "@/hooks/use-settings";
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,

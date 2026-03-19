@@ -6,8 +6,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "#/components/ui/card";
-import type { AssetStats } from "#/types/asset";
+} from "@/components/ui/card";
+import type { AssetStats } from "@/types/asset";
 
 interface SectionCardsProps {
   stats: AssetStats;

@@ -1,4 +1,4 @@
-import type { AchievementPackage } from "#/types/achievements";
+import type { AchievementPackage } from "@/types/achievements";
 
 import { dbAdd, dbDelete, dbGetAll, PACKAGES_STORE } from "./db";
 

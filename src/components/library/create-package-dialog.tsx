@@ -1,21 +1,21 @@
 import { Plus } from "lucide-react";
 import * as React from "react";
 
-import { Button } from "#/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "#/components/ui/dialog";
-import { Input } from "#/components/ui/input";
-import { Label } from "#/components/ui/label";
-import { ACHIEVEMENT_REGISTRY } from "#/constants/achievements";
-import { PACKAGE_COLOR_PRESETS } from "#/constants/packages";
-import { cn } from "#/lib/utils";
-import { savePackage } from "#/services/storage/packages";
-import type { AchievementPackage } from "#/types/achievements";
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ACHIEVEMENT_REGISTRY } from "@/constants/achievements";
+import { PACKAGE_COLOR_PRESETS } from "@/constants/packages";
+import { cn } from "@/lib/utils";
+import { savePackage } from "@/services/storage/packages";
+import type { AchievementPackage } from "@/types/achievements";
 
 interface CreatePackageDialogProps {
   open: boolean;

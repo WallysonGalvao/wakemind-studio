@@ -1,4 +1,4 @@
-import type { GeneratedAsset } from "#/types/asset";
+import type { GeneratedAsset } from "@/types/asset";
 
 const MIME_MAP: Record<string, string> = {
   png: "image/png",

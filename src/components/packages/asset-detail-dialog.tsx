@@ -1,18 +1,18 @@
 import { Download, Trash2 } from "lucide-react";
 import * as React from "react";
 
-import { Button } from "#/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "#/components/ui/dialog";
-import { downloadAsset } from "#/lib/download";
-import { formatDate } from "#/lib/utils";
-import type { AchievementPackage } from "#/types/achievements";
-import type { GeneratedAsset } from "#/types/asset";
+} from "@/components/ui/dialog";
+import { downloadAsset } from "@/lib/download";
+import { formatDate } from "@/lib/utils";
+import type { AchievementPackage } from "@/types/achievements";
+import type { GeneratedAsset } from "@/types/asset";
 
 interface AssetDetailDialogProps {
   asset: GeneratedAsset | null;

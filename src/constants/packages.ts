@@ -1,5 +1,5 @@
-import { BASIC_ACHIEVEMENT_PACKAGE } from "#/lib/library/achievements/packages/basic";
-import type { AchievementPackage } from "#/types/achievements";
+import { BASIC_ACHIEVEMENT_PACKAGE } from "@/lib/library/achievements/packages/basic";
+import type { AchievementPackage } from "@/types/achievements";
 
 /** All built-in achievement packages */
 export const BUILT_IN_PACKAGES: AchievementPackage[] = [BASIC_ACHIEVEMENT_PACKAGE];

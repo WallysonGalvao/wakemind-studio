@@ -2,28 +2,28 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { ExternalLink, Plus, Search, Trash2 } from "lucide-react";
 import * as React from "react";
 
-import { CreatePackageDialog } from "#/components/library/create-package-dialog";
-import { Badge } from "#/components/ui/badge";
+import { CreatePackageDialog } from "@/components/library/create-package-dialog";
+import { Badge } from "@/components/ui/badge";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "#/components/ui/context-menu";
-import { Input } from "#/components/ui/input";
+} from "@/components/ui/context-menu";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "#/components/ui/select";
-import { BUILT_IN_PACKAGES } from "#/constants/packages";
-import { getAllAssets } from "#/services/storage/assets";
-import { deletePackage, getAllCustomPackages } from "#/services/storage/packages";
-import type { AchievementPackage } from "#/types/achievements";
-import type { GeneratedAsset } from "#/types/asset";
+} from "@/components/ui/select";
+import { BUILT_IN_PACKAGES } from "@/constants/packages";
+import { getAllAssets } from "@/services/storage/assets";
+import { deletePackage, getAllCustomPackages } from "@/services/storage/packages";
+import type { AchievementPackage } from "@/types/achievements";
+import type { GeneratedAsset } from "@/types/asset";
 
 export const Route = createFileRoute("/library")({
   loader: async () => {

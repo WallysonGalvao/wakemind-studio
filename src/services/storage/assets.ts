@@ -1,4 +1,4 @@
-import type { AssetStats, DailyActivity, GeneratedAsset } from "#/types/asset";
+import type { AssetStats, DailyActivity, GeneratedAsset } from "@/types/asset";
 
 import { ASSETS_STORE, dbAdd, dbDelete, dbGetAll } from "./db";
 

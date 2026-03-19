@@ -1,6 +1,6 @@
 import { Loader2, Wand2 } from "lucide-react";
 
-import { Button } from "#/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 interface GenerateButtonProps {
   loading: boolean;

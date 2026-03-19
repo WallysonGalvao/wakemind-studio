@@ -1,15 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ExternalLink, Image as ImageIcon, Library, Music, Zap } from "lucide-react";
 
-import { Badge } from "#/components/ui/badge";
-import { Button } from "#/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "#/components/ui/card";
+} from "@/components/ui/card";
 
 export const Route = createFileRoute("/about")({
   component: About,

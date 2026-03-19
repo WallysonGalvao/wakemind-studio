@@ -1,18 +1,18 @@
 import { Check, ClipboardCopy, Download, Eye, RefreshCw, Wand2 } from "lucide-react";
 
-import { Badge } from "#/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "#/components/ui/context-menu";
-import { TIER_COLORS } from "#/constants/achievements";
-import { cn } from "#/lib/utils";
-import type { AchievementPackage, AchievementPackageItem } from "#/types/achievements";
-import { type AchievementTier } from "#/types/achievements";
-import type { GeneratedAsset } from "#/types/asset";
+} from "@/components/ui/context-menu";
+import { TIER_COLORS } from "@/constants/achievements";
+import { cn } from "@/lib/utils";
+import type { AchievementPackage, AchievementPackageItem } from "@/types/achievements";
+import { type AchievementTier } from "@/types/achievements";
+import type { GeneratedAsset } from "@/types/asset";
 
 interface AchievementGridProps {
   items: AchievementPackageItem[];

@@ -6,9 +6,9 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "#/components/ui/context-menu";
-import { formatDate } from "#/lib/utils";
-import type { GeneratedAsset } from "#/types/asset";
+} from "@/components/ui/context-menu";
+import { formatDate } from "@/lib/utils";
+import type { GeneratedAsset } from "@/types/asset";
 
 interface AssetGridProps {
   assets: GeneratedAsset[];

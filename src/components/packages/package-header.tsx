@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
-import { Badge } from "#/components/ui/badge";
-import { Button } from "#/components/ui/button";
-import type { AchievementPackage } from "#/types/achievements";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import type { AchievementPackage } from "@/types/achievements";
 
 interface PackageHeaderProps {
   pkg: AchievementPackage;

@@ -2,34 +2,34 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { ImageIcon } from "lucide-react";
 import * as React from "react";
 
-import { GenerateButton } from "#/components/generation/generate-button";
-import { GenerationOptionsCard } from "#/components/generation/generation-options";
-import { GenerationPreview } from "#/components/generation/generation-preview";
-import { StyleConfigEditor } from "#/components/generation/style-config-editor";
-import { AchievementGrid } from "#/components/packages/achievement-grid";
-import { AssetDetailDialog } from "#/components/packages/asset-detail-dialog";
-import { AssetGrid } from "#/components/packages/asset-grid";
-import { PackageHeader } from "#/components/packages/package-header";
-import { Badge } from "#/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "#/components/ui/card";
-import { Label } from "#/components/ui/label";
+import { GenerateButton } from "@/components/generation/generate-button";
+import { GenerationOptionsCard } from "@/components/generation/generation-options";
+import { GenerationPreview } from "@/components/generation/generation-preview";
+import { StyleConfigEditor } from "@/components/generation/style-config-editor";
+import { AchievementGrid } from "@/components/packages/achievement-grid";
+import { AssetDetailDialog } from "@/components/packages/asset-detail-dialog";
+import { AssetGrid } from "@/components/packages/asset-grid";
+import { PackageHeader } from "@/components/packages/package-header";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "#/components/ui/resizable";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "#/components/ui/tabs";
-import { TIER_COLORS } from "#/constants/achievements";
-import { BUILT_IN_PACKAGES, getPackageById } from "#/constants/packages";
-import { useGeneration } from "#/hooks/use-generation";
-import { useSettings } from "#/hooks/use-settings";
-import { downloadAsset, downloadBase64 } from "#/lib/download";
-import { cn } from "#/lib/utils";
-import { deleteAsset, getAllAssets } from "#/services/storage/assets";
-import { getAllCustomPackages } from "#/services/storage/packages";
-import type { AchievementPackageItem } from "#/types/achievements";
-import { type AchievementTier } from "#/types/achievements";
-import type { GeneratedAsset } from "#/types/asset";
+} from "@/components/ui/resizable";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TIER_COLORS } from "@/constants/achievements";
+import { BUILT_IN_PACKAGES, getPackageById } from "@/constants/packages";
+import { useGeneration } from "@/hooks/use-generation";
+import { useSettings } from "@/hooks/use-settings";
+import { downloadAsset, downloadBase64 } from "@/lib/download";
+import { cn } from "@/lib/utils";
+import { deleteAsset, getAllAssets } from "@/services/storage/assets";
+import { getAllCustomPackages } from "@/services/storage/packages";
+import type { AchievementPackageItem } from "@/types/achievements";
+import { type AchievementTier } from "@/types/achievements";
+import type { GeneratedAsset } from "@/types/asset";
 
 export const Route = createFileRoute("/packages/$packageId")({
   loader: async ({ params }) => {

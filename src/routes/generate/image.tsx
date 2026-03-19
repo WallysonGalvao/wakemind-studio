@@ -2,26 +2,26 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ImageIcon, Package } from "lucide-react";
 import * as React from "react";
 
-import { GenerateButton } from "#/components/generation/generate-button";
-import { GenerationOptionsCard } from "#/components/generation/generation-options";
-import { GenerationPreview } from "#/components/generation/generation-preview";
-import { StyleConfigEditor } from "#/components/generation/style-config-editor";
-import { Card, CardContent, CardHeader, CardTitle } from "#/components/ui/card";
-import { Input } from "#/components/ui/input";
-import { Label } from "#/components/ui/label";
+import { GenerateButton } from "@/components/generation/generate-button";
+import { GenerationOptionsCard } from "@/components/generation/generation-options";
+import { GenerationPreview } from "@/components/generation/generation-preview";
+import { StyleConfigEditor } from "@/components/generation/style-config-editor";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "#/components/ui/select";
-import { BUILT_IN_PACKAGES } from "#/constants/packages";
-import { useGeneration } from "#/hooks/use-generation";
-import { useSettings } from "#/hooks/use-settings";
-import { downloadBase64 } from "#/lib/download";
-import { getAllCustomPackages } from "#/services/storage/packages";
-import type { AchievementPackage } from "#/types/achievements";
+} from "@/components/ui/select";
+import { BUILT_IN_PACKAGES } from "@/constants/packages";
+import { useGeneration } from "@/hooks/use-generation";
+import { useSettings } from "@/hooks/use-settings";
+import { downloadBase64 } from "@/lib/download";
+import { getAllCustomPackages } from "@/services/storage/packages";
+import type { AchievementPackage } from "@/types/achievements";
 
 export const Route = createFileRoute("/generate/image")({
   loader: async () => {

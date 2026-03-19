@@ -1,14 +1,14 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 
-import { ChartAreaInteractive } from "#/components/dashboard/chart-area-interactive";
-import { DataTable } from "#/components/dashboard/data-table";
-import { SectionCards } from "#/components/dashboard/section-cards";
+import { ChartAreaInteractive } from "@/components/dashboard/chart-area-interactive";
+import { DataTable } from "@/components/dashboard/data-table";
+import { SectionCards } from "@/components/dashboard/section-cards";
 import {
   computeActivity,
   computeStats,
   deleteAsset,
   getAllAssets,
-} from "#/services/storage/assets";
+} from "@/services/storage/assets";
 
 export const Route = createFileRoute("/")({
   loader: async () => {

@@ -9,7 +9,7 @@ import {
   Zap,
 } from "lucide-react";
 
-import { NavUser } from "#/components/layout/nav-user";
+import { NavUser } from "@/components/layout/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -21,7 +21,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "#/components/ui/sidebar";
+} from "@/components/ui/sidebar";
 
 const navMain = [
   { label: "Dashboard", icon: LayoutDashboard, to: "/" as const },

@@ -47,9 +47,9 @@ import {
 } from "lucide-react";
 import * as React from "react";
 
-import { Badge } from "#/components/ui/badge";
-import { Button } from "#/components/ui/button";
-import { Checkbox } from "#/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Drawer,
   DrawerClose,
@@ -59,7 +59,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "#/components/ui/drawer";
+} from "@/components/ui/drawer";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -67,16 +67,16 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "#/components/ui/dropdown-menu";
-import { Label } from "#/components/ui/label";
+} from "@/components/ui/dropdown-menu";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "#/components/ui/select";
-import { Separator } from "#/components/ui/separator";
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -84,9 +84,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "#/components/ui/table";
-import { useIsMobile } from "#/hooks/use-mobile";
-import type { GeneratedAsset } from "#/types/asset";
+} from "@/components/ui/table";
+import { useIsMobile } from "@/hooks/use-mobile";
+import type { GeneratedAsset } from "@/types/asset";
 
 // Create a separate component for the drag handle
 function DragHandle({ id }: { id: string }) {
