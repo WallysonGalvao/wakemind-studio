@@ -4,7 +4,7 @@ import * as React from "react";
 
 import { Badge } from "#/components/ui/badge";
 import { Button } from "#/components/ui/button";
-import { Card, CardHeader } from "#/components/ui/card";
+import { CardHeader } from "#/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -170,6 +170,9 @@ function PackageDetailPage() {
   const { pkg, pkgAssets, allPackages } = Route.useLoaderData();
   const router = useRouter();
   const [selectedAsset, setSelectedAsset] = React.useState<GeneratedAsset | null>(null);
+  const [selectedAchievement, setSelectedAchievement] = React.useState<
+    (typeof pkg.items)[number] | null
+  >(null);
 
   async function handleDelete(id: string) {
     await deleteAsset(id);
@@ -243,7 +246,12 @@ function PackageDetailPage() {
             <div className="h-full overflow-auto rounded-md border border-border bg-card/50">
               <div className="grid grid-cols-2 gap-4 p-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
                 {pkg.items.map((item) => (
-                  <Card key={item.id} className="group transition-shadow hover:shadow-md">
+                  <button
+                    key={item.id}
+                    type="button"
+                    className="group rounded-xl border bg-card text-left shadow-xs transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                    onClick={() => setSelectedAchievement(item)}
+                  >
                     <CardHeader className="flex flex-col items-center justify-center gap-3 p-4">
                       <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-muted/50 transition-colors group-hover:bg-primary/5">
                         {pkg.renderIcon?.(item.iconName, {
@@ -270,7 +278,7 @@ function PackageDetailPage() {
                         </Badge>
                       </div>
                     </CardHeader>
-                  </Card>
+                  </button>
                 ))}
               </div>
             </div>
@@ -321,6 +329,49 @@ function PackageDetailPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      <Dialog
+        open={selectedAchievement !== null}
+        onOpenChange={(v) => {
+          if (!v) setSelectedAchievement(null);
+        }}
+      >
+        <DialogContent className="max-w-sm">
+          {selectedAchievement && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="truncate">{selectedAchievement.id}</DialogTitle>
+                <DialogDescription>Achievement details</DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-col items-center gap-4 py-2">
+                <div
+                  className="flex size-20 items-center justify-center rounded-2xl"
+                  style={{ backgroundColor: `${pkg.color}15` }}
+                >
+                  {pkg.renderIcon?.(selectedAchievement.iconName, {
+                    size: 48,
+                    className: "text-foreground",
+                  })}
+                </div>
+                <div className="flex flex-wrap justify-center gap-2">
+                  <Badge
+                    variant="secondary"
+                    className={cn(
+                      "text-xs tracking-wider uppercase",
+                      TIER_COLORS[selectedAchievement.tier as AchievementTier],
+                    )}
+                  >
+                    {selectedAchievement.tier}
+                  </Badge>
+                  <Badge variant="outline" className="text-xs capitalize">
+                    {selectedAchievement.category.toLowerCase()}
+                  </Badge>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <AssetDetailSheet
         asset={selectedAsset}
