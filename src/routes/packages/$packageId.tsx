@@ -2,9 +2,12 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import {
   ArrowLeft,
   Check,
+  ClipboardCopy,
   Download,
+  Eye,
   ImageIcon,
   Loader2,
+  RefreshCw,
   Trash2,
   Wand2,
 } from "lucide-react";
@@ -19,6 +22,13 @@ import {
   CardHeader,
   CardTitle,
 } from "#/components/ui/card";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "#/components/ui/context-menu";
 import {
   Dialog,
   DialogContent,
@@ -318,6 +328,18 @@ function PackageDetailPage() {
     a.click();
   }
 
+  function findAssetForAchievement(achievementId: string): GeneratedAsset | undefined {
+    return pkgAssets.find((a) => a.name === achievementId);
+  }
+
+  function downloadAsset(asset: GeneratedAsset) {
+    const a = document.createElement("a");
+    a.href = `data:${asset.mimeType};base64,${asset.imageData}`;
+    const ext = asset.mimeType.split("/")[1] ?? "png";
+    a.download = `${asset.name.toLowerCase().replace(/\s+/g, "_")}.${ext}`;
+    a.click();
+  }
+
   const hasAchievements = pkg.items.length > 0;
   const imageSrc = result ? `data:image/${result.format};base64,${result.b64}` : null;
 
@@ -393,52 +415,104 @@ function PackageDetailPage() {
                     {pkg.items.map((item) => {
                       const isSelected = selectedAchievement?.id === item.id;
                       const hasAsset = assetsByAchievement.has(item.id);
+                      const existingAsset = hasAsset
+                        ? findAssetForAchievement(item.id)
+                        : undefined;
                       return (
-                        <button
-                          key={item.id}
-                          type="button"
-                          className={cn(
-                            "group relative rounded-xl border bg-card text-left shadow-xs transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                            isSelected && "border-primary shadow-md ring-2 ring-primary",
-                          )}
-                          onClick={() => {
-                            setSelectedAchievement(item);
-                            setResult(null);
-                            setError("");
-                          }}
-                        >
-                          {hasAsset && (
-                            <div className="absolute top-1.5 right-1.5 flex size-5 items-center justify-center rounded-full bg-green-500 text-white">
-                              <Check className="size-3" />
-                            </div>
-                          )}
-                          <div className="flex flex-col items-center justify-center gap-2 p-3">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted/50 transition-colors group-hover:bg-primary/5">
-                              {pkg.renderIcon?.(item.iconName, {
-                                size: 24,
-                                className:
-                                  "text-foreground group-hover:text-primary transition-colors",
-                              })}
-                            </div>
-                            <div className="space-y-1 text-center">
-                              <p
-                                className="w-full truncate text-[11px] leading-tight font-medium"
-                                title={item.id}
-                              >
-                                {item.id}
-                              </p>
-                              <Badge
-                                variant="secondary"
-                                className={cn(
-                                  "h-4 px-1 text-[9px] tracking-wider uppercase",
-                                  TIER_COLORS[item.tier as AchievementTier],
-                                )}
-                              >
-                                {item.tier}
-                              </Badge>
-                            </div>
-                          </div>
-                        </button>
+                        <ContextMenu key={item.id}>
+                          <ContextMenuTrigger asChild>
+                            <button
+                              type="button"
+                              className={cn(
+                                "group relative rounded-xl border bg-card text-left shadow-xs transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                                isSelected &&
+                                  "border-primary shadow-md ring-2 ring-primary",
+                              )}
+                              onClick={() => {
+                                setSelectedAchievement(item);
+                                setResult(null);
+                                setError("");
+                              }}
+                            >
+                              {hasAsset && (
+                                <div className="absolute top-1.5 right-1.5 flex size-5 items-center justify-center rounded-full bg-green-500 text-white">
+                                  <Check className="size-3" />
+                                </div>
+                              )}
+                              <div className="flex flex-col items-center justify-center gap-2 p-3">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted/50 transition-colors group-hover:bg-primary/5">
+                                  {pkg.renderIcon?.(item.iconName, {
+                                    size: 24,
+                                    className:
+                                      "text-foreground group-hover:text-primary transition-colors",
+                                  })}
+                                </div>
+                                <div className="space-y-1 text-center">
+                                  <p
+                                    className="w-full truncate text-[11px] leading-tight font-medium"
+                                    title={item.id}
+                                  >
+                                    {item.id}
+                                  </p>
+                                  <Badge
+                                    variant="secondary"
+                                    className={cn(
+                                      "h-4 px-1 text-[9px] tracking-wider uppercase",
+                                      TIER_COLORS[item.tier as AchievementTier],
+                                    )}
+                                  >
+                                    {item.tier}
+                                  </Badge>
+                                </div>
+                              </div>
+                            </button>
+                          </ContextMenuTrigger>
+                          <ContextMenuContent>
+                            <ContextMenuItem
+                              onClick={() => {
+                                setSelectedAchievement(item);
+                                setResult(null);
+                                setError("");
+                              }}
+                            >
+                              <Wand2 className="size-4" />
+                              Select for generation
+                            </ContextMenuItem>
+                            <ContextMenuItem
+                              onClick={() => navigator.clipboard.writeText(item.id)}
+                            >
+                              <ClipboardCopy className="size-4" />
+                              Copy ID
+                            </ContextMenuItem>
+                            {existingAsset && (
+                              <>
+                                <ContextMenuSeparator />
+                                <ContextMenuItem
+                                  onClick={() => setSelectedAsset(existingAsset)}
+                                >
+                                  <Eye className="size-4" />
+                                  View asset
+                                </ContextMenuItem>
+                                <ContextMenuItem
+                                  onClick={() => downloadAsset(existingAsset)}
+                                >
+                                  <Download className="size-4" />
+                                  Download asset
+                                </ContextMenuItem>
+                                <ContextMenuItem
+                                  onClick={() => {
+                                    setSelectedAchievement(item);
+                                    setResult(null);
+                                    setError("");
+                                  }}
+                                >
+                                  <RefreshCw className="size-4" />
+                                  Regenerate
+                                </ContextMenuItem>
+                              </>
+                            )}
+                          </ContextMenuContent>
+                        </ContextMenu>
                       );
                     })}
                   </div>
@@ -460,28 +534,49 @@ function PackageDetailPage() {
                 <div className="h-full overflow-auto p-4">
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     {pkgAssets.map((asset) => (
-                      <button
-                        key={asset.id}
-                        type="button"
-                        className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                        onClick={() => setSelectedAsset(asset)}
-                      >
-                        <div className="flex aspect-square w-full items-center justify-center bg-muted/50">
-                          <img
-                            src={`data:${asset.mimeType};base64,${asset.imageData}`}
-                            alt={asset.name}
-                            className="max-h-full max-w-full object-contain p-2"
-                          />
-                        </div>
-                        <div className="flex flex-col gap-0.5 p-2 text-left">
-                          <p className="truncate text-xs leading-tight font-medium">
-                            {asset.name}
-                          </p>
-                          <p className="text-[10px] text-muted-foreground">
-                            {formatDate(asset.createdAt)}
-                          </p>
-                        </div>
-                      </button>
+                      <ContextMenu key={asset.id}>
+                        <ContextMenuTrigger asChild>
+                          <button
+                            type="button"
+                            className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                            onClick={() => setSelectedAsset(asset)}
+                          >
+                            <div className="flex aspect-square w-full items-center justify-center bg-muted/50">
+                              <img
+                                src={`data:${asset.mimeType};base64,${asset.imageData}`}
+                                alt={asset.name}
+                                className="max-h-full max-w-full object-contain p-2"
+                              />
+                            </div>
+                            <div className="flex flex-col gap-0.5 p-2 text-left">
+                              <p className="truncate text-xs leading-tight font-medium">
+                                {asset.name}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground">
+                                {formatDate(asset.createdAt)}
+                              </p>
+                            </div>
+                          </button>
+                        </ContextMenuTrigger>
+                        <ContextMenuContent>
+                          <ContextMenuItem onClick={() => setSelectedAsset(asset)}>
+                            <Eye className="size-4" />
+                            View details
+                          </ContextMenuItem>
+                          <ContextMenuItem onClick={() => downloadAsset(asset)}>
+                            <Download className="size-4" />
+                            Download
+                          </ContextMenuItem>
+                          <ContextMenuSeparator />
+                          <ContextMenuItem
+                            variant="destructive"
+                            onClick={() => handleDelete(asset.id)}
+                          >
+                            <Trash2 className="size-4" />
+                            Delete
+                          </ContextMenuItem>
+                        </ContextMenuContent>
+                      </ContextMenu>
                     ))}
                   </div>
                 </div>

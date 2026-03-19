@@ -1,9 +1,16 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { Plus, Search } from "lucide-react";
+import { ExternalLink, Plus, Search, Trash2 } from "lucide-react";
 import * as React from "react";
 
 import { CreatePackageDialog } from "#/components/library/create-package-dialog";
 import { Badge } from "#/components/ui/badge";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "#/components/ui/context-menu";
 import { Input } from "#/components/ui/input";
 import {
   Select,
@@ -14,7 +21,7 @@ import {
 } from "#/components/ui/select";
 import { BUILT_IN_PACKAGES } from "#/constants/packages";
 import { getAllAssets } from "#/services/storage/assets";
-import { getAllCustomPackages } from "#/services/storage/packages";
+import { deletePackage, getAllCustomPackages } from "#/services/storage/packages";
 import type { AchievementPackage } from "#/types/achievements";
 import type { GeneratedAsset } from "#/types/asset";
 
@@ -60,6 +67,11 @@ function LibraryPage() {
   const [search, setSearch] = React.useState("");
   const [sort, setSort] = React.useState<SortOption>("last-edited");
   const [createOpen, setCreateOpen] = React.useState(false);
+
+  async function handleDeletePackage(id: string) {
+    await deletePackage(id);
+    await router.invalidate();
+  }
 
   const allPackages = React.useMemo(
     () => [...BUILT_IN_PACKAGES, ...customPackages],
@@ -150,7 +162,7 @@ function LibraryPage() {
           const assetCount = assets.filter((a) => a.packageId === pkg.id).length;
           const lastEdited = getLastEdited(pkg, assets);
 
-          return (
+          const card = (
             <Link
               key={pkg.id}
               to="/packages/$packageId"
@@ -197,6 +209,32 @@ function LibraryPage() {
                 </p>
               </div>
             </Link>
+          );
+
+          if (pkg.isBuiltIn) {
+            return <React.Fragment key={pkg.id}>{card}</React.Fragment>;
+          }
+
+          return (
+            <ContextMenu key={pkg.id}>
+              <ContextMenuTrigger asChild>{card}</ContextMenuTrigger>
+              <ContextMenuContent>
+                <ContextMenuItem asChild>
+                  <Link to="/packages/$packageId" params={{ packageId: pkg.id }}>
+                    <ExternalLink className="size-4" />
+                    Open
+                  </Link>
+                </ContextMenuItem>
+                <ContextMenuSeparator />
+                <ContextMenuItem
+                  variant="destructive"
+                  onClick={() => handleDeletePackage(pkg.id)}
+                >
+                  <Trash2 className="size-4" />
+                  Delete package
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
           );
         })}
       </div>
