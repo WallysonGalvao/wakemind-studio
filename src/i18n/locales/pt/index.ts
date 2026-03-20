@@ -40,27 +40,21 @@ const pt = {
     projects: "Projetos",
     getHelp: "Ajuda",
     newProject: "Novo projeto…",
-    fenrir: "Fenrir by Three Wolves",
-    github: "GitHub",
-    mobile: "Mobile",
-    lp: "LP",
-    studio: "Studio",
+    fenrir: "Fenrir",
+    repos: "Repos",
     about: "Sobre",
     package: "Pacote",
   },
 
   // ── User menu ────────────────────────────────────────────────────────────
   userMenu: {
-    account: "Conta",
-    billing: "Faturamento",
-    notifications: "Notificações",
     logOut: "Sair",
     language: "Idioma",
   },
 
   // ── Auth ──────────────────────────────────────────────────────────────────
   auth: {
-    appName: "Fenrir by Three Wolves",
+    appName: "Fenrir",
     signIn: "Entrar",
     signUp: "Criar conta",
     signingIn: "Entrando…",
@@ -220,10 +214,14 @@ const pt = {
     settings: {
       title: "Configurações",
       subtitle: "Gerencie preferências de",
-      account: {
-        title: "Conta",
+      repositories: {
+        title: "Repositórios",
         description:
-          "Conectado como {{email}}. A geração de assets é alimentada pela OpenAI via Three Wolves.",
+          "Vincule os repositórios de código do projeto. Eles aparecem no header para acesso rápido.",
+        labelPlaceholder: "ex. Mobile",
+        urlPlaceholder: "ex. https://github.com/org/repo",
+        add: "Adicionar repositório",
+        saved: "Repositórios salvos",
       },
       appStores: {
         title: "App Stores",
@@ -364,48 +362,72 @@ const pt = {
 
     // About
     about: {
-      title: "Wakemind Studio",
-      subtitle:
-        "Criação de assets e gerenciamento de conquistas para o ecossistema Wakemind",
+      title: "Fenrir",
+      subtitle: "Hub Multi-projeto para Criação de Assets & Analytics",
       description:
-        "Wakemind Studio é o companheiro criativo do app mobile Wakemind — uma ferramenta que permite a desenvolvedores e criadores gerar assets de imagem com qualidade de jogo e efeitos sonoros com IA, gerenciar uma biblioteca de ícones de conquistas e configurar os componentes do sistema de recompensas que roda dentro da experiência Wakemind.",
-      howToUse: "Como usar",
-      generateImageCard: {
-        title: "Gerar Imagem",
+        "Fenrir é um hub multi-projeto criado pela Three Wolves que permite a desenvolvedores de jogos gerar assets de imagem e som com IA, gerenciar bibliotecas de ícones de conquistas e monitorar analytics de produto — tudo em um único workspace. Cada projeto tem seu próprio dashboard, ferramentas de geração, biblioteca de assets e integrações de analytics.",
+      features: "Funcionalidades",
+      dashboardCard: {
+        title: "Dashboard",
         description:
-          "Crie ícones e assets prontos para jogo com um único prompt. Escolha um preset de estilo, defina as dimensões e baixe seu PNG em segundos.",
-        cta: "Abrir Gerador",
+          "Visão geral do projeto com KPIs de total de assets, imagens geradas, sons gerados e armazenamento utilizado. Inclui gráfico de atividade e tabela de assets pesquisável.",
+      },
+      generateImageCard: {
+        title: "Geração de Imagens",
+        description:
+          "Crie ícones e assets prontos para jogo com IA usando OpenAI gpt-image-1 ou dall-e-3. Configure presets de estilo, dimensões, qualidade e transparência de fundo.",
       },
       generateSoundCard: {
-        title: "Gerar Som",
+        title: "Geração de Sons",
         description:
-          "Produza trilhas ambiente, SFX 8-bit e sons de notificação para combinar com suas conquistas e alarmes do jogo.",
-        cta: "Abrir Gerador",
+          "Gere assets de voz e áudio usando OpenAI TTS. Escolha entre múltiplos presets de voz, controle velocidade, formato e tom com instruções de voz personalizadas.",
       },
       libraryCard: {
-        title: "Navegar na Biblioteca",
+        title: "Biblioteca de Assets",
         description:
-          "Revise o catálogo completo de ícones de conquistas incluídos no Pacote Básico. Visualize cada tier e ícone antes de exportar.",
-        cta: "Abrir Biblioteca",
+          "Navegue e gerencie pacotes de ícones de conquistas. Visualize tiers (Bronze, Prata, Ouro, Platina), exporte como JSON e crie pacotes personalizados.",
       },
-      providers: {
-        title: "Provedores",
-        description: "Serviços externos que alimentam as funcionalidades de geração",
+      analyticsCard: {
+        title: "Analytics",
+        description:
+          "Métricas de produto em tempo real com Mixpanel (DAU, top eventos, retenção) e RevenueCat (MRR, assinaturas, churn). Além de avaliações e reviews da App Store e Google Play.",
+      },
+      settingsCard: {
+        title: "Integrações",
+        description:
+          "Conecte serviços externos por projeto — Mixpanel, RevenueCat, App Store Connect e Google Play Console. Chaves de API armazenadas com segurança via Supabase Vault.",
+      },
+      integrations: {
+        title: "Integrações",
+        description: "Serviços externos que alimentam geração e analytics",
         openai: {
           name: "OpenAI",
           description:
-            "Geração de imagens via `gpt-image-1` e `dall-e-3`. Requer uma chave de API pessoal configurada nas Configurações.",
+            "Geração de imagens via gpt-image-1 e dall-e-3. Geração de som via API TTS com múltiplos modelos de voz.",
           docs: "Docs",
         },
-        sound: {
-          name: "Provedor de Som",
+        mixpanel: {
+          name: "Mixpanel",
           description:
-            "A geração de som suportará OpenAI TTS, ElevenLabs ou fal.ai. A seleção do provedor estará disponível nas Configurações quando a funcionalidade for lançada.",
+            "Analytics de engajamento — usuários ativos diários, top eventos e heatmaps de retenção por coorte.",
+          docs: "Docs",
+        },
+        revenuecat: {
+          name: "RevenueCat",
+          description:
+            "Analytics de receita — MRR, assinaturas ativas e rastreamento de taxa de churn.",
+          docs: "Docs",
         },
       },
       stack: {
         title: "Stack",
         description: "Tecnologias principais usadas neste projeto",
+      },
+      gettingStarted: {
+        title: "Começando",
+        description:
+          "Crie um projeto a partir do hub para ter seu próprio dashboard, geradores de assets, biblioteca e analytics.",
+        link: "Ir para Projetos",
       },
     },
   },

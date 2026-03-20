@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { Bell, CreditCard, Globe, LogOut, MoreVertical, UserCircle } from "lucide-react";
+import { Globe, LogOut, MoreVertical } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -102,21 +102,9 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <UserCircle />
-                {t("userMenu.account")}
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                {t("userMenu.billing")}
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                {t("userMenu.notifications")}
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={handleToggleLanguage}>
                 <Globe />
-                {t("userMenu.language")}: {i18n.language === "pt" ? "PT-BR" : "EN"}
+                {t("userMenu.language")}: {i18n.language === "pt" ? "🇧🇷 PT-BR" : "🇺🇸 EN"}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

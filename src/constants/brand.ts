@@ -1,11 +1,12 @@
 export const BRAND = {
   name: "Three Wolves",
   product: "Fenrir",
-  fullName: "Fenrir by Three Wolves",
+  fullName: "Fenrir",
   tagline: "Multi-project Hub for Game Asset Creation & Analytics",
   logo: {
-    sidebar: "/src/assets/images/fenrir.png",
-    favicon: "/src/assets/images/favicon.png",
+    product: "/src/assets/images/fenrir.png",
+    studio: "/src/assets/images/three-wolves.webp",
+    favicon: "/src/assets/images/fenrir.png",
   },
   links: {
     github: "https://github.com/WallysonGalvao/wakemind-studio",

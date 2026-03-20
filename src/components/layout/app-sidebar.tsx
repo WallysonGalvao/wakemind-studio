@@ -16,6 +16,7 @@ import * as React from "react";
 import { useTranslation } from "react-i18next";
 
 import logo from "@/assets/images/fenrir.png";
+import studioLogo from "@/assets/images/three-wolves.webp";
 import { NavUser } from "@/components/layout/nav-user";
 import {
   DropdownMenu,
@@ -185,6 +186,20 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         </SidebarContent>
 
         <SidebarFooter>
+          <div className="flex flex-col gap-2 border-t p-4 pt-4 group-data-[state=collapsed]:items-center group-data-[state=collapsed]:p-2">
+            <div className="flex items-center gap-2 opacity-60 grayscale transition-all hover:opacity-100 hover:grayscale-0">
+              <div className="flex size-6 items-center justify-center rounded bg-white p-0.5 shadow-sm">
+                <img
+                  src={studioLogo}
+                  alt="Three Wolves"
+                  className="size-full object-contain"
+                />
+              </div>
+              <span className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase group-data-[state=collapsed]:hidden">
+                Three Wolves
+              </span>
+            </div>
+          </div>
           <NavUser user={navUser} />
         </SidebarFooter>
       </Sidebar>
@@ -256,6 +271,20 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
 
       <SidebarFooter>
+        <div className="flex flex-col gap-2 border-t p-4 pt-4 group-data-[state=collapsed]:items-center group-data-[state=collapsed]:p-2">
+          <div className="flex items-center gap-2 opacity-60 grayscale transition-all hover:opacity-100 hover:grayscale-0">
+            <div className="flex size-6 items-center justify-center rounded bg-white p-0.5 shadow-sm">
+              <img
+                src={studioLogo}
+                alt="Three Wolves"
+                className="size-full object-contain"
+              />
+            </div>
+            <span className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase group-data-[state=collapsed]:hidden">
+              Three Wolves
+            </span>
+          </div>
+        </div>
         <NavUser user={navUser} />
       </SidebarFooter>
     </Sidebar>

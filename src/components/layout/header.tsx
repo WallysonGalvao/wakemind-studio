@@ -1,6 +1,5 @@
 import { Link, useMatches } from "@tanstack/react-router";
-import type { LucideIcon } from "lucide-react";
-import { Globe, Monitor, Smartphone } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -20,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import type { Project, ProjectRepository } from "@/types/project";
 
 function GitHubIcon({ className }: { className?: string }) {
   return (
@@ -35,6 +35,11 @@ export function SiteHeader() {
   const currentMatch = matches[matches.length - 1];
   const currentPath = currentMatch?.pathname ?? "/";
 
+  // Extract project from route context (available inside /$projectSlug)
+  const projectMatch = matches.find((m) => (m.context as { project?: Project })?.project);
+  const project = (projectMatch?.context as { project?: Project })?.project;
+  const repos: ProjectRepository[] = project?.repositories ?? [];
+
   const routeLabels: Record<string, string> = {
     "/": t("nav.dashboard"),
     "/generate/image": t("nav.generateImage"),
@@ -43,24 +48,6 @@ export function SiteHeader() {
     "/settings": t("nav.settings"),
     "/about": t("nav.about"),
   };
-
-  const repos: { label: string; href: string; icon: LucideIcon }[] = [
-    {
-      label: t("nav.mobile"),
-      href: "https://github.com/WallysonGalvao/wakemind",
-      icon: Smartphone,
-    },
-    {
-      label: t("nav.lp"),
-      href: "https://github.com/WallysonGalvao/wakemindapp",
-      icon: Globe,
-    },
-    {
-      label: t("nav.studio"),
-      href: "https://github.com/WallysonGalvao/wakemind-studio",
-      icon: Monitor,
-    },
-  ];
 
   const pageLabel = routeLabels[currentPath] ?? currentPath;
 
@@ -100,36 +87,34 @@ export function SiteHeader() {
             )}
           </BreadcrumbList>
         </Breadcrumb>
-        <div className="ml-auto flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="hidden sm:flex">
+        {repos.length > 0 && (
+          <div className="ml-auto flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="hidden sm:flex">
+                  <GitHubIcon className="size-4" />
+                  {t("nav.repos")}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {repos.map((repo) => (
+                  <DropdownMenuItem key={repo.url} asChild>
+                    <a href={repo.url} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="size-4" />
+                      {repo.label}
+                    </a>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button variant="ghost" size="icon" className="sm:hidden" asChild>
+              <a href={repos[0].url} target="_blank" rel="noopener noreferrer">
                 <GitHubIcon className="size-4" />
-                {t("nav.github")}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {repos.map((repo) => (
-                <DropdownMenuItem key={repo.label} asChild>
-                  <a href={repo.href} target="_blank" rel="noopener noreferrer">
-                    <repo.icon className="size-4" />
-                    {repo.label}
-                  </a>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button variant="ghost" size="icon" className="sm:hidden" asChild>
-            <a
-              href="https://github.com/WallysonGalvao/wakemind-studio"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <GitHubIcon className="size-4" />
-              <span className="sr-only">{t("nav.github")}</span>
-            </a>
-          </Button>
-        </div>
+                <span className="sr-only">{t("nav.repos")}</span>
+              </a>
+            </Button>
+          </div>
+        )}
       </div>
     </header>
   );

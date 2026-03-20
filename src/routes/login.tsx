@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod/v4";
 
 import logo from "@/assets/images/fenrir.png";
+import studioLogo from "@/assets/images/three-wolves.webp";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -219,6 +220,21 @@ function LoginPage() {
             </>
           )}
         </p>
+
+        {/* Studio Signature */}
+        <div className="mt-12 flex flex-col items-center gap-2 opacity-40 transition-opacity hover:opacity-100">
+          <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-muted-foreground">
+            A tool by
+          </span>
+          <div className="flex items-center gap-2">
+            <div className="flex size-6 items-center justify-center rounded bg-white p-0.5 shadow-sm ring-1 ring-border/50">
+              <img src={studioLogo} alt="Three Wolves" className="size-full object-contain" />
+            </div>
+            <span className="text-xs font-bold tracking-tight text-foreground">
+              Three Wolves
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

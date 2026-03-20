@@ -1,8 +1,14 @@
+export interface ProjectRepository {
+  label: string;
+  url: string;
+}
+
 export interface Project {
   id: string;
   user_id: string;
   name: string;
   slug: string;
+  repositories: ProjectRepository[];
   created_at: string;
   updated_at: string;
 }

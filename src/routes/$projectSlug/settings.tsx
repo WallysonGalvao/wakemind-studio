@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Check, Eye, EyeOff, Loader2, UserCircle } from "lucide-react";
+import { Check, Eye, EyeOff, GitBranch, Loader2, Plus, Trash2 } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -16,13 +16,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { queryClient } from "@/configs/react-query";
-import { useAuth } from "@/hooks/use-auth";
 import { useProject } from "@/hooks/use-project";
 import {
   getIntegrationStatus,
   type IntegrationProvider,
   saveIntegration,
 } from "@/services/analytics/integrations";
+import { updateProjectRepositories } from "@/services/supabase/projects";
+import type { Project, ProjectRepository } from "@/types/project";
 
 export const Route = createFileRoute("/$projectSlug/settings")({
   component: SettingsPage,
@@ -211,7 +212,6 @@ function useCardConfigs() {
 
 function SettingsPage() {
   const { t } = useTranslation();
-  const { user } = useAuth();
   const project = useProject();
   const { analyticsCards, storeCards } = useCardConfigs();
 
@@ -226,17 +226,7 @@ function SettingsPage() {
       </div>
 
       <div className="flex flex-col gap-6">
-        <Card className="max-w-xl">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <UserCircle className="size-4" />
-              {t("pages.settings.account.title")}
-            </CardTitle>
-            <CardDescription>
-              {t("pages.settings.account.description", { email: user?.email })}
-            </CardDescription>
-          </CardHeader>
-        </Card>
+        <RepositoriesCard project={project} />
 
         <div className="grid gap-4 md:grid-cols-2">
           {analyticsCards.map((c) => (
@@ -262,6 +252,97 @@ function SettingsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// ── Repositories card ────────────────────────────────────────────────────────
+
+function RepositoriesCard({ project }: { project: Project }) {
+  const { t } = useTranslation();
+  const [repos, setRepos] = React.useState<ProjectRepository[]>(
+    project.repositories ?? [],
+  );
+
+  const saveMutation = useMutation({
+    mutationFn: () => {
+      const cleaned = repos.filter((r) => r.label.trim() && r.url.trim());
+      return updateProjectRepositories(project.id, cleaned);
+    },
+    onSuccess: () => {
+      toast.success(t("pages.settings.repositories.saved"));
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+    onError: () => {
+      toast.error(t("pages.settings.failedToSave"));
+    },
+  });
+
+  function addRepo() {
+    setRepos((prev) => [...prev, { label: "", url: "" }]);
+  }
+
+  function removeRepo(index: number) {
+    setRepos((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function updateRepo(index: number, field: keyof ProjectRepository, value: string) {
+    setRepos((prev) => prev.map((r, i) => (i === index ? { ...r, [field]: value } : r)));
+  }
+
+  return (
+    <Card className="max-w-xl">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <GitBranch className="size-4" />
+          {t("pages.settings.repositories.title")}
+        </CardTitle>
+        <CardDescription>{t("pages.settings.repositories.description")}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-3">
+          {repos.map((repo, index) => (
+            <div key={index} className="flex items-start gap-2">
+              <div className="flex flex-1 flex-col gap-2 sm:flex-row">
+                <Input
+                  placeholder={t("pages.settings.repositories.labelPlaceholder")}
+                  value={repo.label}
+                  onChange={(e) => updateRepo(index, "label", e.target.value)}
+                  className="sm:w-36"
+                />
+                <Input
+                  placeholder={t("pages.settings.repositories.urlPlaceholder")}
+                  value={repo.url}
+                  onChange={(e) => updateRepo(index, "url", e.target.value)}
+                  className="flex-1"
+                />
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => removeRepo(index)}
+                className="shrink-0"
+              >
+                <Trash2 className="size-4" />
+              </Button>
+            </div>
+          ))}
+          <div className="flex items-center justify-between">
+            <Button variant="outline" size="sm" onClick={addRepo}>
+              <Plus className="size-4" />
+              {t("pages.settings.repositories.add")}
+            </Button>
+            <Button
+              onClick={() => saveMutation.mutate()}
+              disabled={saveMutation.isPending}
+              size="sm"
+            >
+              {saveMutation.isPending && <Loader2 className="size-4 animate-spin" />}
+              {t("common.save")}
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 

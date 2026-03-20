@@ -40,27 +40,21 @@ const en = {
     projects: "Projects",
     getHelp: "Get Help",
     newProject: "New project…",
-    fenrir: "Fenrir by Three Wolves",
-    github: "GitHub",
-    mobile: "Mobile",
-    lp: "LP",
-    studio: "Studio",
+    fenrir: "Fenrir",
+    repos: "Repos",
     about: "About",
     package: "Package",
   },
 
   // ── User menu ────────────────────────────────────────────────────────────
   userMenu: {
-    account: "Account",
-    billing: "Billing",
-    notifications: "Notifications",
     logOut: "Log out",
     language: "Language",
   },
 
   // ── Auth ──────────────────────────────────────────────────────────────────
   auth: {
-    appName: "Fenrir by Three Wolves",
+    appName: "Fenrir",
     signIn: "Sign In",
     signUp: "Sign Up",
     signingIn: "Signing in…",
@@ -220,10 +214,14 @@ const en = {
     settings: {
       title: "Settings",
       subtitle: "Manage preferences for",
-      account: {
-        title: "Account",
+      repositories: {
+        title: "Repositories",
         description:
-          "Signed in as {{email}}. Asset generation is powered by OpenAI via Three Wolves.",
+          "Link the project's code repositories. These appear in the header for quick access.",
+        labelPlaceholder: "e.g. Mobile",
+        urlPlaceholder: "e.g. https://github.com/org/repo",
+        add: "Add repository",
+        saved: "Repositories saved",
       },
       appStores: {
         title: "App Stores",
@@ -362,47 +360,72 @@ const en = {
 
     // About
     about: {
-      title: "Wakemind Studio",
-      subtitle: "Asset creation and achievement management for the Wakemind ecosystem",
+      title: "Fenrir",
+      subtitle: "Multi-project Hub for Game Asset Creation & Analytics",
       description:
-        "Wakemind Studio is the creative companion to the Wakemind mobile app — a tool that lets developers and creators generate game-quality image assets and sound effects with AI, manage an achievement icon library, and configure the reward-system components that run inside the Wakemind experience.",
-      howToUse: "How to use",
-      generateImageCard: {
-        title: "Generate Image",
+        "Fenrir is a multi-project hub built by Three Wolves that lets game developers generate AI-powered image and sound assets, manage achievement icon libraries, and monitor product analytics — all from a single workspace. Each project has its own dashboard, generation tools, asset library, and analytics integrations.",
+      features: "Features",
+      dashboardCard: {
+        title: "Dashboard",
         description:
-          "Create game-ready icons and assets with a single prompt. Choose a style preset, set the dimensions, and download your PNG in seconds.",
-        cta: "Open Generator",
+          "Overview of your project with KPIs for total assets, images generated, sounds generated, and storage used. Includes an activity chart and searchable asset data table.",
+      },
+      generateImageCard: {
+        title: "Image Generation",
+        description:
+          "Create game-ready icons and assets with AI using OpenAI gpt-image-1 or dall-e-3. Configure style presets, dimensions, quality, and background transparency.",
       },
       generateSoundCard: {
-        title: "Generate Sound",
+        title: "Sound Generation",
         description:
-          "Produce ambient tracks, 8-bit SFX, and notification sounds to match your game's achievements and alarms.",
-        cta: "Open Generator",
+          "Generate voice and audio assets using OpenAI TTS. Choose from multiple voice presets, control speed, format, and tone with custom voice instructions.",
       },
       libraryCard: {
-        title: "Browse Library",
+        title: "Asset Library",
         description:
-          "Review the full catalogue of achievement icons included in the Basic Pack. Preview each tier and icon before exporting.",
-        cta: "Open Library",
+          "Browse and manage achievement icon packages. Preview tiers (Bronze, Silver, Gold, Platinum), export as JSON, and create custom packages.",
       },
-      providers: {
-        title: "Providers",
-        description: "External services powering the generation features",
+      analyticsCard: {
+        title: "Analytics",
+        description:
+          "Real-time product metrics powered by Mixpanel (DAU, top events, retention) and RevenueCat (MRR, subscriptions, churn). Plus App Store and Google Play ratings and reviews.",
+      },
+      settingsCard: {
+        title: "Integrations",
+        description:
+          "Connect external services per project — Mixpanel, RevenueCat, App Store Connect, and Google Play Console. API keys are stored securely via Supabase Vault.",
+      },
+      integrations: {
+        title: "Integrations",
+        description: "External services powering generation and analytics",
         openai: {
           name: "OpenAI",
           description:
-            "Image generation via `gpt-image-1` and `dall-e-3`. Requires a personal API key set in Settings.",
+            "Image generation via gpt-image-1 and dall-e-3. Sound generation via TTS API with multiple voice models.",
           docs: "Docs",
         },
-        sound: {
-          name: "Sound Provider",
+        mixpanel: {
+          name: "Mixpanel",
           description:
-            "Sound generation will support OpenAI TTS, ElevenLabs, or fal.ai. Provider selection will be available in Settings when the feature ships.",
+            "Engagement analytics — daily active users, top events, and retention cohort heatmaps.",
+          docs: "Docs",
+        },
+        revenuecat: {
+          name: "RevenueCat",
+          description:
+            "Revenue analytics — MRR, active subscriptions and churn rate tracking.",
+          docs: "Docs",
         },
       },
       stack: {
         title: "Stack",
         description: "Core technologies used in this project",
+      },
+      gettingStarted: {
+        title: "Getting Started",
+        description:
+          "Create a project from the hub to get your own dashboard, asset generators, library, and analytics.",
+        link: "Go to Projects",
       },
     },
   },
