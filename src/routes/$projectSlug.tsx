@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
+import { RouteErrorFallback } from "@/components/ui/route-error-fallback";
 import { ProjectProvider } from "@/hooks/use-project";
 import { getProjectBySlug } from "@/services/supabase/projects";
 
@@ -10,6 +11,7 @@ export const Route = createFileRoute("/$projectSlug")({
     return { project };
   },
   component: ProjectLayout,
+  errorComponent: RouteErrorFallback,
 });
 
 function ProjectLayout() {

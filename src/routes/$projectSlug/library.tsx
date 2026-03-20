@@ -1,7 +1,9 @@
+import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { Download, ExternalLink, Plus, Search, Trash2 } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 import { CreatePackageDialog } from "@/components/library/create-package-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +15,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Input } from "@/components/ui/input";
+import { RouteErrorFallback } from "@/components/ui/route-error-fallback";
 import {
   Select,
   SelectContent,
@@ -20,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { BUILT_IN_PACKAGES } from "@/constants/packages";
 import { useProject } from "@/hooks/use-project";
 import { exportPackage } from "@/lib/download";
@@ -38,7 +42,29 @@ export const Route = createFileRoute("/$projectSlug/library")({
     return { assets, customPackages };
   },
   component: LibraryPage,
+  errorComponent: RouteErrorFallback,
+  pendingComponent: LibrarySkeleton,
 });
+
+function LibrarySkeleton() {
+  return (
+    <div className="flex h-full flex-col gap-6 overflow-auto p-6">
+      <div>
+        <Skeleton className="h-9 w-40" />
+        <Skeleton className="mt-2 h-4 w-56" />
+      </div>
+      <div className="flex gap-3">
+        <Skeleton className="h-9 w-64" />
+        <Skeleton className="h-9 w-44" />
+      </div>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-56 rounded-xl" />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 type SortOption = "last-edited" | "name" | "assets";
 
@@ -93,10 +119,18 @@ function LibraryPage() {
     setCreateOpen(true);
   }
 
-  async function handleDeletePackage(id: string) {
-    await deletePackage(id);
-    await router.invalidate();
-  }
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deletePackage(id),
+    onSuccess: () => {
+      toast.success(t("toast.packageDeleted"));
+    },
+    onError: () => {
+      toast.error(t("toast.packageDeleteFailed"));
+    },
+    onSettled: () => {
+      router.invalidate();
+    },
+  });
 
   const allPackages = React.useMemo(
     () => [...BUILT_IN_PACKAGES, ...customPackages],
@@ -262,7 +296,7 @@ function LibraryPage() {
                 <ContextMenuSeparator />
                 <ContextMenuItem
                   variant="destructive"
-                  onClick={() => handleDeletePackage(pkg.id)}
+                  onClick={() => deleteMutation.mutate(pkg.id)}
                 >
                   <Trash2 className="size-4" />
                   {t("pages.library.contextMenu.deletePackage")}

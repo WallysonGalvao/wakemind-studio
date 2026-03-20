@@ -19,6 +19,7 @@ import { RevenueChart } from "@/components/analytics/revenue-chart";
 import { ReviewsFeed } from "@/components/analytics/reviews-feed";
 import { TopEventsTable } from "@/components/analytics/top-events-table";
 import { Button } from "@/components/ui/button";
+import { RouteErrorFallback } from "@/components/ui/route-error-fallback";
 import { Separator } from "@/components/ui/separator";
 import { useProject } from "@/hooks/use-project";
 import {
@@ -39,6 +40,7 @@ import { fetchOverview } from "@/services/analytics/revenuecat";
 
 export const Route = createFileRoute("/$projectSlug/analytics")({
   component: AnalyticsPage,
+  errorComponent: RouteErrorFallback,
 });
 
 // Analytics data changes slowly — cache for 10 min, keep in memory for 30 min

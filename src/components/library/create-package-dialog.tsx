@@ -1,8 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { z } from "zod/v4";
 
 import { Button } from "@/components/ui/button";
@@ -50,7 +52,7 @@ export function CreatePackageDialog({
     watch,
     setValue,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     setError,
   } = useForm<CreatePackageFields>({
     resolver: zodResolver(createPackageSchema),
@@ -68,32 +70,39 @@ export function CreatePackageDialog({
     [reset, onOpenChange],
   );
 
-  async function onSubmit({ name, description, color }: CreatePackageFields) {
-    try {
-      const pkg: AchievementPackage = {
-        id: crypto.randomUUID(),
-        name: name.trim(),
-        description: description?.trim() ?? "",
-        color,
-        isBuiltIn: false,
-        createdAt: Date.now(),
-        styleConfig: {},
-        items: ACHIEVEMENT_REGISTRY.map((a) => ({
-          id: a.id,
-          iconName: a.icon,
-          tier: a.tier,
-          category: a.category,
-        })),
-      };
-      await savePackage(pkg, projectId);
+  const saveMutation = useMutation({
+    mutationFn: (pkg: AchievementPackage) => savePackage(pkg, projectId),
+    onSuccess: () => {
+      toast.success(t("toast.packageCreated"));
       reset();
       onOpenChange(false);
       onCreated();
-    } catch (err) {
+    },
+    onError: (err) => {
+      toast.error(t("toast.packageCreateFailed"));
       setError("root", {
         message: err instanceof Error ? err.message : "Failed to create package.",
       });
-    }
+    },
+  });
+
+  async function onSubmit({ name, description, color }: CreatePackageFields) {
+    const pkg: AchievementPackage = {
+      id: crypto.randomUUID(),
+      name: name.trim(),
+      description: description?.trim() ?? "",
+      color,
+      isBuiltIn: false,
+      createdAt: Date.now(),
+      styleConfig: {},
+      items: ACHIEVEMENT_REGISTRY.map((a) => ({
+        id: a.id,
+        iconName: a.icon,
+        tier: a.tier,
+        category: a.category,
+      })),
+    };
+    saveMutation.mutate(pkg);
   }
 
   return (
@@ -164,9 +173,9 @@ export function CreatePackageDialog({
             <p className="text-sm text-destructive">{errors.root.message}</p>
           )}
 
-          <Button type="submit" disabled={isSubmitting} className="mt-2">
+          <Button type="submit" disabled={saveMutation.isPending} className="mt-2">
             <Plus className="size-4" />
-            {isSubmitting
+            {saveMutation.isPending
               ? t("components.createPackage.creating")
               : t("components.createPackage.createBtn")}
           </Button>

@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router"
 import { Folders, Plus, Settings, Trash2 } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RouteErrorFallback } from "@/components/ui/route-error-fallback";
+import { Skeleton } from "@/components/ui/skeleton";
 import { queryClient } from "@/configs/react-query";
 import {
   createProject,
@@ -36,7 +39,28 @@ export const Route = createFileRoute("/")({
     return { projects };
   },
   component: HubOverview,
+  errorComponent: RouteErrorFallback,
+  pendingComponent: ProjectsSkeleton,
 });
+
+function ProjectsSkeleton() {
+  return (
+    <div className="flex flex-col gap-6 p-4 md:p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="mt-2 h-4 w-56" />
+        </div>
+        <Skeleton className="h-9 w-32" />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Skeleton key={i} className="h-36 rounded-xl" />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function HubOverview() {
   const { t } = useTranslation();
@@ -48,18 +72,37 @@ function HubOverview() {
   const [newSlug, setNewSlug] = React.useState("");
 
   const createMutation = useMutation({
-    mutationFn: () =>
-      createProject(
-        newName.trim(),
-        newSlug
-          .trim()
-          .toLowerCase()
-          .replace(/[^a-z0-9-]/g, "-"),
-      ),
-    onSuccess: () => {
+    mutationFn: () => {
+      const name = newName.trim();
+      const slug = newSlug
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, "-");
+      return createProject(name, slug);
+    },
+    onMutate: async () => {
+      setCreateOpen(false);
+      const name = newName.trim();
+      const slug = newSlug
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, "-");
       setNewName("");
       setNewSlug("");
-      setCreateOpen(false);
+      return { name, slug };
+    },
+    onSuccess: () => {
+      toast.success(t("toast.projectCreated"));
+    },
+    onError: (_err, _vars, context) => {
+      if (context) {
+        setNewName(context.name);
+        setNewSlug(context.slug);
+        setCreateOpen(true);
+      }
+      toast.error(t("toast.projectCreateFailed"));
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
       router.invalidate();
     },
@@ -68,6 +111,12 @@ function HubOverview() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteProject(id),
     onSuccess: () => {
+      toast.success(t("toast.projectDeleted"));
+    },
+    onError: () => {
+      toast.error(t("toast.projectDeleteFailed"));
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
       router.invalidate();
     },

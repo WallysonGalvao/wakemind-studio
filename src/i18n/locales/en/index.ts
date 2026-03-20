@@ -545,6 +545,36 @@ const en = {
     },
   },
 
+  // ── Error Fallback ────────────────────────────────────────────────────────
+  errorFallback: {
+    title: "Something went wrong",
+    description: "An unexpected error occurred.",
+    retry: "Try again",
+    goHome: "Go to home",
+  },
+
+  // ── Loading ────────────────────────────────────────────────────────────────
+  loading: {
+    projects: "Loading projects…",
+    dashboard: "Loading dashboard…",
+    library: "Loading library…",
+    analytics: "Loading analytics…",
+  },
+
+  // ── Toast ──────────────────────────────────────────────────────────────────
+  toast: {
+    projectDeleted: "Project deleted",
+    projectCreated: "Project created",
+    projectDeleteFailed: "Failed to delete project",
+    projectCreateFailed: "Failed to create project",
+    assetDeleted: "Asset deleted",
+    assetDeleteFailed: "Failed to delete asset",
+    packageDeleted: "Package deleted",
+    packageDeleteFailed: "Failed to delete package",
+    packageCreated: "Package created",
+    packageCreateFailed: "Failed to create package",
+  },
+
   // ── Validation ────────────────────────────────────────────────────────────
   validation: {
     required: "Required",

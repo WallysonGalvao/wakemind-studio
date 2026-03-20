@@ -20,6 +20,7 @@ import { useProject } from "@/hooks/use-project";
 import {
   getIntegrationStatus,
   type IntegrationProvider,
+  type IntegrationStatusMap,
   saveIntegration,
 } from "@/services/analytics/integrations";
 import { updateProjectRepositories } from "@/services/supabase/projects";
@@ -409,6 +410,26 @@ function IntegrationCard({
       }
       return saveIntegration(projectId, config.provider, token, meta);
     },
+    onMutate: async () => {
+      await queryClient.cancelQueries({
+        queryKey: ["integrations", projectId],
+      });
+      const previous = queryClient.getQueryData<IntegrationStatusMap>([
+        "integrations",
+        projectId,
+      ]);
+      // Build metadata from current values
+      const meta: Record<string, string> = {};
+      for (const field of config.fields) {
+        if (field.metadataKey) meta[field.metadataKey] = values[field.key]?.trim() ?? "";
+      }
+      queryClient.setQueryData<IntegrationStatusMap>(
+        ["integrations", projectId],
+        (old) =>
+          old ? { ...old, [config.provider]: { connected: true, metadata: meta } } : old,
+      );
+      return { previous };
+    },
     onSuccess: () => {
       // Clear secret fields only
       setValues((prev) => {
@@ -419,10 +440,15 @@ function IntegrationCard({
         return next;
       });
       toast.success(`${config.title} connected successfully`);
-      queryClient.invalidateQueries({ queryKey: ["integrations", projectId] });
     },
-    onError: (err) => {
+    onError: (err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["integrations", projectId], context.previous);
+      }
       toast.error(err instanceof Error ? err.message : "Failed to save integration");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["integrations", projectId] });
     },
   });
 

@@ -548,6 +548,36 @@ const pt = {
     },
   },
 
+  // ── Error Fallback ────────────────────────────────────────────────────────
+  errorFallback: {
+    title: "Algo deu errado",
+    description: "Ocorreu um erro inesperado.",
+    retry: "Tentar novamente",
+    goHome: "Voltar ao início",
+  },
+
+  // ── Loading ────────────────────────────────────────────────────────────────
+  loading: {
+    projects: "Carregando projetos…",
+    dashboard: "Carregando dashboard…",
+    library: "Carregando biblioteca…",
+    analytics: "Carregando analytics…",
+  },
+
+  // ── Toast ──────────────────────────────────────────────────────────────────
+  toast: {
+    projectDeleted: "Projeto excluído",
+    projectCreated: "Projeto criado",
+    projectDeleteFailed: "Falha ao excluir projeto",
+    projectCreateFailed: "Falha ao criar projeto",
+    assetDeleted: "Asset excluído",
+    assetDeleteFailed: "Falha ao excluir asset",
+    packageDeleted: "Pacote excluído",
+    packageDeleteFailed: "Falha ao excluir pacote",
+    packageCreated: "Pacote criado",
+    packageCreateFailed: "Falha ao criar pacote",
+  },
+
   // ── Validation ────────────────────────────────────────────────────────────
   validation: {
     required: "Campo obrigatório",
