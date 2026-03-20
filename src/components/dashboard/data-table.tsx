@@ -399,9 +399,7 @@ export function DataTable({
               </Label>
               <Select
                 value={`${table.getState().pagination.pageSize}`}
-                onValueChange={(value) => {
-                  table.setPageSize(Number(value));
-                }}
+                onValueChange={handlePageSizeChange}
               >
                 <SelectTrigger className="h-8 w-20" id="rows-per-page">
                   <SelectValue placeholder={table.getState().pagination.pageSize} />
@@ -422,7 +420,7 @@ export function DataTable({
               <Button
                 variant="outline"
                 className="hidden h-8 w-8 p-0 lg:flex"
-                onClick={() => table.setPageIndex(0)}
+                onClick={handleFirstPage}
                 disabled={!table.getCanPreviousPage()}
               >
                 <span className="sr-only">Go to first page</span>
@@ -432,7 +430,7 @@ export function DataTable({
                 variant="outline"
                 className="size-8"
                 size="icon"
-                onClick={() => table.previousPage()}
+                onClick={handlePreviousPage}
                 disabled={!table.getCanPreviousPage()}
               >
                 <span className="sr-only">Go to previous page</span>
@@ -442,7 +440,7 @@ export function DataTable({
                 variant="outline"
                 className="size-8"
                 size="icon"
-                onClick={() => table.nextPage()}
+                onClick={handleNextPage}
                 disabled={!table.getCanNextPage()}
               >
                 <span className="sr-only">Go to next page</span>
@@ -452,7 +450,7 @@ export function DataTable({
                 variant="outline"
                 className="hidden size-8 lg:flex"
                 size="icon"
-                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                onClick={handleLastPage}
                 disabled={!table.getCanNextPage()}
               >
                 <span className="sr-only">Go to last page</span>

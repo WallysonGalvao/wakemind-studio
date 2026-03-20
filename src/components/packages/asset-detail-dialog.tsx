@@ -31,6 +31,17 @@ export function AssetDetailDialog({
 }: AssetDetailDialogProps) {
   const [deleting, setDeleting] = React.useState(false);
 
+  const handleOpenChange = React.useCallback(
+    (v: boolean) => {
+      if (!v) onClose();
+    },
+    [onClose],
+  );
+
+  function handleDownload() {
+    if (asset) downloadAsset(asset);
+  }
+
   async function handleDelete() {
     if (!asset) return;
     setDeleting(true);
@@ -40,12 +51,7 @@ export function AssetDetailDialog({
   }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        if (!v) onClose();
-      }}
-    >
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="flex max-h-[90vh] max-w-lg flex-col gap-0 overflow-y-auto p-0">
         {asset && (
           <>
@@ -96,7 +102,7 @@ export function AssetDetailDialog({
               )}
 
               <div className="flex gap-2">
-                <Button className="flex-1" onClick={() => asset && downloadAsset(asset)}>
+                <Button className="flex-1" onClick={handleDownload}>
                   <Download className="size-4" />
                   Download
                 </Button>

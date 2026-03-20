@@ -105,6 +105,18 @@ function IntegrationCard({
     },
   });
 
+  function handleTokenChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setToken(e.target.value);
+  }
+
+  function handleToggleToken() {
+    setShowToken(!showToken);
+  }
+
+  function handleSave() {
+    saveMutation.mutate();
+  }
+
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -127,19 +139,19 @@ function IntegrationCard({
                 type={showToken ? "text" : "password"}
                 placeholder={connected ? "••••••••••••" : placeholder}
                 value={token}
-                onChange={(e) => setToken(e.target.value)}
+                onChange={handleTokenChange}
                 className="pr-10"
               />
               <button
                 type="button"
-                onClick={() => setShowToken(!showToken)}
+                onClick={handleToggleToken}
                 className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 {showToken ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>
             </div>
             <Button
-              onClick={() => saveMutation.mutate()}
+              onClick={handleSave}
               disabled={saveMutation.isPending || !token.trim()}
             >
               {saveMutation.isPending && <Loader2 className="size-4 animate-spin" />}

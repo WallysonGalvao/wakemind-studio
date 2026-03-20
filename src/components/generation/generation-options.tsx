@@ -1,3 +1,5 @@
+import * as React from "react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
@@ -21,6 +23,31 @@ export function GenerationOptionsCard({
   options,
   onOptionChange,
 }: GenerationOptionsCardProps) {
+  const handleModelChange = React.useCallback(
+    (v: string) => onOptionChange("model", v),
+    [onOptionChange],
+  );
+
+  const handleSizeChange = React.useCallback(
+    (v: string) => onOptionChange("size", v),
+    [onOptionChange],
+  );
+
+  const handleQualityChange = React.useCallback(
+    (v: string) => onOptionChange("quality", v as "standard" | "hd"),
+    [onOptionChange],
+  );
+
+  const handleFormatChange = React.useCallback(
+    (v: string) => onOptionChange("format", v),
+    [onOptionChange],
+  );
+
+  const handleBackgroundChange = React.useCallback(
+    (v: string) => onOptionChange("background", v),
+    [onOptionChange],
+  );
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -29,7 +56,7 @@ export function GenerationOptionsCard({
       <CardContent className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-1">
           <Label className="text-xs">Model</Label>
-          <Select value={options.model} onValueChange={(v) => onOptionChange("model", v)}>
+          <Select value={options.model} onValueChange={handleModelChange}>
             <SelectTrigger className="h-8 text-xs">
               <SelectValue />
             </SelectTrigger>
@@ -43,7 +70,7 @@ export function GenerationOptionsCard({
 
         <div className="flex flex-col gap-1">
           <Label className="text-xs">Size</Label>
-          <Select value={options.size} onValueChange={(v) => onOptionChange("size", v)}>
+          <Select value={options.size} onValueChange={handleSizeChange}>
             <SelectTrigger className="h-8 text-xs">
               <SelectValue />
             </SelectTrigger>
@@ -59,10 +86,7 @@ export function GenerationOptionsCard({
 
         <div className="flex flex-col gap-1">
           <Label className="text-xs">Quality</Label>
-          <Select
-            value={options.quality}
-            onValueChange={(v) => onOptionChange("quality", v as "standard" | "hd")}
-          >
+          <Select value={options.quality} onValueChange={handleQualityChange}>
             <SelectTrigger className="h-8 text-xs">
               <SelectValue />
             </SelectTrigger>
@@ -75,10 +99,7 @@ export function GenerationOptionsCard({
 
         <div className="flex flex-col gap-1">
           <Label className="text-xs">Format</Label>
-          <Select
-            value={options.format}
-            onValueChange={(v) => onOptionChange("format", v)}
-          >
+          <Select value={options.format} onValueChange={handleFormatChange}>
             <SelectTrigger className="h-8 text-xs">
               <SelectValue />
             </SelectTrigger>
@@ -92,10 +113,7 @@ export function GenerationOptionsCard({
 
         <div className="col-span-2 flex flex-col gap-1">
           <Label className="text-xs">Background</Label>
-          <Select
-            value={options.background}
-            onValueChange={(v) => onOptionChange("background", v)}
-          >
+          <Select value={options.background} onValueChange={handleBackgroundChange}>
             <SelectTrigger className="h-8 text-xs">
               <SelectValue />
             </SelectTrigger>

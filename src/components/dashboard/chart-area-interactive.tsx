@@ -26,6 +26,13 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { DailyActivity } from "@/types/asset";
 
+function formatDateShort(value: string) {
+  return new Date(value).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
+
 const chartConfig = {
   images: {
     label: "Images",
@@ -115,26 +122,12 @@ export function ChartAreaInteractive({ data }: ChartAreaInteractiveProps) {
               axisLine={false}
               tickMargin={8}
               minTickGap={32}
-              tickFormatter={(value: string) => {
-                const date = new Date(value);
-                return date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                });
-              }}
+              tickFormatter={formatDateShort}
             />
             <ChartTooltip
               cursor={false}
               content={
-                <ChartTooltipContent
-                  labelFormatter={(value: string) => {
-                    return new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    });
-                  }}
-                  indicator="dot"
-                />
+                <ChartTooltipContent labelFormatter={formatDateShort} indicator="dot" />
               }
             />
             <Area

@@ -41,6 +41,14 @@ function GenerateImagePage() {
 
   const gen = useGeneration({ projectId: project.id });
 
+  function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setName(e.target.value);
+  }
+
+  function handleDescriptionChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    gen.setDescription(e.target.value);
+  }
+
   function handlePackageChange(id: string) {
     setPackageId(id);
     const pkg = PACKAGES.find((p) => p.id === id);
@@ -100,7 +108,7 @@ function GenerateImagePage() {
                   id="name"
                   placeholder="e.g. Wheat, Iron Sword, Fire Crystal"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={handleNameChange}
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -116,7 +124,7 @@ function GenerateImagePage() {
                   className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="e.g. A golden ear of wheat, ripe and glowing, with a few leaves at the base"
                   value={gen.description}
-                  onChange={(e) => gen.setDescription(e.target.value)}
+                  onChange={handleDescriptionChange}
                 />
               </div>
             </CardContent>

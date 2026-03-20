@@ -72,6 +72,18 @@ function LibraryPage() {
   const [sort, setSort] = React.useState<SortOption>("last-edited");
   const [createOpen, setCreateOpen] = React.useState(false);
 
+  function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setSearch(e.target.value);
+  }
+
+  function handleSortChange(v: string) {
+    setSort(v as SortOption);
+  }
+
+  function handleOpenCreate() {
+    setCreateOpen(true);
+  }
+
   async function handleDeletePackage(id: string) {
     await deletePackage(id);
     await router.invalidate();
@@ -128,11 +140,11 @@ function LibraryPage() {
           <Input
             placeholder="Search packages…"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
             className="pl-9"
           />
         </div>
-        <Select value={sort} onValueChange={(v) => setSort(v as SortOption)}>
+        <Select value={sort} onValueChange={handleSortChange}>
           <SelectTrigger className="w-44">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
@@ -151,7 +163,7 @@ function LibraryPage() {
           type="button"
           className="group flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border bg-card/50 p-6 transition-colors hover:border-primary/40 hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           style={{ minHeight: 220 }}
-          onClick={() => setCreateOpen(true)}
+          onClick={handleOpenCreate}
         >
           <div className="flex size-12 items-center justify-center rounded-full border-2 border-dashed border-muted-foreground/30 transition-colors group-hover:border-primary/50">
             <Plus className="size-6 text-muted-foreground transition-colors group-hover:text-primary" />

@@ -77,6 +77,37 @@ function HubOverview() {
     createMutation.mutate();
   }
 
+  function handleOpenCreate() {
+    setCreateOpen(true);
+  }
+
+  function handleNavigateProject(slug: string) {
+    navigate({
+      to: "/$projectSlug/dashboard",
+      params: { projectSlug: slug },
+    });
+  }
+
+  function handleDeleteProject(e: React.MouseEvent, id: string) {
+    e.preventDefault();
+    e.stopPropagation();
+    deleteMutation.mutate(id);
+  }
+
+  function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setNewName(e.target.value);
+    setNewSlug(
+      e.target.value
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-"),
+    );
+  }
+
+  function handleSlugChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setNewSlug(e.target.value);
+  }
+
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6">
       <div className="flex items-center justify-between">
@@ -86,7 +117,7 @@ function HubOverview() {
             Manage your apps and projects.
           </p>
         </div>
-        <Button onClick={() => setCreateOpen(true)}>
+        <Button onClick={handleOpenCreate}>
           <Plus className="size-4" />
           New Project
         </Button>
@@ -99,7 +130,7 @@ function HubOverview() {
           <p className="mt-1 text-sm text-muted-foreground">
             Create your first project to get started.
           </p>
-          <Button className="mt-6" onClick={() => setCreateOpen(true)}>
+          <Button className="mt-6" onClick={handleOpenCreate}>
             <Plus className="size-4" />
             Create Project
           </Button>
@@ -110,12 +141,7 @@ function HubOverview() {
             <Card
               key={project.id}
               className="cursor-pointer transition-shadow hover:shadow-md"
-              onClick={() =>
-                navigate({
-                  to: "/$projectSlug/dashboard",
-                  params: { projectSlug: project.slug },
-                })
-              }
+              onClick={() => handleNavigateProject(project.slug)}
             >
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
@@ -153,11 +179,7 @@ function HubOverview() {
                   variant="ghost"
                   size="sm"
                   className="h-7 px-2 text-xs text-destructive hover:text-destructive"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    deleteMutation.mutate(project.id);
-                  }}
+                  onClick={(e) => handleDeleteProject(e, project.id)}
                 >
                   <Trash2 className="size-3" />
                   Delete
@@ -183,15 +205,7 @@ function HubOverview() {
                 id="proj-name"
                 placeholder="e.g. WakeMind, My App"
                 value={newName}
-                onChange={(e) => {
-                  setNewName(e.target.value);
-                  setNewSlug(
-                    e.target.value
-                      .toLowerCase()
-                      .replace(/[^a-z0-9\s-]/g, "")
-                      .replace(/\s+/g, "-"),
-                  );
-                }}
+                onChange={handleNameChange}
               />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -200,7 +214,7 @@ function HubOverview() {
                 id="proj-slug"
                 placeholder="e.g. wakemind"
                 value={newSlug}
-                onChange={(e) => setNewSlug(e.target.value)}
+                onChange={handleSlugChange}
               />
               <p className="text-xs text-muted-foreground">
                 Used in the URL: /{newSlug || "my-project"}/dashboard

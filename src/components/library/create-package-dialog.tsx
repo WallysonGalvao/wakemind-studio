@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
+import * as React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod/v4";
 
@@ -55,6 +56,14 @@ export function CreatePackageDialog({
 
   const selectedColor = watch("color");
 
+  const handleOpenChange = React.useCallback(
+    (v: boolean) => {
+      if (!v) reset();
+      onOpenChange(v);
+    },
+    [reset, onOpenChange],
+  );
+
   async function onSubmit({ name, description, color }: CreatePackageFields) {
     try {
       const pkg: AchievementPackage = {
@@ -84,13 +93,7 @@ export function CreatePackageDialog({
   }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        if (!v) reset();
-        onOpenChange(v);
-      }}
-    >
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Create New Package</DialogTitle>

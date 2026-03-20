@@ -38,85 +38,131 @@ export function AchievementGrid({
   return (
     <div className="h-full overflow-auto p-4">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-        {items.map((item) => {
-          const isSelected = selectedId === item.id;
-          const hasAsset = assetsByAchievement.has(item.id);
-          const existingAsset = hasAsset ? findAsset(item.id) : undefined;
-          return (
-            <ContextMenu key={item.id}>
-              <ContextMenuTrigger asChild>
-                <button
-                  type="button"
-                  className={cn(
-                    "group relative rounded-xl border bg-card text-left shadow-xs transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                    isSelected && "border-primary shadow-md ring-2 ring-primary",
-                  )}
-                  onClick={() => onSelect(item)}
-                >
-                  {hasAsset && (
-                    <div className="absolute top-1.5 right-1.5 flex size-5 items-center justify-center rounded-full bg-green-500 text-white">
-                      <Check className="size-3" />
-                    </div>
-                  )}
-                  <div className="flex flex-col items-center justify-center gap-2 p-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted/50 transition-colors group-hover:bg-primary/5">
-                      {pkg.renderIcon?.(item.iconName, {
-                        size: 24,
-                        className:
-                          "text-foreground group-hover:text-primary transition-colors",
-                      })}
-                    </div>
-                    <div className="space-y-1 text-center">
-                      <p
-                        className="w-full truncate text-[11px] leading-tight font-medium"
-                        title={item.id}
-                      >
-                        {item.id}
-                      </p>
-                      <Badge
-                        variant="secondary"
-                        className={cn(
-                          "h-4 px-1 text-[9px] tracking-wider uppercase",
-                          TIER_COLORS[item.tier as AchievementTier],
-                        )}
-                      >
-                        {item.tier}
-                      </Badge>
-                    </div>
-                  </div>
-                </button>
-              </ContextMenuTrigger>
-              <ContextMenuContent>
-                <ContextMenuItem onClick={() => onSelect(item)}>
-                  <Wand2 className="size-4" />
-                  Select for generation
-                </ContextMenuItem>
-                <ContextMenuItem onClick={() => navigator.clipboard.writeText(item.id)}>
-                  <ClipboardCopy className="size-4" />
-                  Copy ID
-                </ContextMenuItem>
-                {existingAsset && (
-                  <>
-                    <ContextMenuSeparator />
-                    <ContextMenuItem onClick={() => onViewAsset(existingAsset)}>
-                      <Eye className="size-4" />
-                      View asset
-                    </ContextMenuItem>
-                    <ContextMenuItem onClick={() => onDownloadAsset(existingAsset)}>
-                      <Download className="size-4" />
-                      Download asset
-                    </ContextMenuItem>
-                    <ContextMenuItem onClick={() => onSelect(item)}>
-                      <RefreshCw className="size-4" />
-                      Regenerate
-                    </ContextMenuItem>
-                  </>
-                )}
-              </ContextMenuContent>
-            </ContextMenu>
-          );
-        })}
+        {items.map((item) => (
+          <AchievementItem
+            key={item.id}
+            item={item}
+            pkg={pkg}
+            isSelected={selectedId === item.id}
+            hasAsset={assetsByAchievement.has(item.id)}
+            existingAsset={
+              assetsByAchievement.has(item.id) ? findAsset(item.id) : undefined
+            }
+            onSelect={onSelect}
+            onViewAsset={onViewAsset}
+            onDownloadAsset={onDownloadAsset}
+          />
+        ))}
       </div>
     </div>
+  );
+}
+
+function AchievementItem({
+  item,
+  pkg,
+  isSelected,
+  hasAsset,
+  existingAsset,
+  onSelect,
+  onViewAsset,
+  onDownloadAsset,
+}: {
+  item: AchievementPackageItem;
+  pkg: AchievementPackage;
+  isSelected: boolean;
+  hasAsset: boolean;
+  existingAsset: GeneratedAsset | undefined;
+  onSelect: (item: AchievementPackageItem) => void;
+  onViewAsset: (asset: GeneratedAsset) => void;
+  onDownloadAsset: (asset: GeneratedAsset) => void | Promise<void>;
+}) {
+  function handleSelect() {
+    onSelect(item);
+  }
+
+  function handleCopyId() {
+    navigator.clipboard.writeText(item.id);
+  }
+
+  function handleViewAsset() {
+    if (existingAsset) onViewAsset(existingAsset);
+  }
+
+  function handleDownloadAsset() {
+    if (existingAsset) onDownloadAsset(existingAsset);
+  }
+
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <button
+          type="button"
+          className={cn(
+            "group relative rounded-xl border bg-card text-left shadow-xs transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+            isSelected && "border-primary shadow-md ring-2 ring-primary",
+          )}
+          onClick={handleSelect}
+        >
+          {hasAsset && (
+            <div className="absolute top-1.5 right-1.5 flex size-5 items-center justify-center rounded-full bg-green-500 text-white">
+              <Check className="size-3" />
+            </div>
+          )}
+          <div className="flex flex-col items-center justify-center gap-2 p-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted/50 transition-colors group-hover:bg-primary/5">
+              {pkg.renderIcon?.(item.iconName, {
+                size: 24,
+                className: "text-foreground group-hover:text-primary transition-colors",
+              })}
+            </div>
+            <div className="space-y-1 text-center">
+              <p
+                className="w-full truncate text-[11px] leading-tight font-medium"
+                title={item.id}
+              >
+                {item.id}
+              </p>
+              <Badge
+                variant="secondary"
+                className={cn(
+                  "h-4 px-1 text-[9px] tracking-wider uppercase",
+                  TIER_COLORS[item.tier as AchievementTier],
+                )}
+              >
+                {item.tier}
+              </Badge>
+            </div>
+          </div>
+        </button>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem onClick={handleSelect}>
+          <Wand2 className="size-4" />
+          Select for generation
+        </ContextMenuItem>
+        <ContextMenuItem onClick={handleCopyId}>
+          <ClipboardCopy className="size-4" />
+          Copy ID
+        </ContextMenuItem>
+        {existingAsset && (
+          <>
+            <ContextMenuSeparator />
+            <ContextMenuItem onClick={handleViewAsset}>
+              <Eye className="size-4" />
+              View asset
+            </ContextMenuItem>
+            <ContextMenuItem onClick={handleDownloadAsset}>
+              <Download className="size-4" />
+              Download asset
+            </ContextMenuItem>
+            <ContextMenuItem onClick={handleSelect}>
+              <RefreshCw className="size-4" />
+              Regenerate
+            </ContextMenuItem>
+          </>
+        )}
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }

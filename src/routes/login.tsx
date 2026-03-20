@@ -63,6 +63,16 @@ function LoginPage() {
     }
   }
 
+  function handleSwitchToSignup() {
+    setMode("signup");
+    setServerError("");
+  }
+
+  function handleSwitchToSignin() {
+    setMode("signin");
+    setServerError("");
+  }
+
   async function handleGoogleLogin() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -183,10 +193,7 @@ function LoginPage() {
               <button
                 type="button"
                 className="font-medium text-foreground underline underline-offset-2 hover:text-primary"
-                onClick={() => {
-                  setMode("signup");
-                  setServerError("");
-                }}
+                onClick={handleSwitchToSignup}
               >
                 Sign up
               </button>
@@ -197,10 +204,7 @@ function LoginPage() {
               <button
                 type="button"
                 className="font-medium text-foreground underline underline-offset-2 hover:text-primary"
-                onClick={() => {
-                  setMode("signin");
-                  setServerError("");
-                }}
+                onClick={handleSwitchToSignin}
               >
                 Sign in
               </button>

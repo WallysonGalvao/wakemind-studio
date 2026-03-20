@@ -31,48 +31,80 @@ export function AssetGrid({ assets, onSelect, onDelete, onDownload }: AssetGridP
     <div className="h-full overflow-auto p-4">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {assets.map((asset) => (
-          <ContextMenu key={asset.id}>
-            <ContextMenuTrigger asChild>
-              <button
-                type="button"
-                className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                onClick={() => onSelect(asset)}
-              >
-                <div className="flex aspect-square w-full items-center justify-center bg-muted/50">
-                  <img
-                    src={asset.imageUrl ?? ""}
-                    alt={asset.name}
-                    className="max-h-full max-w-full object-contain p-2"
-                  />
-                </div>
-                <div className="flex flex-col gap-0.5 p-2 text-left">
-                  <p className="truncate text-xs leading-tight font-medium">
-                    {asset.name}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground">
-                    {formatDate(asset.createdAt)}
-                  </p>
-                </div>
-              </button>
-            </ContextMenuTrigger>
-            <ContextMenuContent>
-              <ContextMenuItem onClick={() => onSelect(asset)}>
-                <Eye className="size-4" />
-                View details
-              </ContextMenuItem>
-              <ContextMenuItem onClick={() => onDownload(asset)}>
-                <Download className="size-4" />
-                Download
-              </ContextMenuItem>
-              <ContextMenuSeparator />
-              <ContextMenuItem variant="destructive" onClick={() => onDelete(asset.id)}>
-                <Trash2 className="size-4" />
-                Delete
-              </ContextMenuItem>
-            </ContextMenuContent>
-          </ContextMenu>
+          <AssetItem
+            key={asset.id}
+            asset={asset}
+            onSelect={onSelect}
+            onDelete={onDelete}
+            onDownload={onDownload}
+          />
         ))}
       </div>
     </div>
+  );
+}
+
+function AssetItem({
+  asset,
+  onSelect,
+  onDelete,
+  onDownload,
+}: {
+  asset: GeneratedAsset;
+  onSelect: (asset: GeneratedAsset) => void;
+  onDelete: (id: string) => void;
+  onDownload: (asset: GeneratedAsset) => void | Promise<void>;
+}) {
+  function handleSelect() {
+    onSelect(asset);
+  }
+
+  function handleDownload() {
+    onDownload(asset);
+  }
+
+  function handleDelete() {
+    onDelete(asset.id);
+  }
+
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <button
+          type="button"
+          className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          onClick={handleSelect}
+        >
+          <div className="flex aspect-square w-full items-center justify-center bg-muted/50">
+            <img
+              src={asset.imageUrl ?? ""}
+              alt={asset.name}
+              className="max-h-full max-w-full object-contain p-2"
+            />
+          </div>
+          <div className="flex flex-col gap-0.5 p-2 text-left">
+            <p className="truncate text-xs leading-tight font-medium">{asset.name}</p>
+            <p className="text-[10px] text-muted-foreground">
+              {formatDate(asset.createdAt)}
+            </p>
+          </div>
+        </button>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem onClick={handleSelect}>
+          <Eye className="size-4" />
+          View details
+        </ContextMenuItem>
+        <ContextMenuItem onClick={handleDownload}>
+          <Download className="size-4" />
+          Download
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem variant="destructive" onClick={handleDelete}>
+          <Trash2 className="size-4" />
+          Delete
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }
