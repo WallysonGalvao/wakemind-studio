@@ -13,9 +13,13 @@ import {
 
 interface UseGenerationProps {
   initialStyleConfig?: Record<string, unknown>;
+  projectId?: string;
 }
 
-export function useGeneration({ initialStyleConfig }: UseGenerationProps = {}) {
+export function useGeneration({
+  initialStyleConfig,
+  projectId,
+}: UseGenerationProps = {}) {
   const [options, setOptions] = React.useState<GenerationOptions>(
     DEFAULT_GENERATION_OPTIONS,
   );
@@ -100,7 +104,7 @@ export function useGeneration({ initialStyleConfig }: UseGenerationProps = {}) {
         mimeType,
         createdAt: Date.now(),
       };
-      await saveAsset(asset);
+      await saveAsset(asset, projectId ?? "");
       return asset;
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unknown error");

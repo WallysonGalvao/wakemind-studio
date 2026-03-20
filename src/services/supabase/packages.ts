@@ -2,7 +2,10 @@ import { supabase } from "@/lib/supabase";
 import type { AchievementPackage } from "@/types/achievements";
 import type { Json } from "@/types/supabase";
 
-export async function savePackage(pkg: AchievementPackage): Promise<void> {
+export async function savePackage(
+  pkg: AchievementPackage,
+  projectId: string,
+): Promise<void> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -17,14 +20,18 @@ export async function savePackage(pkg: AchievementPackage): Promise<void> {
     style_config: pkg.styleConfig as unknown as Json,
     created_at: pkg.createdAt,
     user_id: user.id,
+    project_id: projectId,
   });
   if (error) throw error;
 }
 
-export async function getAllCustomPackages(): Promise<AchievementPackage[]> {
+export async function getAllCustomPackages(
+  projectId: string,
+): Promise<AchievementPackage[]> {
   const { data, error } = await supabase
     .from("packages")
     .select("*")
+    .eq("project_id", projectId)
     .order("created_at", { ascending: false });
   if (error) throw error;
 

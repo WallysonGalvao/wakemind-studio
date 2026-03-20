@@ -80,7 +80,7 @@ function LoginPage() {
             <Zap className="size-6" fill="currentColor" />
           </div>
           <div className="text-center">
-            <h1 className="text-xl font-semibold">WakeMind Studio</h1>
+            <h1 className="text-xl font-semibold">Fenrir</h1>
             <p className="mt-1 text-sm text-muted-foreground">
               {mode === "signin" ? "Sign in to your account" : "Create your account"}
             </p>

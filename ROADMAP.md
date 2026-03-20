@@ -41,57 +41,6 @@ Implementar a geração de áudio seguindo o mesmo padrão arquitetural do `gene
 
 ---
 
-## Fase 2 — Configuração & Exportação de Conquistas
-
-> **Objetivo:** aprofundar as ferramentas de visualização e exportação de pacotes — o Studio é responsável pela _criação_ e configuração; o tracking e unlock acontecem no app mobile.  
-> **Horizonte estimado:** médio prazo
-
-### 2.1 Export de Pacote
-
-- Exportar o pacote de conquistas em JSON padronizado
-- Útil para importar no app mobile ou compartilhar configurações entre projetos
-- Botão "Export Package" na aba de conquistas da biblioteca
-
----
-
-## Fase 3 — Autenticação & Backend
-
-> **Objetivo:** sair do modo localStorage-only; ter usuários, dados persistidos e API key segura.  
-> **Horizonte estimado:** médio prazo
-
-### 3.1 Autenticação
-
-**Provider sugerido:** Supabase Auth (ou Clerk)
-
-- Login com email/senha e OAuth (Google)
-- Sessão persistida; `nav-user.tsx` já tem o slot de avatar/email pronto
-- Rota `/login` e proteção de rotas autenticadas
-
-### 3.2 Proxy de API Key
-
-Em vez de armazenar a OpenAI key no browser do usuário:
-
-- Backend Edge Function (Supabase ou Cloudflare Worker) que faz a chamada à OpenAI
-- O cliente envia apenas o prompt + opções; o servidor injeta a key
-- Remove a necessidade de cada usuário ter sua própria key
-- Habilita rate limiting e consumo de créditos por conta
-
-### 3.3 Perfis & Progresso Sincronizado
-
-- Progresso de conquistas salvo no banco, não no browser
-- Histórico de assets gerados por usuário
-- Configurações sincronizadas entre dispositivos
-
-### 3.4 Dashboard Real
-
-Com backend:
-
-- KPIs vindos de queries reais (assets gerados, conquistas desbloqueadas, créditos consumidos)
-- Gráfico mostrando atividade real do usuário (geração por dia, streaks)
-- Dados da tabela (`data.json`) substituídos por listagem de atividade real
-
----
-
 ## Fase 4 — Monetização & Escala
 
 > **Objetivo:** ativar o modelo de negócio que já está desenhado no código.  

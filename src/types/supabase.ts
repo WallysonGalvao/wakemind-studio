@@ -23,6 +23,7 @@ export type Database = {
           model: string;
           name: string;
           package_id: string | null;
+          project_id: string;
           prompt: string;
           settings: Json;
           storage_path: string;
@@ -37,6 +38,7 @@ export type Database = {
           model?: string;
           name: string;
           package_id?: string | null;
+          project_id: string;
           prompt?: string;
           settings?: Json;
           storage_path: string;
@@ -51,6 +53,7 @@ export type Database = {
           model?: string;
           name?: string;
           package_id?: string | null;
+          project_id?: string;
           prompt?: string;
           settings?: Json;
           storage_path?: string;
@@ -65,6 +68,13 @@ export type Database = {
             referencedRelation: "packages";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "assets_project_id_fkey";
+            columns: ["project_id"];
+            isOneToOne: false;
+            referencedRelation: "projects";
+            referencedColumns: ["id"];
+          },
         ];
       };
       packages: {
@@ -75,6 +85,7 @@ export type Database = {
           description: string;
           id: string;
           name: string;
+          project_id: string;
           style_config: Json;
           user_id: string;
         };
@@ -85,6 +96,7 @@ export type Database = {
           description?: string;
           id: string;
           name: string;
+          project_id: string;
           style_config?: Json;
           user_id: string;
         };
@@ -95,7 +107,75 @@ export type Database = {
           description?: string;
           id?: string;
           name?: string;
+          project_id?: string;
           style_config?: Json;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "packages_project_id_fkey";
+            columns: ["project_id"];
+            isOneToOne: false;
+            referencedRelation: "projects";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      project_integrations: {
+        Row: {
+          created_at: string;
+          id: string;
+          project_id: string;
+          provider: string;
+          vault_secret_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          project_id: string;
+          provider: string;
+          vault_secret_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          project_id?: string;
+          provider?: string;
+          vault_secret_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "project_integrations_project_id_fkey";
+            columns: ["project_id"];
+            isOneToOne: false;
+            referencedRelation: "projects";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      projects: {
+        Row: {
+          created_at: string;
+          id: string;
+          name: string;
+          slug: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          name: string;
+          slug: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          name?: string;
+          slug?: string;
+          updated_at?: string;
           user_id?: string;
         };
         Relationships: [];

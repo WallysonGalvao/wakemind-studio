@@ -54,7 +54,10 @@ export async function getDownloadUrl(
 
 // ── DB helpers ────────────────────────────────────────────────────────────────
 
-export async function saveAsset(asset: Omit<GeneratedAsset, "imageUrl">): Promise<void> {
+export async function saveAsset(
+  asset: Omit<GeneratedAsset, "imageUrl">,
+  projectId: string,
+): Promise<void> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -65,6 +68,7 @@ export async function saveAsset(asset: Omit<GeneratedAsset, "imageUrl">): Promis
     name: asset.name,
     type: asset.type,
     package_id: asset.packageId ?? null,
+    project_id: projectId,
     model: asset.model,
     prompt: asset.prompt,
     settings: asset.settings as Json,
@@ -77,10 +81,11 @@ export async function saveAsset(asset: Omit<GeneratedAsset, "imageUrl">): Promis
   if (error) throw error;
 }
 
-export async function getAllAssets(): Promise<GeneratedAsset[]> {
+export async function getAllAssets(projectId: string): Promise<GeneratedAsset[]> {
   const { data, error } = await supabase
     .from("assets")
     .select("*")
+    .eq("project_id", projectId)
     .order("created_at", { ascending: false });
   if (error) throw error;
 

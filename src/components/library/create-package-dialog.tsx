@@ -23,6 +23,7 @@ interface CreatePackageDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreated: () => void;
+  projectId: string;
 }
 
 const createPackageSchema = z.object({
@@ -37,6 +38,7 @@ export function CreatePackageDialog({
   open,
   onOpenChange,
   onCreated,
+  projectId,
 }: CreatePackageDialogProps) {
   const {
     register,
@@ -70,7 +72,7 @@ export function CreatePackageDialog({
           category: a.category,
         })),
       };
-      await savePackage(pkg);
+      await savePackage(pkg, projectId);
       reset();
       onOpenChange(false);
       onCreated();

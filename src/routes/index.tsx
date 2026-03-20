@@ -1,41 +1,213 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { Folders, Plus, Settings, Trash2 } from "lucide-react";
+import * as React from "react";
 
-import { ChartAreaInteractive } from "@/components/dashboard/chart-area-interactive";
-import { DataTable } from "@/components/dashboard/data-table";
-import { SectionCards } from "@/components/dashboard/section-cards";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
-  computeActivity,
-  computeStats,
-  deleteAsset,
-  getAllAssets,
-} from "@/services/supabase/assets";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  createProject,
+  deleteProject,
+  getAllProjects,
+} from "@/services/supabase/projects";
+import type { Project } from "@/types/project";
 
 export const Route = createFileRoute("/")({
   loader: async () => {
-    const assets = await getAllAssets();
-    const stats = computeStats(assets);
-    const activity90d = computeActivity(assets, 90);
-    return { assets, stats, activity90d };
+    const projects = await getAllProjects();
+    return { projects };
   },
-  component: Dashboard,
+  component: HubOverview,
 });
 
-function Dashboard() {
-  const { assets, stats, activity90d } = Route.useLoaderData();
+function HubOverview() {
+  const { projects } = Route.useLoaderData();
   const router = useRouter();
+  const navigate = useNavigate();
+  const [createOpen, setCreateOpen] = React.useState(false);
+  const [newName, setNewName] = React.useState("");
+  const [newSlug, setNewSlug] = React.useState("");
+  const [creating, setCreating] = React.useState(false);
+
+  async function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newName.trim() || !newSlug.trim()) return;
+    setCreating(true);
+    try {
+      await createProject(
+        newName.trim(),
+        newSlug
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9-]/g, "-"),
+      );
+      setNewName("");
+      setNewSlug("");
+      setCreateOpen(false);
+      await router.invalidate();
+    } finally {
+      setCreating(false);
+    }
+  }
 
   async function handleDelete(id: string) {
-    await deleteAsset(id);
+    await deleteProject(id);
     await router.invalidate();
   }
 
   return (
-    <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-      <SectionCards stats={stats} />
-      <div className="px-4 lg:px-6">
-        <ChartAreaInteractive data={activity90d} />
+    <div className="flex flex-col gap-6 p-4 md:p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Projects</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage your apps and projects.
+          </p>
+        </div>
+        <Button onClick={() => setCreateOpen(true)}>
+          <Plus className="size-4" />
+          New Project
+        </Button>
       </div>
-      <DataTable data={assets} onDelete={handleDelete} />
+
+      {projects.length === 0 ? (
+        <Card className="flex flex-col items-center justify-center py-16">
+          <Folders className="size-12 text-muted-foreground/40" />
+          <p className="mt-4 text-lg font-medium">No projects yet</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Create your first project to get started.
+          </p>
+          <Button className="mt-6" onClick={() => setCreateOpen(true)}>
+            <Plus className="size-4" />
+            Create Project
+          </Button>
+        </Card>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {projects.map((project: Project) => (
+            <Card
+              key={project.id}
+              className="cursor-pointer transition-shadow hover:shadow-md"
+              onClick={() =>
+                navigate({
+                  to: "/$projectSlug/dashboard",
+                  params: { projectSlug: project.slug },
+                })
+              }
+            >
+              <CardHeader className="pb-2">
+                <div className="flex items-start justify-between">
+                  <CardTitle className="text-base">{project.name}</CardTitle>
+                  <Badge variant="secondary" className="text-[10px]">
+                    {project.slug}
+                  </Badge>
+                </div>
+                <CardDescription>
+                  Created{" "}
+                  {new Date(project.created_at).toLocaleDateString(undefined, {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  asChild
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Link
+                    to="/$projectSlug/settings"
+                    params={{ projectSlug: project.slug }}
+                  >
+                    <Settings className="size-3" />
+                    Settings
+                  </Link>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs text-destructive hover:text-destructive"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleDelete(project.id);
+                  }}
+                >
+                  <Trash2 className="size-3" />
+                  Delete
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create New Project</DialogTitle>
+            <DialogDescription>
+              Projects let you organize assets and analytics for each of your apps.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleCreate} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="proj-name">Name *</Label>
+              <Input
+                id="proj-name"
+                placeholder="e.g. WakeMind, My App"
+                value={newName}
+                onChange={(e) => {
+                  setNewName(e.target.value);
+                  setNewSlug(
+                    e.target.value
+                      .toLowerCase()
+                      .replace(/[^a-z0-9\s-]/g, "")
+                      .replace(/\s+/g, "-"),
+                  );
+                }}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="proj-slug">Slug *</Label>
+              <Input
+                id="proj-slug"
+                placeholder="e.g. wakemind"
+                value={newSlug}
+                onChange={(e) => setNewSlug(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                Used in the URL: /{newSlug || "my-project"}/dashboard
+              </p>
+            </div>
+            <Button
+              type="submit"
+              disabled={creating || !newName.trim() || !newSlug.trim()}
+            >
+              {creating ? "Creating…" : "Create Project"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
