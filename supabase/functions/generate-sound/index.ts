@@ -3,6 +3,7 @@
 // Uses the same OPENAI_API_KEY secret as generate-image
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { checkRateLimit } from "../_shared/rate-limit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -40,6 +41,14 @@ Deno.serve(async (req: Request) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // ── Rate limit ──────────────────────────────────────────────────────
+    const rateLimitResponse = await checkRateLimit(
+      user.id,
+      "generate-sound",
+      corsHeaders,
+    );
+    if (rateLimitResponse) return rateLimitResponse;
 
     // ── Parse request ────────────────────────────────────────────────────
     const { input, options } = (await req.json()) as {

@@ -573,6 +573,8 @@ const en = {
     packageDeleteFailed: "Failed to delete package",
     packageCreated: "Package created",
     packageCreateFailed: "Failed to create package",
+    rateLimitMinute: "Too many requests. Please wait a moment before generating again.",
+    rateLimitDaily: "Daily generation limit reached. Try again tomorrow.",
   },
 
   // ── Validation ────────────────────────────────────────────────────────────

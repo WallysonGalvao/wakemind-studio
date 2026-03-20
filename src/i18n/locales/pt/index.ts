@@ -576,6 +576,8 @@ const pt = {
     packageDeleteFailed: "Falha ao excluir pacote",
     packageCreated: "Pacote criado",
     packageCreateFailed: "Falha ao criar pacote",
+    rateLimitMinute: "Muitas requisições. Aguarde um momento antes de gerar novamente.",
+    rateLimitDaily: "Limite diário de geração atingido. Tente novamente amanhã.",
   },
 
   // ── Validation ────────────────────────────────────────────────────────────

@@ -3,6 +3,7 @@
 // Set the secret: supabase secrets set OPENAI_API_KEY=sk-...
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { checkRateLimit } from "../_shared/rate-limit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -41,6 +42,14 @@ Deno.serve(async (req: Request) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // ── Rate limit ───────────────────────────────────────────────────────
+    const rateLimitResponse = await checkRateLimit(
+      user.id,
+      "generate-image",
+      corsHeaders,
+    );
+    if (rateLimitResponse) return rateLimitResponse;
 
     // ── Parse request ────────────────────────────────────────────────────────
     const { prompt, options } = (await req.json()) as {
