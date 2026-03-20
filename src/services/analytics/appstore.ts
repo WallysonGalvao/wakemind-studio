@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { invokeFunction } from "@/lib/supabase-helpers";
 
 export interface StoreRatings {
   average: number;
@@ -15,23 +15,20 @@ export interface StoreReview {
   createdDate: string;
 }
 
-export async function fetchAppStoreRatings(projectId: string): Promise<StoreRatings> {
-  const { data, error } = await supabase.functions.invoke("analytics-appstore", {
-    body: { projectId, endpoint: "ratings" },
+export function fetchAppStoreRatings(projectId: string): Promise<StoreRatings> {
+  return invokeFunction("analytics-appstore", {
+    projectId,
+    endpoint: "ratings",
   });
-
-  if (error) throw new Error(error.message);
-  return data as StoreRatings;
 }
 
-export async function fetchAppStoreReviews(
+export function fetchAppStoreReviews(
   projectId: string,
   limit = 20,
 ): Promise<StoreReview[]> {
-  const { data, error } = await supabase.functions.invoke("analytics-appstore", {
-    body: { projectId, endpoint: "reviews", params: { limit: String(limit) } },
+  return invokeFunction("analytics-appstore", {
+    projectId,
+    endpoint: "reviews",
+    params: { limit: String(limit) },
   });
-
-  if (error) throw new Error(error.message);
-  return (data ?? []) as StoreReview[];
 }

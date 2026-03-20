@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { invokeFunction } from "@/lib/supabase-helpers";
 
 export interface RevenueCatOverview {
   active_subscribers: number;
@@ -20,13 +20,11 @@ interface RCOverviewResponse {
 }
 
 export async function fetchOverview(projectId: string): Promise<RevenueCatOverview> {
-  const { data, error } = await supabase.functions.invoke("analytics-revenuecat", {
-    body: { projectId, endpoint: "metrics/overview" },
+  const raw = await invokeFunction<RCOverviewResponse>("analytics-revenuecat", {
+    projectId,
+    endpoint: "metrics/overview",
   });
 
-  if (error) throw new Error(error.message);
-
-  const raw = data as RCOverviewResponse;
   const byId = new Map(raw.metrics.map((m) => [m.id, m.value]));
 
   return {

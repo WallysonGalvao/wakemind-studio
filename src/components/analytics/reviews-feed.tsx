@@ -1,4 +1,5 @@
 import { Star } from "lucide-react";
+import * as React from "react";
 
 import {
   Card,
@@ -17,10 +18,16 @@ interface ReviewsFeedProps {
 }
 
 export function ReviewsFeed({ iosReviews, androidReviews, loading }: ReviewsFeedProps) {
-  const allReviews = [
-    ...iosReviews.map((r) => ({ ...r, store: "iOS" as const })),
-    ...androidReviews.map((r) => ({ ...r, store: "Android" as const })),
-  ].sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
+  const allReviews = React.useMemo(
+    () =>
+      [
+        ...iosReviews.map((r) => ({ ...r, store: "iOS" as const })),
+        ...androidReviews.map((r) => ({ ...r, store: "Android" as const })),
+      ].sort(
+        (a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime(),
+      ),
+    [iosReviews, androidReviews],
+  );
 
   return (
     <Card>

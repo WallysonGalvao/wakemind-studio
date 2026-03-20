@@ -125,6 +125,7 @@ export type Database = {
         Row: {
           created_at: string;
           id: string;
+          metadata: Json | null;
           project_id: string;
           provider: string;
           vault_secret_id: string;
@@ -132,6 +133,7 @@ export type Database = {
         Insert: {
           created_at?: string;
           id?: string;
+          metadata?: Json | null;
           project_id: string;
           provider: string;
           vault_secret_id: string;
@@ -139,6 +141,7 @@ export type Database = {
         Update: {
           created_at?: string;
           id?: string;
+          metadata?: Json | null;
           project_id?: string;
           provider?: string;
           vault_secret_id?: string;

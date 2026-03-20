@@ -35,17 +35,6 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   return data as Project | null;
 }
 
-export async function updateProject(
-  id: string,
-  updates: Partial<Pick<Project, "name" | "slug">>,
-): Promise<void> {
-  const { error } = await supabase
-    .from("projects")
-    .update({ ...updates, updated_at: new Date().toISOString() })
-    .eq("id", id);
-  if (error) throw error;
-}
-
 export async function deleteProject(id: string): Promise<void> {
   const { error } = await supabase.from("projects").delete().eq("id", id);
   if (error) throw error;

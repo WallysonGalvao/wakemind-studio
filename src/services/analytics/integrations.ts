@@ -1,18 +1,20 @@
 import { supabase } from "@/lib/supabase";
+import { invokeFunction } from "@/lib/supabase-helpers";
 
 export type IntegrationProvider = "mixpanel" | "revenuecat" | "appstore" | "playstore";
 
-export async function saveIntegration(
+export function saveIntegration(
   projectId: string,
   provider: IntegrationProvider,
   token: string,
   metadata?: Record<string, string>,
 ): Promise<void> {
-  const { error } = await supabase.functions.invoke("save-integration", {
-    body: { projectId, provider, token, metadata },
+  return invokeFunction("save-integration", {
+    projectId,
+    provider,
+    token,
+    metadata,
   });
-
-  if (error) throw new Error(error.message);
 }
 
 export interface IntegrationInfo {
@@ -37,10 +39,7 @@ export async function getIntegrationStatus(
 
   if (error) throw new Error(error.message);
 
-  const rows = (data ?? []) as unknown as Array<{
-    provider: string;
-    metadata: Record<string, string> | null;
-  }>;
+  const rows = data ?? [];
 
   function info(provider: string): IntegrationInfo {
     const row = rows.find((d) => d.provider === provider);
