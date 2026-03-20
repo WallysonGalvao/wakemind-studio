@@ -1,4 +1,5 @@
 import { Check, ClipboardCopy, Download, Eye, RefreshCw, Wand2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -77,6 +78,7 @@ function AchievementItem({
   onViewAsset: (asset: GeneratedAsset) => void;
   onDownloadAsset: (asset: GeneratedAsset) => void | Promise<void>;
 }) {
+  const { t } = useTranslation();
   function handleSelect() {
     onSelect(item);
   }
@@ -139,26 +141,26 @@ function AchievementItem({
       <ContextMenuContent>
         <ContextMenuItem onClick={handleSelect}>
           <Wand2 className="size-4" />
-          Select for generation
+          {t("pages.packageDetail.contextMenu.selectForGeneration")}
         </ContextMenuItem>
         <ContextMenuItem onClick={handleCopyId}>
           <ClipboardCopy className="size-4" />
-          Copy ID
+          {t("pages.packageDetail.contextMenu.copyId")}
         </ContextMenuItem>
         {existingAsset && (
           <>
             <ContextMenuSeparator />
             <ContextMenuItem onClick={handleViewAsset}>
               <Eye className="size-4" />
-              View asset
+              {t("pages.packageDetail.contextMenu.viewAsset")}
             </ContextMenuItem>
             <ContextMenuItem onClick={handleDownloadAsset}>
               <Download className="size-4" />
-              Download asset
+              {t("pages.packageDetail.contextMenu.downloadAsset")}
             </ContextMenuItem>
             <ContextMenuItem onClick={handleSelect}>
               <RefreshCw className="size-4" />
-              Regenerate
+              {t("pages.packageDetail.contextMenu.regenerate")}
             </ContextMenuItem>
           </>
         )}

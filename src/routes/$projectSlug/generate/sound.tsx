@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Download, Loader2, Music, Volume2, Wand2 } from "lucide-react";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,6 +44,7 @@ const FORMAT_MIME: Record<string, string> = {
 };
 
 function GenerateSoundPage() {
+  const { t } = useTranslation();
   const project = useProject();
   const gen = useSoundGeneration({ projectId: project.id });
 
@@ -112,9 +114,11 @@ function GenerateSoundPage() {
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Generate Sound</h1>
+        <h1 className="text-2xl font-bold tracking-tight">
+          {t("pages.generateSound.title")}
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Generate voice and audio assets using the OpenAI TTS API.
+          {t("pages.generateSound.subtitle")}
         </p>
       </div>
 
@@ -126,15 +130,17 @@ function GenerateSoundPage() {
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Music className="size-4" />
-                Asset
+                {t("pages.generateSound.asset")}
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="preset">Preset</Label>
+                <Label htmlFor="preset">{t("pages.generateSound.presetLabel")}</Label>
                 <Select value={presetId} onValueChange={handlePresetChange}>
                   <SelectTrigger id="preset">
-                    <SelectValue placeholder="Select a voice preset…" />
+                    <SelectValue
+                      placeholder={t("pages.generateSound.presetPlaceholder")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {SOUND_PRESETS.map((p) => (
@@ -150,22 +156,22 @@ function GenerateSoundPage() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="name">Name *</Label>
+                <Label htmlFor="name">{t("pages.generateSound.nameLabel")}</Label>
                 <Input
                   id="name"
-                  placeholder="e.g. Quest Accepted, Victory Fanfare"
+                  placeholder={t("pages.generateSound.namePlaceholder")}
                   value={name}
                   onChange={handleNameChange}
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="input">Text to speak *</Label>
+                <Label htmlFor="input">{t("pages.generateSound.textLabel")}</Label>
                 <textarea
                   id="input"
                   rows={4}
                   className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="e.g. Quest accepted! Seek the ancient artifact in the Crystal Caverns."
+                  placeholder={t("pages.generateSound.textPlaceholder")}
                   value={input}
                   onChange={handleInputChange}
                 />
@@ -176,11 +182,13 @@ function GenerateSoundPage() {
           {/* Generation options */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Generation Options</CardTitle>
+              <CardTitle className="text-sm">
+                {t("pages.generateSound.generationOptions")}
+              </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
-                <Label className="text-xs">Model</Label>
+                <Label className="text-xs">{t("pages.generateSound.modelLabel")}</Label>
                 <Select value={gen.options.model} onValueChange={handleModelChange}>
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue />
@@ -194,7 +202,7 @@ function GenerateSoundPage() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label className="text-xs">Voice</Label>
+                <Label className="text-xs">{t("pages.generateSound.voiceLabel")}</Label>
                 <Select value={gen.options.voice} onValueChange={handleVoiceChange}>
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue />
@@ -210,7 +218,7 @@ function GenerateSoundPage() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label className="text-xs">Format</Label>
+                <Label className="text-xs">{t("pages.generateSound.formatLabel")}</Label>
                 <Select value={gen.options.format} onValueChange={handleFormatChange}>
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue />
@@ -226,7 +234,9 @@ function GenerateSoundPage() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label className="text-xs">Speed ({gen.options.speed}x)</Label>
+                <Label className="text-xs">
+                  {t("pages.generateSound.speedLabel", { speed: gen.options.speed })}
+                </Label>
                 <input
                   type="range"
                   min="0.25"
@@ -244,18 +254,20 @@ function GenerateSoundPage() {
           {(gen.options.model === "gpt-4o-mini-tts" || isCustomPreset) && (
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Voice Instructions</CardTitle>
+                <CardTitle className="text-sm">
+                  {t("pages.generateSound.voiceInstructions")}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <textarea
                   rows={4}
                   className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Describe tone, emotion, pacing… e.g. Speak in a warm, mysterious tone with dramatic pauses."
+                  placeholder={t("pages.generateSound.voiceInstructionsPlaceholder")}
                   value={gen.options.instructions ?? ""}
                   onChange={handleInstructionsChange}
                 />
                 <p className="mt-1.5 text-xs text-muted-foreground">
-                  Only supported by gpt-4o-mini-tts. Controls tone, emotion, and style.
+                  {t("pages.generateSound.voiceInstructionsHint")}
                 </p>
               </CardContent>
             </Card>
@@ -276,12 +288,12 @@ function GenerateSoundPage() {
             {gen.loading ? (
               <>
                 <Loader2 className="mr-2 size-4 animate-spin" />
-                Generating…
+                {t("pages.generateSound.generating")}
               </>
             ) : (
               <>
                 <Wand2 className="mr-2 size-4" />
-                Generate Sound
+                {t("pages.generateSound.generateBtn")}
               </>
             )}
           </Button>
@@ -291,14 +303,16 @@ function GenerateSoundPage() {
         <div className="flex flex-col gap-4">
           <Card className="flex flex-col gap-0 overflow-hidden">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base">Preview</CardTitle>
+              <CardTitle className="text-base">{t("common.preview")}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-4">
               <div className="flex aspect-square w-full items-center justify-center rounded-lg border border-border bg-muted/50">
                 {gen.loading && (
                   <div className="flex flex-col items-center gap-3 text-center">
                     <Loader2 className="size-8 animate-spin text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Generating audio…</p>
+                    <p className="text-sm text-muted-foreground">
+                      {t("pages.generateSound.generatingAudio")}
+                    </p>
                   </div>
                 )}
                 {audioSrc && !gen.loading && (
@@ -316,7 +330,7 @@ function GenerateSoundPage() {
                   <div className="flex flex-col items-center gap-2">
                     <Volume2 className="size-12 text-muted-foreground/40" />
                     <p className="text-xs text-muted-foreground">
-                      Your audio will appear here
+                      {t("pages.generateSound.audioEmptyState")}
                     </p>
                   </div>
                 )}
@@ -325,7 +339,7 @@ function GenerateSoundPage() {
               {gen.result && (
                 <Button variant="outline" className="w-full" onClick={handleDownload}>
                   <Download className="mr-2 size-4" />
-                  Download .{gen.result.format}
+                  {t("pages.generateSound.downloadFormat", { format: gen.result.format })}
                 </Button>
               )}
             </CardContent>

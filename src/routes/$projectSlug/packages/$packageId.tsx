@@ -1,6 +1,7 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ImageIcon } from "lucide-react";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { GenerateButton } from "@/components/generation/generate-button";
 import { GenerationOptionsCard } from "@/components/generation/generation-options";
@@ -48,6 +49,7 @@ export const Route = createFileRoute("/$projectSlug/packages/$packageId")({
 });
 
 function PackageDetailPage() {
+  const { t } = useTranslation();
   const { pkg, pkgAssets, allPackages } = Route.useLoaderData();
   const project = useProject();
   const router = useRouter();
@@ -112,10 +114,12 @@ function PackageDetailPage() {
             <div className="border-b px-4 py-2">
               <TabsList className="w-fit">
                 {hasAchievements && (
-                  <TabsTrigger value="achievements">Achievements</TabsTrigger>
+                  <TabsTrigger value="achievements">
+                    {t("pages.packageDetail.achievements")}
+                  </TabsTrigger>
                 )}
                 <TabsTrigger value="assets">
-                  Assets
+                  {t("pages.packageDetail.assets")}
                   {pkgAssets.length > 0 && (
                     <Badge variant="secondary" className="ml-1.5 h-4 px-1 text-[10px]">
                       {pkgAssets.length}
@@ -170,7 +174,7 @@ function PackageDetailPage() {
                     <div className="flex flex-col gap-3">
                       <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                         <ImageIcon className="size-3.5" />
-                        Generating for
+                        {t("pages.packageDetail.generatingFor")}
                       </p>
                       <div className="flex items-center gap-3">
                         <div
@@ -216,23 +220,23 @@ function PackageDetailPage() {
                 </Card>
               ) : (
                 <div className="flex h-20 items-center justify-center rounded-lg border border-dashed border-border text-sm text-muted-foreground">
-                  Select an achievement to generate an asset
+                  {t("pages.packageDetail.selectAchievement")}
                 </div>
               )}
 
               {selectedAchievement && (
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="gen-desc">
-                    Description{" "}
+                    {t("pages.packageDetail.descriptionLabel")}{" "}
                     <span className="font-normal text-muted-foreground">
-                      (optional — overrides name in prompt)
+                      {t("pages.packageDetail.descriptionHint")}
                     </span>
                   </Label>
                   <textarea
                     id="gen-desc"
                     rows={2}
                     className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
-                    placeholder="e.g. A golden ear of wheat, ripe and glowing"
+                    placeholder={t("pages.packageDetail.descriptionPlaceholder")}
                     value={gen.description}
                     onChange={(e) => gen.setDescription(e.target.value)}
                   />
@@ -265,7 +269,9 @@ function PackageDetailPage() {
               {gen.result && (
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-xs">Generated Prompt</CardTitle>
+                    <CardTitle className="text-xs">
+                      {t("pages.packageDetail.generatedPrompt")}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-xs leading-relaxed wrap-break-word text-muted-foreground">

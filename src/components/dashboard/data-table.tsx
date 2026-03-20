@@ -46,6 +46,7 @@ import {
   Trash2,
 } from "lucide-react";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -91,6 +92,7 @@ import type { GeneratedAsset } from "@/types/asset";
 // Create a separate component for the drag handle
 function DragHandle({ id }: { id: string }) {
   const { attributes, listeners } = useSortable({ id });
+  const { t } = useTranslation();
 
   return (
     <Button
@@ -101,7 +103,7 @@ function DragHandle({ id }: { id: string }) {
       className="size-7 text-muted-foreground hover:bg-transparent"
     >
       <GripVertical className="size-3 text-muted-foreground" />
-      <span className="sr-only">Drag to reorder</span>
+      <span className="sr-only">{t("pages.dashboard.table.dragToReorder")}</span>
     </Button>
   );
 }
@@ -139,6 +141,7 @@ export function DataTable({
   onDelete?: (id: string) => Promise<void> | void;
 }) {
   "use no memo";
+  const { t } = useTranslation();
   const [data, setData] = React.useState<GeneratedAsset[]>(() => initialData);
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -166,7 +169,7 @@ export function DataTable({
                 (table.getIsSomePageRowsSelected() && "indeterminate")
               }
               onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-              aria-label="Select all"
+              aria-label={t("pages.dashboard.table.selectAll")}
             />
           </div>
         ),
@@ -175,7 +178,7 @@ export function DataTable({
             <Checkbox
               checked={row.getIsSelected()}
               onCheckedChange={(value) => row.toggleSelected(!!value)}
-              aria-label="Select row"
+              aria-label={t("pages.dashboard.table.selectRow")}
             />
           </div>
         ),
@@ -184,22 +187,22 @@ export function DataTable({
       },
       {
         accessorKey: "name",
-        header: "Name",
+        header: t("pages.dashboard.table.name"),
         cell: ({ row }) => <TableCellViewer item={row.original} />,
         enableHiding: false,
       },
       {
         accessorKey: "type",
-        header: "Type",
+        header: t("pages.dashboard.table.type"),
         cell: ({ row }) => (
           <Badge variant="outline" className="px-1.5 text-muted-foreground">
             {row.original.type === "image" ? (
               <>
-                <ImageIcon className="size-3" /> Image
+                <ImageIcon className="size-3" /> {t("pages.dashboard.table.image")}
               </>
             ) : (
               <>
-                <Music className="size-3" /> Sound
+                <Music className="size-3" /> {t("pages.dashboard.table.sound")}
               </>
             )}
           </Badge>
@@ -207,14 +210,14 @@ export function DataTable({
       },
       {
         accessorKey: "model",
-        header: "Model",
+        header: t("pages.dashboard.table.model"),
         cell: ({ row }) => (
           <span className="text-sm text-muted-foreground">{row.original.model}</span>
         ),
       },
       {
         accessorKey: "createdAt",
-        header: "Created",
+        header: t("pages.dashboard.table.created"),
         cell: ({ row }) => (
           <span className="text-sm text-muted-foreground">
             {new Date(row.original.createdAt).toLocaleDateString()}
@@ -232,7 +235,7 @@ export function DataTable({
                 size="icon"
               >
                 <MoreVertical />
-                <span className="sr-only">Open menu</span>
+                <span className="sr-only">{t("pages.dashboard.table.openMenu")}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-32">
@@ -242,14 +245,14 @@ export function DataTable({
                 onClick={() => onDelete?.(row.original.id)}
               >
                 <Trash2 className="size-3.5" />
-                Delete
+                {t("common.delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ),
       },
     ],
-    [onDelete],
+    [onDelete, t],
   );
 
   const [pagination, setPagination] = React.useState({
@@ -329,15 +332,17 @@ export function DataTable({
     <div className="w-full flex-col justify-start gap-6">
       <div className="flex items-center justify-between px-4 lg:px-6">
         <span className="text-sm font-medium text-muted-foreground">
-          {data.length} asset{data.length !== 1 ? "s" : ""}
+          {t("pages.dashboard.table.assetCount", { count: data.length })}
         </span>
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <Columns3 />
-                <span className="hidden lg:inline">Customize Columns</span>
-                <span className="lg:hidden">Columns</span>
+                <span className="hidden lg:inline">
+                  {t("pages.dashboard.table.customizeColumns")}
+                </span>
+                <span className="lg:hidden">{t("pages.dashboard.table.columns")}</span>
                 <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
@@ -401,7 +406,7 @@ export function DataTable({
                       colSpan={columns.length}
                       className="h-24 text-center text-muted-foreground"
                     >
-                      No assets yet. Generate an image or sound to get started.
+                      {t("pages.dashboard.table.empty")}
                     </TableCell>
                   </TableRow>
                 )}
@@ -411,13 +416,15 @@ export function DataTable({
         </div>
         <div className="flex items-center justify-between px-4">
           <div className="hidden flex-1 text-sm text-muted-foreground lg:flex">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
+            {t("pages.dashboard.table.selectedRows", {
+              selected: table.getFilteredSelectedRowModel().rows.length,
+              total: table.getFilteredRowModel().rows.length,
+            })}
           </div>
           <div className="flex w-full items-center gap-8 lg:w-fit">
             <div className="hidden items-center gap-2 lg:flex">
               <Label htmlFor="rows-per-page" className="text-sm font-medium">
-                Rows per page
+                {t("pages.dashboard.table.rowsPerPage")}
               </Label>
               <Select
                 value={`${table.getState().pagination.pageSize}`}
@@ -436,7 +443,10 @@ export function DataTable({
               </Select>
             </div>
             <div className="flex w-fit items-center justify-center text-sm font-medium">
-              Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+              {t("pages.dashboard.table.pageOf", {
+                current: table.getState().pagination.pageIndex + 1,
+                total: table.getPageCount(),
+              })}
             </div>
             <div className="ml-auto flex items-center gap-2 lg:ml-0">
               <Button
@@ -445,7 +455,7 @@ export function DataTable({
                 onClick={handleFirstPage}
                 disabled={!table.getCanPreviousPage()}
               >
-                <span className="sr-only">Go to first page</span>
+                <span className="sr-only">{t("pages.dashboard.table.firstPage")}</span>
                 <ChevronsLeft />
               </Button>
               <Button
@@ -455,7 +465,7 @@ export function DataTable({
                 onClick={handlePreviousPage}
                 disabled={!table.getCanPreviousPage()}
               >
-                <span className="sr-only">Go to previous page</span>
+                <span className="sr-only">{t("pages.dashboard.table.previousPage")}</span>
                 <ChevronLeft />
               </Button>
               <Button
@@ -465,7 +475,7 @@ export function DataTable({
                 onClick={handleNextPage}
                 disabled={!table.getCanNextPage()}
               >
-                <span className="sr-only">Go to next page</span>
+                <span className="sr-only">{t("pages.dashboard.table.nextPage")}</span>
                 <ChevronRight />
               </Button>
               <Button
@@ -475,7 +485,7 @@ export function DataTable({
                 onClick={handleLastPage}
                 disabled={!table.getCanNextPage()}
               >
-                <span className="sr-only">Go to last page</span>
+                <span className="sr-only">{t("pages.dashboard.table.lastPage")}</span>
                 <ChevronsRight />
               </Button>
             </div>
@@ -488,6 +498,7 @@ export function DataTable({
 
 function TableCellViewer({ item }: { item: GeneratedAsset }) {
   const isMobile = useIsMobile();
+  const { t } = useTranslation();
 
   return (
     <Drawer direction={isMobile ? "bottom" : "right"}>
@@ -500,8 +511,10 @@ function TableCellViewer({ item }: { item: GeneratedAsset }) {
         <DrawerHeader className="gap-1">
           <DrawerTitle>{item.name}</DrawerTitle>
           <DrawerDescription>
-            {item.type === "image" ? "Image" : "Sound"} · {item.model} ·{" "}
-            {new Date(item.createdAt).toLocaleDateString()}
+            {item.type === "image"
+              ? t("pages.dashboard.table.image")
+              : t("pages.dashboard.table.sound")}{" "}
+            · {item.model} · {new Date(item.createdAt).toLocaleDateString()}
           </DrawerDescription>
         </DrawerHeader>
         <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
@@ -515,14 +528,14 @@ function TableCellViewer({ item }: { item: GeneratedAsset }) {
           <Separator />
           <div className="flex flex-col gap-1.5">
             <span className="text-xs font-medium text-muted-foreground uppercase">
-              Prompt
+              {t("components.assetDetail.prompt")}
             </span>
             <p className="leading-relaxed">{item.prompt}</p>
           </div>
         </div>
         <DrawerFooter>
           <DrawerClose asChild>
-            <Button variant="outline">Close</Button>
+            <Button variant="outline">{t("common.close")}</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

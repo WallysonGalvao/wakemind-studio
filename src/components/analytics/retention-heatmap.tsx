@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import {
   Card,
   CardContent,
@@ -30,20 +32,21 @@ function getCellColor(pct: number): string {
 }
 
 export function RetentionHeatmap({ data, loading }: RetentionHeatmapProps) {
+  const { t } = useTranslation();
   const maxWeeks = data.length > 0 ? Math.max(...data.map((c) => c.retention.length)) : 0;
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Retention</CardTitle>
-        <CardDescription>User retention by weekly cohort</CardDescription>
+        <CardTitle>{t("components.retention.title")}</CardTitle>
+        <CardDescription>{t("components.retention.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         {loading ? (
           <Skeleton className="h-64 w-full" />
         ) : data.length === 0 ? (
           <div className="flex h-64 items-center justify-center text-sm text-muted-foreground">
-            No retention data available
+            {t("components.retention.empty")}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -51,17 +54,17 @@ export function RetentionHeatmap({ data, loading }: RetentionHeatmapProps) {
               <thead>
                 <tr>
                   <th className="px-2 py-1.5 text-left font-medium text-muted-foreground">
-                    Cohort
+                    {t("components.retention.cohort")}
                   </th>
                   <th className="px-2 py-1.5 text-center font-medium text-muted-foreground">
-                    Users
+                    {t("components.retention.users")}
                   </th>
                   {Array.from({ length: maxWeeks }, (_, i) => (
                     <th
                       key={i}
                       className="px-2 py-1.5 text-center font-medium text-muted-foreground"
                     >
-                      W{i}
+                      {t("components.retention.week", { index: i })}
                     </th>
                   ))}
                 </tr>
@@ -91,13 +94,18 @@ export function RetentionHeatmap({ data, loading }: RetentionHeatmapProps) {
                             </TooltipTrigger>
                             <TooltipContent side="top">
                               <p className="text-xs">
-                                <span className="font-medium">{cohort.date}</span> · Week{" "}
-                                {weekIdx}
+                                {t("components.retention.dateWeekTooltip", {
+                                  date: cohort.date,
+                                  index: weekIdx,
+                                })}
                               </p>
                               <p className="text-xs text-muted-foreground">
-                                {pct.toFixed(1)}% retained (
-                                {Math.round((cohort.size * pct) / 100).toLocaleString()}{" "}
-                                users)
+                                {t("components.retention.retainedTooltip", {
+                                  pct: pct.toFixed(1),
+                                  users: Math.round(
+                                    (cohort.size * pct) / 100,
+                                  ).toLocaleString(),
+                                })}
                               </p>
                             </TooltipContent>
                           </Tooltip>

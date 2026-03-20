@@ -1,5 +1,5 @@
-import { Link, useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { Link, useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import {
   BarChart3,
   Check,
@@ -11,10 +11,11 @@ import {
   Music,
   Plus,
   Settings,
-  Zap,
 } from "lucide-react";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
+import logo from "@/assets/images/fenrir.png";
 import { NavUser } from "@/components/layout/nav-user";
 import {
   DropdownMenu,
@@ -39,6 +40,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { getAllProjects } from "@/services/supabase/projects";
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+  const { t } = useTranslation();
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
   const navigate = useNavigate();
@@ -53,7 +55,8 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   });
 
   const navUser = {
-    name: user?.user_metadata?.full_name ?? user?.email?.split("@")[0] ?? "Fenrir User",
+    name:
+      user?.user_metadata?.full_name ?? user?.email?.split("@")[0] ?? "Three Wolves User",
     email: user?.email ?? "",
     avatarUrl: (user?.user_metadata?.avatar_url as string | undefined) ?? "",
   };
@@ -65,15 +68,27 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   // When inside a project, show project-scoped navigation
   if (projectSlug) {
     const navMain = [
-      { label: "Dashboard", icon: LayoutDashboard, to: `/${projectSlug}/dashboard` },
-      { label: "Generate Image", icon: ImageIcon, to: `/${projectSlug}/generate/image` },
-      { label: "Generate Sound", icon: Music, to: `/${projectSlug}/generate/sound` },
-      { label: "Library", icon: Library, to: `/${projectSlug}/library` },
-      { label: "Analytics", icon: BarChart3, to: `/${projectSlug}/analytics` },
+      {
+        label: t("nav.dashboard"),
+        icon: LayoutDashboard,
+        to: `/${projectSlug}/dashboard`,
+      },
+      {
+        label: t("nav.generateImage"),
+        icon: ImageIcon,
+        to: `/${projectSlug}/generate/image`,
+      },
+      {
+        label: t("nav.generateSound"),
+        icon: Music,
+        to: `/${projectSlug}/generate/sound`,
+      },
+      { label: t("nav.library"), icon: Library, to: `/${projectSlug}/library` },
+      { label: t("nav.analytics"), icon: BarChart3, to: `/${projectSlug}/analytics` },
     ];
 
     const navSecondary = [
-      { label: "Settings", icon: Settings, to: `/${projectSlug}/settings` },
+      { label: t("nav.settings"), icon: Settings, to: `/${projectSlug}/settings` },
     ];
 
     return (
@@ -87,10 +102,16 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                 className="data-[slot=sidebar-menu-button]:p-1.5!"
               >
                 <Link to="/">
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-                    <Zap className="size-5" fill="currentColor" />
+                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-white p-1 shadow-md">
+                    <img
+                      src={logo}
+                      alt="Three Wolves"
+                      className="size-full object-contain"
+                    />
                   </div>
-                  <span className="text-base font-semibold">Fenrir</span>
+                  <span className="text-base font-bold tracking-tight">
+                    {t("nav.fenrir")}
+                  </span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -120,7 +141,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onSelect={() => navigate({ to: "/" })}>
                     <Plus className="size-4" />
-                    <span>New project…</span>
+                    <span>{t("nav.newProject")}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -182,10 +203,16 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
               <Link to="/">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-                  <Zap className="size-5" fill="currentColor" />
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-white p-1 shadow-md">
+                  <img
+                    src={logo}
+                    alt="Three Wolves"
+                    className="size-full object-contain"
+                  />
                 </div>
-                <span className="text-base font-semibold">Fenrir</span>
+                <span className="text-base font-bold tracking-tight">
+                  {t("nav.fenrir")}
+                </span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -200,11 +227,11 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuButton
                   asChild
                   isActive={currentPath === "/"}
-                  tooltip="Projects"
+                  tooltip={t("nav.projects")}
                 >
                   <Link to="/">
                     <LayoutDashboard />
-                    <span>Projects</span>
+                    <span>{t("nav.projects")}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -216,10 +243,10 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Get Help">
+                <SidebarMenuButton asChild tooltip={t("nav.getHelp")}>
                   <Link to="/about">
                     <HelpCircle />
-                    <span>Get Help</span>
+                    <span>{t("nav.getHelp")}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { Folders, Plus, Settings, Trash2 } from "lucide-react";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,7 @@ export const Route = createFileRoute("/")({
 });
 
 function HubOverview() {
+  const { t } = useTranslation();
   const { projects } = Route.useLoaderData();
   const router = useRouter();
   const navigate = useNavigate();
@@ -112,27 +114,29 @@ function HubOverview() {
     <div className="flex flex-col gap-6 p-4 md:p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Projects</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {t("pages.projects.title")}
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage your apps and projects.
+            {t("pages.projects.subtitle")}
           </p>
         </div>
         <Button onClick={handleOpenCreate}>
           <Plus className="size-4" />
-          New Project
+          {t("pages.projects.newProject")}
         </Button>
       </div>
 
       {projects.length === 0 ? (
         <Card className="flex flex-col items-center justify-center py-16">
           <Folders className="size-12 text-muted-foreground/40" />
-          <p className="mt-4 text-lg font-medium">No projects yet</p>
+          <p className="mt-4 text-lg font-medium">{t("pages.projects.emptyTitle")}</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Create your first project to get started.
+            {t("pages.projects.emptyDescription")}
           </p>
           <Button className="mt-6" onClick={handleOpenCreate}>
             <Plus className="size-4" />
-            Create Project
+            {t("pages.projects.createProject")}
           </Button>
         </Card>
       ) : (
@@ -151,7 +155,7 @@ function HubOverview() {
                   </Badge>
                 </div>
                 <CardDescription>
-                  Created{" "}
+                  {t("pages.projects.created")}{" "}
                   {new Date(project.created_at).toLocaleDateString(undefined, {
                     month: "short",
                     day: "numeric",
@@ -173,7 +177,7 @@ function HubOverview() {
                   }}
                 >
                   <Settings className="size-3" />
-                  Settings
+                  {t("pages.projects.settingsBtn")}
                 </Button>
                 <Button
                   variant="ghost"
@@ -182,7 +186,7 @@ function HubOverview() {
                   onClick={(e) => handleDeleteProject(e, project.id)}
                 >
                   <Trash2 className="size-3" />
-                  Delete
+                  {t("pages.projects.deleteBtn")}
                 </Button>
               </CardContent>
             </Card>
@@ -193,38 +197,46 @@ function HubOverview() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Create New Project</DialogTitle>
+            <DialogTitle>{t("pages.projects.createDialog.title")}</DialogTitle>
             <DialogDescription>
-              Projects let you organize assets and analytics for each of your apps.
+              {t("pages.projects.createDialog.description")}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleCreate} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="proj-name">Name *</Label>
+              <Label htmlFor="proj-name">
+                {t("pages.projects.createDialog.nameLabel")}
+              </Label>
               <Input
                 id="proj-name"
-                placeholder="e.g. WakeMind, My App"
+                placeholder={t("pages.projects.createDialog.namePlaceholder")}
                 value={newName}
                 onChange={handleNameChange}
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="proj-slug">Slug *</Label>
+              <Label htmlFor="proj-slug">
+                {t("pages.projects.createDialog.slugLabel")}
+              </Label>
               <Input
                 id="proj-slug"
-                placeholder="e.g. wakemind"
+                placeholder={t("pages.projects.createDialog.slugPlaceholder")}
                 value={newSlug}
                 onChange={handleSlugChange}
               />
               <p className="text-xs text-muted-foreground">
-                Used in the URL: /{newSlug || "my-project"}/dashboard
+                {t("pages.projects.createDialog.slugHelper", {
+                  slug: newSlug || "my-project",
+                })}
               </p>
             </div>
             <Button
               type="submit"
               disabled={createMutation.isPending || !newName.trim() || !newSlug.trim()}
             >
-              {createMutation.isPending ? "Creating…" : "Create Project"}
+              {createMutation.isPending
+                ? t("pages.projects.createDialog.creating")
+                : t("pages.projects.createDialog.createBtn")}
             </Button>
           </form>
         </DialogContent>

@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   Card,
@@ -18,6 +19,7 @@ interface ReviewsFeedProps {
 }
 
 export function ReviewsFeed({ iosReviews, androidReviews, loading }: ReviewsFeedProps) {
+  const { t } = useTranslation();
   const allReviews = React.useMemo(
     () =>
       [
@@ -32,8 +34,8 @@ export function ReviewsFeed({ iosReviews, androidReviews, loading }: ReviewsFeed
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Reviews</CardTitle>
-        <CardDescription>Latest reviews from App Store and Google Play</CardDescription>
+        <CardTitle>{t("components.reviewsFeed.title")}</CardTitle>
+        <CardDescription>{t("components.reviewsFeed.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         {loading ? (
@@ -44,7 +46,7 @@ export function ReviewsFeed({ iosReviews, androidReviews, loading }: ReviewsFeed
           </div>
         ) : allReviews.length === 0 ? (
           <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-            No reviews available
+            {t("components.reviewsFeed.empty")}
           </div>
         ) : (
           <div className="flex max-h-125 flex-col gap-3 overflow-y-auto">

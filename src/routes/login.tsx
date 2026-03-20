@@ -1,10 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { Zap } from "lucide-react";
 import * as React from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { z } from "zod/v4";
 
+import logo from "@/assets/images/fenrir.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,6 +29,7 @@ const loginSchema = z.object({
 type LoginFields = z.infer<typeof loginSchema>;
 
 function LoginPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = React.useState<"signin" | "signup">("signin");
   const [serverError, setServerError] = React.useState("");
@@ -58,7 +60,7 @@ function LoginPage() {
         setServerError(error.message);
         return;
       }
-      setMessage("Check your email to confirm your account, then sign in.");
+      setMessage(t("auth.checkEmail"));
       setMode("signin");
     }
   }
@@ -85,14 +87,16 @@ function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-sm">
         {/* Logo */}
-        <div className="mb-8 flex flex-col items-center gap-3">
-          <div className="flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-            <Zap className="size-6" fill="currentColor" />
+        <div className="mb-10 flex flex-col items-center gap-6">
+          <div className="flex size-32 items-center justify-center rounded-3xl bg-white p-4 shadow-2xl ring-1 ring-border/50">
+            <img src={logo} alt="Three Wolves" className="size-full object-contain" />
           </div>
           <div className="text-center">
-            <h1 className="text-xl font-semibold">Fenrir</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {mode === "signin" ? "Sign in to your account" : "Create your account"}
+            <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+              {t("auth.appName")}
+            </h1>
+            <p className="mt-2 text-muted-foreground">
+              {mode === "signin" ? t("auth.signInSubtitle") : t("auth.signUpSubtitle")}
             </p>
           </div>
         </div>
@@ -116,11 +120,11 @@ function LoginPage() {
           noValidate
         >
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("auth.email")}</Label>
             <Input
               id="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder={t("auth.emailPlaceholder")}
               autoComplete="email"
               aria-invalid={!!errors.email}
               {...register("email")}
@@ -131,11 +135,11 @@ function LoginPage() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t("auth.password")}</Label>
             <Input
               id="password"
               type="password"
-              placeholder="••••••••"
+              placeholder={t("auth.passwordPlaceholder")}
               autoComplete={mode === "signin" ? "current-password" : "new-password"}
               aria-invalid={!!errors.password}
               {...register("password")}
@@ -146,14 +150,18 @@ function LoginPage() {
           </div>
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Loading…" : mode === "signin" ? "Sign in" : "Create account"}
+            {isSubmitting
+              ? t("common.loading")
+              : mode === "signin"
+                ? t("auth.signIn")
+                : t("auth.signUp")}
           </Button>
         </form>
 
         {/* Divider */}
         <div className="my-4 flex items-center gap-3">
           <div className="h-px flex-1 bg-border" />
-          <span className="text-xs text-muted-foreground">or</span>
+          <span className="text-xs text-muted-foreground">{t("common.or")}</span>
           <div className="h-px flex-1 bg-border" />
         </div>
 
@@ -182,31 +190,31 @@ function LoginPage() {
               fill="#EA4335"
             />
           </svg>
-          Continue with Google
+          {t("auth.continueWithGoogle")}
         </Button>
 
         {/* Toggle signup/signin */}
         <p className="mt-6 text-center text-sm text-muted-foreground">
           {mode === "signin" ? (
             <>
-              Don't have an account?{" "}
+              {t("auth.dontHaveAccount")}{" "}
               <button
                 type="button"
                 className="font-medium text-foreground underline underline-offset-2 hover:text-primary"
                 onClick={handleSwitchToSignup}
               >
-                Sign up
+                {t("auth.signUp")}
               </button>
             </>
           ) : (
             <>
-              Already have an account?{" "}
+              {t("auth.alreadyHaveAccount")}{" "}
               <button
                 type="button"
                 className="font-medium text-foreground underline underline-offset-2 hover:text-primary"
                 onClick={handleSwitchToSignin}
               >
-                Sign in
+                {t("auth.signIn")}
               </button>
             </>
           )}

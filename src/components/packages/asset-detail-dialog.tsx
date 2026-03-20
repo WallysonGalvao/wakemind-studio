@@ -1,5 +1,6 @@
 import { Download, Trash2 } from "lucide-react";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +31,7 @@ export function AssetDetailDialog({
   allPackages,
 }: AssetDetailDialogProps) {
   const [deleting, setDeleting] = React.useState(false);
+  const { t } = useTranslation();
 
   const handleOpenChange = React.useCallback(
     (v: boolean) => {
@@ -70,17 +72,23 @@ export function AssetDetailDialog({
               </div>
 
               <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2 text-sm">
-                <span className="text-muted-foreground">Package</span>
+                <span className="text-muted-foreground">
+                  {t("components.assetDetail.package")}
+                </span>
                 <span className="font-medium">
                   {allPackages.find((p) => p.id === asset.packageId)?.name ??
                     asset.packageId ??
                     "—"}
                 </span>
-                <span className="text-muted-foreground">Model</span>
+                <span className="text-muted-foreground">
+                  {t("components.assetDetail.model")}
+                </span>
                 <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
                   {asset.model}
                 </code>
-                <span className="text-muted-foreground">Type</span>
+                <span className="text-muted-foreground">
+                  {t("components.assetDetail.type")}
+                </span>
                 <span className="capitalize">{asset.type}</span>
                 {Object.entries(asset.settings).map(([k, v]) => (
                   <React.Fragment key={k}>
@@ -93,7 +101,7 @@ export function AssetDetailDialog({
               {asset.prompt && (
                 <div className="flex flex-col gap-1.5">
                   <p className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
-                    Prompt
+                    {t("components.assetDetail.prompt")}
                   </p>
                   <p className="rounded-lg border border-border bg-muted/30 p-3 text-xs leading-relaxed text-muted-foreground">
                     {asset.prompt}
@@ -104,14 +112,14 @@ export function AssetDetailDialog({
               <div className="flex gap-2">
                 <Button className="flex-1" onClick={handleDownload}>
                   <Download className="size-4" />
-                  Download
+                  {t("components.assetDetail.download")}
                 </Button>
                 <Button
                   variant="destructive"
                   size="icon"
                   onClick={handleDelete}
                   disabled={deleting}
-                  aria-label="Delete asset"
+                  aria-label={t("components.assetDetail.deleteAsset")}
                 >
                   <Trash2 className="size-4" />
                 </Button>

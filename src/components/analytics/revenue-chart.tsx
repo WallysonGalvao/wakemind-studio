@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
@@ -26,18 +27,19 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function RevenueChart({ data, loading }: RevenueChartProps) {
+  const { t } = useTranslation();
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Revenue</CardTitle>
-        <CardDescription>MRR and Churn Rate over time</CardDescription>
+        <CardTitle>{t("components.revenueChart.title")}</CardTitle>
+        <CardDescription>{t("components.revenueChart.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         {loading ? (
           <Skeleton className="h-62.5 w-full" />
         ) : data.length === 0 ? (
           <div className="flex h-62.5 items-center justify-center text-sm text-muted-foreground">
-            No data available
+            {t("components.revenueChart.empty")}
           </div>
         ) : (
           <ChartContainer config={chartConfig} className="h-62.5 w-full">

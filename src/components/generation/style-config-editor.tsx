@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import {
   Card,
   CardContent,
@@ -21,6 +23,8 @@ export function StyleConfigEditor({
   placeholder = "Select a package above to load its style config…",
   rows = 10,
 }: StyleConfigEditorProps) {
+  const { t } = useTranslation();
+
   function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     onChange(e.target.value);
   }
@@ -28,9 +32,9 @@ export function StyleConfigEditor({
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm">Style Config</CardTitle>
+        <CardTitle className="text-sm">{t("components.styleConfig.title")}</CardTitle>
         <CardDescription className="text-xs">
-          Pre-filled from the package. Edit freely to override.
+          {t("components.styleConfig.description")}
         </CardDescription>
       </CardHeader>
       <CardContent>

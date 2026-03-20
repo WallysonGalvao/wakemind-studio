@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import {
   Card,
   CardContent,
@@ -22,11 +24,12 @@ interface TopEventsTableProps {
 }
 
 export function TopEventsTable({ events, loading }: TopEventsTableProps) {
+  const { t } = useTranslation();
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Top Events</CardTitle>
-        <CardDescription>Most triggered events from Mixpanel</CardDescription>
+        <CardTitle>{t("components.topEvents.title")}</CardTitle>
+        <CardDescription>{t("components.topEvents.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         {loading ? (
@@ -37,14 +40,16 @@ export function TopEventsTable({ events, loading }: TopEventsTableProps) {
           </div>
         ) : events.length === 0 ? (
           <p className="py-6 text-center text-sm text-muted-foreground">
-            No events data available
+            {t("components.topEvents.empty")}
           </p>
         ) : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Event</TableHead>
-                <TableHead className="text-right">Count</TableHead>
+                <TableHead>{t("components.topEvents.event")}</TableHead>
+                <TableHead className="text-right">
+                  {t("components.topEvents.count")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

@@ -9,6 +9,7 @@ import {
   TrendingDown,
   Users,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { ActiveUsersChart } from "@/components/analytics/active-users-chart";
 import { MetricCard } from "@/components/analytics/metric-card";
@@ -47,6 +48,7 @@ const ANALYTICS_QUERY_OPTS = {
 } as const;
 
 function AnalyticsPage() {
+  const { t } = useTranslation();
   const project = useProject();
 
   const { data: integrations, isLoading: intLoading } = useQuery({
@@ -146,15 +148,18 @@ function AnalyticsPage() {
     <div className="flex flex-col gap-6 p-4 md:p-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Analytics</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {t("pages.analytics.title")}
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Metrics for <span className="font-medium">{project.name}</span>.
+            {t("pages.analytics.metricsFor")}{" "}
+            <span className="font-medium">{project.name}</span>.
           </p>
         </div>
         <Button variant="outline" size="sm" asChild>
           <Link to="/$projectSlug/settings" params={{ projectSlug: project.slug }}>
             <Settings className="size-4" />
-            Integrations
+            {t("pages.analytics.integrations")}
           </Link>
         </Button>
       </div>
@@ -162,15 +167,14 @@ function AnalyticsPage() {
       {!hasAny && !loading ? (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
           <Activity className="mb-4 size-10 text-muted-foreground/50" />
-          <h2 className="text-lg font-semibold">No integrations connected</h2>
+          <h2 className="text-lg font-semibold">{t("pages.analytics.emptyTitle")}</h2>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Connect Mixpanel, RevenueCat, App Store Connect, or Google Play in project
-            settings to see live analytics data.
+            {t("pages.analytics.emptyDescription")}
           </p>
           <Button className="mt-4" asChild>
             <Link to="/$projectSlug/settings" params={{ projectSlug: project.slug }}>
               <Settings className="size-4" />
-              Configure Integrations
+              {t("pages.analytics.configureIntegrations")}
             </Link>
           </Button>
         </div>
@@ -179,20 +183,22 @@ function AnalyticsPage() {
           {/* KPI Cards */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <MetricCard
-              title="Daily Active Users"
+              title={t("pages.analytics.kpis.dau")}
               value={
                 integrations.mixpanel.connected
                   ? (activeUsers?.dau ?? 0).toLocaleString()
                   : "—"
               }
               description={
-                integrations.mixpanel.connected ? "From Mixpanel" : "Connect Mixpanel"
+                integrations.mixpanel.connected
+                  ? t("pages.analytics.kpis.fromMixpanel")
+                  : t("pages.analytics.kpis.connectMixpanel")
               }
               icon={<Users className="size-4" />}
               loading={loading}
             />
             <MetricCard
-              title="MRR"
+              title={t("pages.analytics.kpis.mrr")}
               value={
                 integrations.revenuecat.connected
                   ? `$${(revenue?.mrr ?? 0).toLocaleString()}`
@@ -200,14 +206,14 @@ function AnalyticsPage() {
               }
               description={
                 integrations.revenuecat.connected
-                  ? "From RevenueCat"
-                  : "Connect RevenueCat"
+                  ? t("pages.analytics.kpis.fromRevenuecat")
+                  : t("pages.analytics.kpis.connectRevenuecat")
               }
               icon={<DollarSign className="size-4" />}
               loading={loading}
             />
             <MetricCard
-              title="Churn Rate"
+              title={t("pages.analytics.kpis.churnRate")}
               value={
                 integrations.revenuecat.connected
                   ? `${(revenue?.churn_rate ?? 0).toFixed(1)}%`
@@ -215,14 +221,14 @@ function AnalyticsPage() {
               }
               description={
                 integrations.revenuecat.connected
-                  ? "From RevenueCat"
-                  : "Connect RevenueCat"
+                  ? t("pages.analytics.kpis.fromRevenuecat")
+                  : t("pages.analytics.kpis.connectRevenuecat")
               }
               icon={<TrendingDown className="size-4" />}
               loading={loading}
             />
             <MetricCard
-              title="Active Subscriptions"
+              title={t("pages.analytics.kpis.activeSubscriptions")}
               value={
                 integrations.revenuecat.connected
                   ? (revenue?.active_subscribers ?? 0).toLocaleString()
@@ -230,8 +236,8 @@ function AnalyticsPage() {
               }
               description={
                 integrations.revenuecat.connected
-                  ? "From RevenueCat"
-                  : "Connect RevenueCat"
+                  ? t("pages.analytics.kpis.fromRevenuecat")
+                  : t("pages.analytics.kpis.connectRevenuecat")
               }
               icon={<Activity className="size-4" />}
               loading={loading}
@@ -260,16 +266,18 @@ function AnalyticsPage() {
               <Separator />
 
               <div>
-                <h2 className="text-lg font-semibold tracking-tight">App Stores</h2>
+                <h2 className="text-lg font-semibold tracking-tight">
+                  {t("pages.analytics.stores.title")}
+                </h2>
                 <p className="mt-0.5 text-sm text-muted-foreground">
-                  Ratings and reviews from the App Store and Google Play.
+                  {t("pages.analytics.stores.description")}
                 </p>
               </div>
 
               {/* Store KPI Cards */}
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <MetricCard
-                  title="iOS Rating"
+                  title={t("pages.analytics.stores.iosRating")}
                   value={
                     integrations.appstore.connected
                       ? `${iosRatings?.average ?? "—"} ★`
@@ -277,14 +285,16 @@ function AnalyticsPage() {
                   }
                   description={
                     integrations.appstore.connected
-                      ? `${iosRatings?.total ?? 0} ratings`
-                      : "Connect App Store"
+                      ? t("pages.analytics.stores.ratings", {
+                          count: iosRatings?.total ?? 0,
+                        })
+                      : t("pages.analytics.stores.connectAppStore")
                   }
                   icon={<Star className="size-4" />}
                   loading={loading}
                 />
                 <MetricCard
-                  title="Android Rating"
+                  title={t("pages.analytics.stores.androidRating")}
                   value={
                     integrations.playstore.connected
                       ? `${androidRatings?.average ?? "—"} ★`
@@ -292,14 +302,16 @@ function AnalyticsPage() {
                   }
                   description={
                     integrations.playstore.connected
-                      ? `${androidRatings?.total ?? 0} ratings`
-                      : "Connect Google Play"
+                      ? t("pages.analytics.stores.ratings", {
+                          count: androidRatings?.total ?? 0,
+                        })
+                      : t("pages.analytics.stores.connectGooglePlay")
                   }
                   icon={<Star className="size-4" />}
                   loading={loading}
                 />
                 <MetricCard
-                  title="iOS Reviews"
+                  title={t("pages.analytics.stores.iosReviews")}
                   value={
                     integrations.appstore.connected
                       ? iosReviews.length.toLocaleString()
@@ -307,14 +319,14 @@ function AnalyticsPage() {
                   }
                   description={
                     integrations.appstore.connected
-                      ? "Recent reviews"
-                      : "Connect App Store"
+                      ? t("pages.analytics.stores.recentReviews")
+                      : t("pages.analytics.stores.connectAppStore")
                   }
                   icon={<MessageSquare className="size-4" />}
                   loading={loading}
                 />
                 <MetricCard
-                  title="Android Reviews"
+                  title={t("pages.analytics.stores.androidReviews")}
                   value={
                     integrations.playstore.connected
                       ? androidReviews.length.toLocaleString()
@@ -322,8 +334,8 @@ function AnalyticsPage() {
                   }
                   description={
                     integrations.playstore.connected
-                      ? "Recent reviews"
-                      : "Connect Google Play"
+                      ? t("pages.analytics.stores.recentReviews")
+                      : t("pages.analytics.stores.connectGooglePlay")
                   }
                   icon={<MessageSquare className="size-4" />}
                   loading={loading}

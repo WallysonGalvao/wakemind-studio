@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
@@ -21,12 +22,13 @@ interface RatingsBreakdownProps {
   loading?: boolean;
 }
 
-const chartConfig = {
-  ios: { label: "iOS", color: "var(--chart-1)" },
-  android: { label: "Android", color: "var(--chart-2)" },
-} satisfies ChartConfig;
-
 export function RatingsBreakdown({ ios, android, loading }: RatingsBreakdownProps) {
+  const { t } = useTranslation();
+  const chartConfig = {
+    ios: { label: t("components.ratingsBreakdown.ios"), color: "var(--chart-1)" },
+    android: { label: t("components.ratingsBreakdown.android"), color: "var(--chart-2)" },
+  } satisfies ChartConfig;
+
   const data = ["5", "4", "3", "2", "1"].map((star) => ({
     star: `${star}★`,
     ios: ios?.[star] ?? 0,
@@ -38,15 +40,15 @@ export function RatingsBreakdown({ ios, android, loading }: RatingsBreakdownProp
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Ratings Breakdown</CardTitle>
-        <CardDescription>Distribution by star rating (iOS vs Android)</CardDescription>
+        <CardTitle>{t("components.ratingsBreakdown.title")}</CardTitle>
+        <CardDescription>{t("components.ratingsBreakdown.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         {loading ? (
           <Skeleton className="h-62.5 w-full" />
         ) : !hasData ? (
           <div className="flex h-62.5 items-center justify-center text-sm text-muted-foreground">
-            No ratings data available
+            {t("components.ratingsBreakdown.empty")}
           </div>
         ) : (
           <ChartContainer config={chartConfig} className="h-62.5 w-full">

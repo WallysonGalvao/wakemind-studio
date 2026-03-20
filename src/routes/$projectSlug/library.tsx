@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { Download, ExternalLink, Plus, Search, Trash2 } from "lucide-react";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { CreatePackageDialog } from "@/components/library/create-package-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -51,20 +52,28 @@ function getLastEdited(pkg: AchievementPackage, assets: GeneratedAsset[]): numbe
   return pkgAssets.length > 0 ? pkgAssets[0]!.createdAt : 0;
 }
 
-function formatRelativeDate(ts: number): string {
+function formatRelativeDate(
+  ts: number,
+  t: (key: string, opts?: Record<string, unknown>) => string,
+): string {
   if (ts === 0) return "";
   const diff = Date.now() - ts;
   const minutes = Math.floor(diff / 60_000);
-  if (minutes < 1) return "Edited just now";
-  if (minutes < 60) return `Edited ${minutes}m ago`;
+  if (minutes < 1) return t("pages.library.editedJustNow");
+  if (minutes < 60) return t("pages.library.editedMinutes", { count: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `Edited ${hours}h ago`;
+  if (hours < 24) return t("pages.library.editedHours", { count: hours });
   const days = Math.floor(hours / 24);
-  if (days < 30) return `Edited ${days}d ago`;
-  return `Edited ${new Date(ts).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}`;
+  if (days < 30) return t("pages.library.editedDays", { count: days });
+  return new Date(ts).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 function LibraryPage() {
+  const { t } = useTranslation();
   const { assets, customPackages } = Route.useLoaderData();
   const project = useProject();
   const router = useRouter();
@@ -127,10 +136,8 @@ function LibraryPage() {
     <div className="flex h-full flex-col gap-6 overflow-auto p-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Library</h1>
-        <p className="text-muted-foreground">
-          Browse achievement icon packages and generated assets.
-        </p>
+        <h1 className="text-3xl font-bold tracking-tight">{t("pages.library.title")}</h1>
+        <p className="text-muted-foreground">{t("pages.library.subtitle")}</p>
       </div>
 
       {/* Search + Sort */}
@@ -138,7 +145,7 @@ function LibraryPage() {
         <div className="relative max-w-sm flex-1">
           <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search packages…"
+            placeholder={t("pages.library.searchPlaceholder")}
             value={search}
             onChange={handleSearchChange}
             className="pl-9"
@@ -149,9 +156,13 @@ function LibraryPage() {
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="last-edited">Last edited</SelectItem>
-            <SelectItem value="name">Name</SelectItem>
-            <SelectItem value="assets">Asset count</SelectItem>
+            <SelectItem value="last-edited">
+              {t("pages.library.sortOptions.lastEdited")}
+            </SelectItem>
+            <SelectItem value="name">{t("pages.library.sortOptions.name")}</SelectItem>
+            <SelectItem value="assets">
+              {t("pages.library.sortOptions.assetCount")}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -169,7 +180,7 @@ function LibraryPage() {
             <Plus className="size-6 text-muted-foreground transition-colors group-hover:text-primary" />
           </div>
           <span className="text-sm font-medium text-muted-foreground transition-colors group-hover:text-foreground">
-            Create new package
+            {t("pages.library.createPackage")}
           </span>
         </button>
 
@@ -205,7 +216,7 @@ function LibraryPage() {
                     variant="secondary"
                     className="absolute top-2 right-2 bg-white/20 text-[10px] text-white backdrop-blur-sm"
                   >
-                    Custom
+                    {t("pages.library.custom")}
                   </Badge>
                 )}
               </div>
@@ -221,7 +232,7 @@ function LibraryPage() {
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {lastEdited > 0 ? formatRelativeDate(lastEdited) : pkg.description}
+                  {lastEdited > 0 ? formatRelativeDate(lastEdited, t) : pkg.description}
                 </p>
               </div>
             </Link>
@@ -241,12 +252,12 @@ function LibraryPage() {
                     params={{ projectSlug: project.slug, packageId: pkg.id }}
                   >
                     <ExternalLink className="size-4" />
-                    Open
+                    {t("pages.library.contextMenu.open")}
                   </Link>
                 </ContextMenuItem>
                 <ContextMenuItem onClick={() => exportPackage(pkg)}>
                   <Download className="size-4" />
-                  Export JSON
+                  {t("pages.library.contextMenu.exportJson")}
                 </ContextMenuItem>
                 <ContextMenuSeparator />
                 <ContextMenuItem
@@ -254,7 +265,7 @@ function LibraryPage() {
                   onClick={() => handleDeletePackage(pkg.id)}
                 >
                   <Trash2 className="size-4" />
-                  Delete package
+                  {t("pages.library.contextMenu.deletePackage")}
                 </ContextMenuItem>
               </ContextMenuContent>
             </ContextMenu>

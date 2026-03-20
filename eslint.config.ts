@@ -1,6 +1,7 @@
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import pluginReactHooks from "eslint-plugin-react-hooks";
+// @ts-expect-error - missing types
 import pluginJsxA11y from "eslint-plugin-jsx-a11y";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 

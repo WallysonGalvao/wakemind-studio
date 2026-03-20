@@ -1,4 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 import { ChartAreaInteractive } from "@/components/dashboard/chart-area-interactive";
 import { DataTable } from "@/components/dashboard/data-table";
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/$projectSlug/dashboard")({
 });
 
 function Dashboard() {
+  const { t } = useTranslation();
   const { assets, stats, activity90d } = Route.useLoaderData();
   const project = useProject();
   const router = useRouter();
@@ -37,7 +39,7 @@ function Dashboard() {
       <div className="px-4 lg:px-6">
         <h1 className="text-2xl font-bold tracking-tight">{project.name}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Dashboard overview for this project.
+          {t("pages.dashboard.subtitle")}
         </p>
       </div>
       <SectionCards stats={stats} />

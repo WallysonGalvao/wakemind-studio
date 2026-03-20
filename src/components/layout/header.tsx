@@ -1,6 +1,7 @@
 import { Link, useMatches } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import { Globe, Monitor, Smartphone } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import {
   Breadcrumb,
@@ -28,38 +29,40 @@ function GitHubIcon({ className }: { className?: string }) {
   );
 }
 
-const routeLabels: Record<string, string> = {
-  "/": "Dashboard",
-  "/generate/image": "Generate Image",
-  "/generate/sound": "Generate Sound",
-  "/library": "Library",
-  "/settings": "Settings",
-  "/about": "About",
-};
-
-const repos: { label: string; href: string; icon: LucideIcon }[] = [
-  {
-    label: "Mobile",
-    href: "https://github.com/WallysonGalvao/wakemind",
-    icon: Smartphone,
-  },
-  {
-    label: "LP",
-    href: "https://github.com/WallysonGalvao/wakemindapp",
-    icon: Globe,
-  },
-  {
-    label: "Studio",
-    href: "https://github.com/WallysonGalvao/wakemind-studio",
-    icon: Monitor,
-  },
-];
-
 export function SiteHeader() {
+  const { t } = useTranslation();
   const matches = useMatches();
   const currentMatch = matches[matches.length - 1];
   const currentPath = currentMatch?.pathname ?? "/";
-  const pageLabel = routeLabels[currentPath] ?? "Page";
+
+  const routeLabels: Record<string, string> = {
+    "/": t("nav.dashboard"),
+    "/generate/image": t("nav.generateImage"),
+    "/generate/sound": t("nav.generateSound"),
+    "/library": t("nav.library"),
+    "/settings": t("nav.settings"),
+    "/about": t("nav.about"),
+  };
+
+  const repos: { label: string; href: string; icon: LucideIcon }[] = [
+    {
+      label: t("nav.mobile"),
+      href: "https://github.com/WallysonGalvao/wakemind",
+      icon: Smartphone,
+    },
+    {
+      label: t("nav.lp"),
+      href: "https://github.com/WallysonGalvao/wakemindapp",
+      icon: Globe,
+    },
+    {
+      label: t("nav.studio"),
+      href: "https://github.com/WallysonGalvao/wakemind-studio",
+      icon: Monitor,
+    },
+  ];
+
+  const pageLabel = routeLabels[currentPath] ?? currentPath;
 
   // Detect package detail pages: /packages/$packageId
   const isPackageDetail = currentPath.startsWith("/packages/");
@@ -82,12 +85,12 @@ export function SiteHeader() {
               <>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link to="/library">Library</Link>
+                    <Link to="/library">{t("nav.library")}</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{packageName ?? "Package"}</BreadcrumbPage>
+                  <BreadcrumbPage>{packageName ?? t("nav.package")}</BreadcrumbPage>
                 </BreadcrumbItem>
               </>
             ) : (
@@ -102,7 +105,7 @@ export function SiteHeader() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="hidden sm:flex">
                 <GitHubIcon className="size-4" />
-                GitHub
+                {t("nav.github")}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -123,7 +126,7 @@ export function SiteHeader() {
               rel="noopener noreferrer"
             >
               <GitHubIcon className="size-4" />
-              <span className="sr-only">GitHub</span>
+              <span className="sr-only">{t("nav.github")}</span>
             </a>
           </Button>
         </div>

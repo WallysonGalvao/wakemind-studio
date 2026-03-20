@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ExternalLink, Image as ImageIcon, Library, Music, Zap } from "lucide-react";
+import { ExternalLink, Image as ImageIcon, Library, Music } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
+import logo from "@/assets/images/fenrir.png";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,80 +29,72 @@ const STACK = [
   "sonner",
 ];
 
-const HOW_TO = [
-  {
-    icon: ImageIcon,
-    title: "Generate Image",
-    description:
-      "Create game-ready icons and assets with a single prompt. Choose a style preset, set the dimensions, and download your PNG in seconds.",
-    to: "/generate/image" as const,
-    cta: "Open Generator",
-    badge: null as string | null,
-  },
-  {
-    icon: Music,
-    title: "Generate Sound",
-    description:
-      "Produce ambient tracks, 8-bit SFX, and notification sounds to pair with your in-game achievements and alarms.",
-    to: "/generate/sound" as const,
-    cta: "Open Generator",
-    badge: "Coming soon" as string | null,
-  },
-  {
-    icon: Library,
-    title: "Browse Library",
-    description:
-      "Review the full catalogue of achievement icons included in the Basic Package. Preview every tier and icon before exporting.",
-    to: "/library" as const,
-    cta: "Open Library",
-    badge: null as string | null,
-  },
-];
-
 function About() {
+  const { t } = useTranslation();
+
+  const HOW_TO = [
+    {
+      icon: ImageIcon,
+      title: t("pages.about.generateImageCard.title"),
+      description: t("pages.about.generateImageCard.description"),
+      to: "/generate/image" as const,
+      cta: t("pages.about.generateImageCard.cta"),
+      badge: null as string | null,
+    },
+    {
+      icon: Music,
+      title: t("pages.about.generateSoundCard.title"),
+      description: t("pages.about.generateSoundCard.description"),
+      to: "/generate/sound" as const,
+      cta: t("pages.about.generateSoundCard.cta"),
+      badge: t("common.comingSoon") as string | null,
+    },
+    {
+      icon: Library,
+      title: t("pages.about.libraryCard.title"),
+      description: t("pages.about.libraryCard.description"),
+      to: "/library" as const,
+      cta: t("pages.about.libraryCard.cta"),
+      badge: null as string | null,
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-6 p-6">
       {/* Hero */}
       <Card>
         <CardHeader className="gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-              <Zap className="size-5" fill="currentColor" />
+            <div className="flex size-12 items-center justify-center rounded-xl bg-white p-2 shadow-lg">
+              <img src={logo} alt="Three Wolves" className="size-full object-contain" />
             </div>
             <div>
-              <CardTitle className="text-2xl">Wakemind Studio</CardTitle>
-              <CardDescription>
-                Asset creation &amp; achievement management for the Wakemind ecosystem
-              </CardDescription>
+              <CardTitle className="text-2xl font-bold tracking-tight">
+                {t("pages.about.title")}
+              </CardTitle>
+              <CardDescription>{t("pages.about.subtitle")}</CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-sm leading-relaxed text-muted-foreground">
+          <p>{t("pages.about.description")}</p>
           <p>
-            Wakemind Studio is the creative companion to the Wakemind mobile app — a tool
-            that lets developers and creators generate game-quality image assets and sound
-            effects powered by AI, manage a library of in-app achievement icons, and
-            configure the building blocks of the rewards system that runs inside the
-            Wakemind experience.
-          </p>
-          <p>
-            Whether you are bootstrapping a new achievement pack or fine-tuning existing
-            assets, the Studio gives you a focused, no-login workflow right in your
-            browser. Add your OpenAI API key in{" "}
+            {t("common.settings")}{" "}
             <Link
               to="/settings"
               className="text-primary underline underline-offset-4 hover:text-primary/80"
             >
-              Settings
-            </Link>{" "}
-            and start generating.
+              {t("common.settings")}
+            </Link>
           </p>
         </CardContent>
       </Card>
 
       {/* How to use */}
       <div>
-        <h2 className="mb-3 text-lg font-semibold tracking-tight">How to use</h2>
+        <h2 className="mb-3 text-lg font-semibold tracking-tight">
+          {t("pages.about.howToUse")}
+        </h2>
         <div className="grid gap-4 sm:grid-cols-3">
           {HOW_TO.map(({ icon: Icon, title, description, to, cta, badge }) => (
             <Card key={to} className="flex flex-col">
@@ -133,20 +127,17 @@ function About() {
       {/* Providers */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Providers</CardTitle>
-          <CardDescription>
-            External services powering generation features
-          </CardDescription>
+          <CardTitle className="text-base">{t("pages.about.providers.title")}</CardTitle>
+          <CardDescription>{t("pages.about.providers.description")}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           <div className="flex items-start justify-between gap-4 rounded-lg border border-border p-4">
             <div className="flex flex-col gap-1">
-              <p className="text-sm font-medium">OpenAI</p>
+              <p className="text-sm font-medium">
+                {t("pages.about.providers.openai.name")}
+              </p>
               <p className="text-sm text-muted-foreground">
-                Image generation via{" "}
-                <code className="font-mono text-xs">gpt-image-1</code> and{" "}
-                <code className="font-mono text-xs">dall-e-3</code>. Requires a personal
-                API key configured in Settings.
+                {t("pages.about.providers.openai.description")}
               </p>
             </div>
             <Button variant="ghost" size="sm" asChild className="shrink-0">
@@ -156,21 +147,22 @@ function About() {
                 rel="noopener noreferrer"
               >
                 <ExternalLink className="size-4" />
-                Docs
+                {t("pages.about.providers.openai.docs")}
               </a>
             </Button>
           </div>
           <div className="flex items-start gap-4 rounded-lg border border-border bg-muted/30 p-4">
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
-                <p className="text-sm font-medium">Sound Provider</p>
+                <p className="text-sm font-medium">
+                  {t("pages.about.providers.sound.name")}
+                </p>
                 <Badge variant="secondary" className="text-xs">
-                  Coming soon
+                  {t("common.comingSoon")}
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground">
-                Sound generation will support OpenAI TTS, ElevenLabs, or fal.ai. Provider
-                selection will be available in Settings once the feature ships.
+                {t("pages.about.providers.sound.description")}
               </p>
             </div>
           </div>
@@ -180,8 +172,8 @@ function About() {
       {/* Stack */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Stack</CardTitle>
-          <CardDescription>Core technologies used in this project</CardDescription>
+          <CardTitle className="text-base">{t("pages.about.stack.title")}</CardTitle>
+          <CardDescription>{t("pages.about.stack.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">

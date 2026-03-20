@@ -1,4 +1,5 @@
 import { Download, Eye, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import {
   ContextMenu,
@@ -18,11 +19,12 @@ interface AssetGridProps {
 }
 
 export function AssetGrid({ assets, onSelect, onDelete, onDownload }: AssetGridProps) {
+  const { t } = useTranslation();
   if (assets.length === 0) {
     return (
       <div className="flex h-48 flex-col items-center justify-center gap-2 text-muted-foreground">
-        <p className="text-sm">No assets generated yet.</p>
-        <p className="text-xs">Select an achievement and click Generate.</p>
+        <p className="text-sm">{t("components.assetGrid.empty")}</p>
+        <p className="text-xs">{t("components.assetGrid.emptyHint")}</p>
       </div>
     );
   }
@@ -55,6 +57,7 @@ function AssetItem({
   onDelete: (id: string) => void;
   onDownload: (asset: GeneratedAsset) => void | Promise<void>;
 }) {
+  const { t } = useTranslation();
   function handleSelect() {
     onSelect(asset);
   }
@@ -93,16 +96,16 @@ function AssetItem({
       <ContextMenuContent>
         <ContextMenuItem onClick={handleSelect}>
           <Eye className="size-4" />
-          View details
+          {t("components.assetGrid.contextMenu.viewDetails")}
         </ContextMenuItem>
         <ContextMenuItem onClick={handleDownload}>
           <Download className="size-4" />
-          Download
+          {t("components.assetGrid.contextMenu.download")}
         </ContextMenuItem>
         <ContextMenuSeparator />
         <ContextMenuItem variant="destructive" onClick={handleDelete}>
           <Trash2 className="size-4" />
-          Delete
+          {t("components.assetGrid.contextMenu.delete")}
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>

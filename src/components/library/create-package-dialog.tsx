@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import * as React from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { z } from "zod/v4";
 
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,7 @@ export function CreatePackageDialog({
   projectId,
 }: CreatePackageDialogProps) {
   "use no memo";
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -98,9 +100,9 @@ export function CreatePackageDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Create New Package</DialogTitle>
+          <DialogTitle>{t("components.createPackage.title")}</DialogTitle>
           <DialogDescription>
-            Create a custom asset package to organize your generated images.
+            {t("components.createPackage.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -110,10 +112,10 @@ export function CreatePackageDialog({
           noValidate
         >
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="pkg-name">Name *</Label>
+            <Label htmlFor="pkg-name">{t("components.createPackage.nameLabel")}</Label>
             <Input
               id="pkg-name"
-              placeholder="e.g. Fantasy Icons, Pixel Items…"
+              placeholder={t("components.createPackage.namePlaceholder")}
               aria-invalid={!!errors.name}
               {...register("name")}
             />
@@ -123,10 +125,12 @@ export function CreatePackageDialog({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="pkg-desc">Description</Label>
+            <Label htmlFor="pkg-desc">
+              {t("components.createPackage.descriptionLabel")}
+            </Label>
             <Input
               id="pkg-desc"
-              placeholder="Brief description of this package"
+              placeholder={t("components.createPackage.descriptionPlaceholder")}
               aria-invalid={!!errors.description}
               {...register("description")}
             />
@@ -136,7 +140,7 @@ export function CreatePackageDialog({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label>Color</Label>
+            <Label>{t("components.createPackage.colorLabel")}</Label>
             <div className="flex flex-wrap gap-2">
               {PACKAGE_COLOR_PRESETS.map((preset) => (
                 <button
@@ -150,7 +154,7 @@ export function CreatePackageDialog({
                   )}
                   style={{ backgroundColor: preset }}
                   onClick={() => setValue("color", preset)}
-                  aria-label={`Color ${preset}`}
+                  aria-label={t("components.createPackage.colorAriaLabel", { preset })}
                 />
               ))}
             </div>
@@ -162,7 +166,9 @@ export function CreatePackageDialog({
 
           <Button type="submit" disabled={isSubmitting} className="mt-2">
             <Plus className="size-4" />
-            {isSubmitting ? "Creating…" : "Create Package"}
+            {isSubmitting
+              ? t("components.createPackage.creating")
+              : t("components.createPackage.createBtn")}
           </Button>
         </form>
       </DialogContent>
