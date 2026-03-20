@@ -31,10 +31,11 @@ Deno.serve(async (req: Request) => {
     if (authError || !user) return jsonError("Unauthorized", 401);
 
     // ── Parse request ────────────────────────────────────────────────────
-    const { projectId, provider, token } = (await req.json()) as {
+    const { projectId, provider, token, metadata } = (await req.json()) as {
       projectId: string;
       provider: "mixpanel" | "revenuecat";
       token: string;
+      metadata?: Record<string, string>;
     };
 
     if (!projectId || !provider || !token) {
@@ -71,7 +72,7 @@ Deno.serve(async (req: Request) => {
 
     // If existing, delete old secret from Vault
     if (existing) {
-      await serviceClient.rpc("delete_secret", {
+      await serviceClient.rpc("vault_delete_secret", {
         secret_id: existing.vault_secret_id,
       });
       await serviceClient.from("project_integrations").delete().eq("id", existing.id);
@@ -79,28 +80,20 @@ Deno.serve(async (req: Request) => {
 
     // ── Store in Vault ───────────────────────────────────────────────────
     const secretName = `${provider}_${projectId}`;
-    const { data: vaultResult, error: vaultErr } = await serviceClient.rpc(
-      "create_secret",
-      { name: secretName, secret: token },
+    const { data: vaultSecretId, error: vaultErr } = await serviceClient.rpc(
+      "vault_create_secret",
+      { new_secret: token, new_name: secretName },
     );
 
-    if (vaultErr) {
-      // Fallback: try SQL directly
-      const { data: sqlResult, error: sqlErr } = await serviceClient.rpc(
-        "vault_create_secret",
-        { new_secret: token, new_name: secretName },
-      );
+    if (vaultErr) return jsonError(`Vault error: ${vaultErr.message}`, 500);
 
-      if (sqlErr) return jsonError(`Vault error: ${sqlErr.message}`, 500);
-
-      const vaultSecretId = sqlResult;
-      await insertIntegration(serviceClient, projectId, provider, vaultSecretId);
-
-      return jsonOk({ success: true, provider });
-    }
-
-    const vaultSecretId = vaultResult;
-    await insertIntegration(serviceClient, projectId, provider, vaultSecretId);
+    await insertIntegration(
+      serviceClient,
+      projectId,
+      provider,
+      vaultSecretId,
+      metadata ?? {},
+    );
 
     return jsonOk({ success: true, provider });
   } catch (err) {
@@ -114,11 +107,13 @@ async function insertIntegration(
   projectId: string,
   provider: string,
   vaultSecretId: string,
+  metadata: Record<string, string>,
 ) {
   const { error } = await client.from("project_integrations").insert({
     project_id: projectId,
     provider,
     vault_secret_id: vaultSecretId,
+    metadata,
   });
   if (error) throw new Error(`Failed to save integration: ${error.message}`);
 }

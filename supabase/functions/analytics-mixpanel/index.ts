@@ -9,7 +9,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const MIXPANEL_BASE = "https://data.mixpanel.com/api/2.0";
+const MIXPANEL_BASE = "https://mixpanel.com/api/2.0";
 const CACHE_TTL = 300; // 5 minutes
 
 Deno.serve(async (req: Request) => {
@@ -82,26 +82,29 @@ Deno.serve(async (req: Request) => {
     }
 
     // Decrypt from Vault
-    const { data: secrets, error: vaultErr } = (await serviceClient
+    const { data: secretRow, error: vaultErr } = await serviceClient
       .rpc("vault_decrypt_secret", { secret_id: integration.vault_secret_id })
-      .maybeSingle()) as { data: { decrypted_secret: string } | null; error: unknown };
+      .maybeSingle();
 
-    // Fallback: direct query to decrypted_secrets view
-    let apiSecret: string;
-    if (vaultErr || !secrets) {
-      const { data: vaultRow } = await serviceClient
-        .from("vault.decrypted_secrets" as never)
-        .select("decrypted_secret")
-        .eq("id", integration.vault_secret_id)
-        .single();
-      if (!vaultRow) return jsonError("Could not decrypt Mixpanel token", 500);
-      apiSecret = (vaultRow as { decrypted_secret: string }).decrypted_secret;
-    } else {
-      apiSecret = secrets.decrypted_secret;
+    if (vaultErr || !secretRow) {
+      return jsonError("Could not decrypt Mixpanel token", 500);
+    }
+    const raw: string = (secretRow as { decrypted_secret: string }).decrypted_secret;
+
+    // Credentials stored as JSON: { apiSecret, mixpanelProjectId }
+    let creds: { apiSecret: string; mixpanelProjectId: string };
+    try {
+      creds = JSON.parse(raw);
+    } catch {
+      return jsonError(
+        "Invalid Mixpanel credentials format — please reconnect in Settings",
+        500,
+      );
     }
 
     // ── Proxy to Mixpanel ────────────────────────────────────────────────
     const url = new URL(`${MIXPANEL_BASE}/${endpoint}`);
+    url.searchParams.set("project_id", creds.mixpanelProjectId);
     if (params) {
       for (const [k, v] of Object.entries(params)) {
         url.searchParams.set(k, v);
@@ -111,11 +114,24 @@ Deno.serve(async (req: Request) => {
     const mixpanelRes = await fetch(url.toString(), {
       headers: {
         Accept: "application/json",
-        Authorization: `Basic ${btoa(apiSecret + ":")}`,
+        Authorization: `Basic ${btoa(creds.apiSecret + ":")}`,
       },
     });
 
-    const data = await mixpanelRes.json();
+    const body = await mixpanelRes.text();
+    if (!mixpanelRes.ok) {
+      return jsonError(
+        `Mixpanel API error (${mixpanelRes.status}): ${body.slice(0, 200)}`,
+        502,
+      );
+    }
+
+    let data: unknown;
+    try {
+      data = JSON.parse(body);
+    } catch {
+      return jsonError(`Mixpanel returned non-JSON: ${body.slice(0, 200)}`, 502);
+    }
 
     return new Response(JSON.stringify(data), {
       headers: {

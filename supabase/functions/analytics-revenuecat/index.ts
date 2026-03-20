@@ -35,14 +35,13 @@ Deno.serve(async (req: Request) => {
     if (authError || !user) return jsonError("Unauthorized", 401);
 
     // ── Parse request ────────────────────────────────────────────────────
-    const { projectId, rcProjectId, endpoint } = (await req.json()) as {
-      projectId: string; // fenrir project id
-      rcProjectId: string; // RevenueCat project id
-      endpoint: string; // e.g. "metrics/overview"
+    const { projectId, endpoint } = (await req.json()) as {
+      projectId: string;
+      endpoint: string;
     };
 
-    if (!projectId || !rcProjectId || !endpoint) {
-      return jsonError("Missing projectId, rcProjectId, or endpoint", 400);
+    if (!projectId || !endpoint) {
+      return jsonError("Missing projectId or endpoint", 400);
     }
 
     // Allowed endpoints whitelist
@@ -80,30 +79,33 @@ Deno.serve(async (req: Request) => {
     }
 
     // Decrypt from Vault
-    const { data: secrets, error: vaultErr } = (await serviceClient
+    const { data: secretRow, error: vaultErr } = await serviceClient
       .rpc("vault_decrypt_secret", { secret_id: integration.vault_secret_id })
-      .maybeSingle()) as { data: { decrypted_secret: string } | null; error: unknown };
+      .maybeSingle();
 
-    let apiKey: string;
-    if (vaultErr || !secrets) {
-      const { data: vaultRow } = await serviceClient
-        .from("vault.decrypted_secrets" as never)
-        .select("decrypted_secret")
-        .eq("id", integration.vault_secret_id)
-        .single();
-      if (!vaultRow) return jsonError("Could not decrypt RevenueCat key", 500);
-      apiKey = (vaultRow as { decrypted_secret: string }).decrypted_secret;
-    } else {
-      apiKey = secrets.decrypted_secret;
+    if (vaultErr || !secretRow) {
+      return jsonError("Could not decrypt RevenueCat key", 500);
+    }
+    const raw: string = (secretRow as { decrypted_secret: string }).decrypted_secret;
+
+    // Credentials stored as JSON: { apiKey, rcProjectId }
+    let creds: { apiKey: string; rcProjectId: string };
+    try {
+      creds = JSON.parse(raw);
+    } catch {
+      return jsonError(
+        "Invalid RevenueCat credentials format \u2014 please reconnect in Settings",
+        500,
+      );
     }
 
-    // ── Proxy to RevenueCat ──────────────────────────────────────────────
-    const url = `${REVENUECAT_BASE}/v2/projects/${encodeURIComponent(rcProjectId)}/${endpoint}`;
+    // ── Proxy to RevenueCat ────────────────────────────────────────────
+    const url = `${REVENUECAT_BASE}/v2/projects/${encodeURIComponent(creds.rcProjectId)}/${endpoint}`;
 
     const rcRes = await fetch(url, {
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${creds.apiKey}`,
       },
     });
 

@@ -31,13 +31,16 @@ function AnalyticsPage() {
   const { data: integrations, isLoading: intLoading } = useQuery({
     queryKey: ["integrations", project.id],
     queryFn: () => getIntegrationStatus(project.id),
-    initialData: { mixpanel: false, revenuecat: false },
+    initialData: {
+      mixpanel: { connected: false, metadata: {} },
+      revenuecat: { connected: false, metadata: {} },
+    },
   });
 
   const { data: activeUsers, isLoading: mpUsersLoading } = useQuery({
     queryKey: ["mixpanel", "activeUsers", project.id],
     queryFn: () => fetchActiveUsers(project.id),
-    enabled: integrations.mixpanel,
+    enabled: integrations.mixpanel.connected,
     staleTime: ANALYTICS_STALE_TIME,
     gcTime: ANALYTICS_GC_TIME,
   });
@@ -45,7 +48,7 @@ function AnalyticsPage() {
   const { data: topEvents = [], isLoading: mpEventsLoading } = useQuery({
     queryKey: ["mixpanel", "topEvents", project.id],
     queryFn: () => fetchTopEvents(project.id),
-    enabled: integrations.mixpanel,
+    enabled: integrations.mixpanel.connected,
     staleTime: ANALYTICS_STALE_TIME,
     gcTime: ANALYTICS_GC_TIME,
   });
@@ -62,22 +65,22 @@ function AnalyticsPage() {
         to.toISOString().slice(0, 10),
       );
     },
-    enabled: integrations.mixpanel,
+    enabled: integrations.mixpanel.connected,
     staleTime: ANALYTICS_STALE_TIME,
     gcTime: ANALYTICS_GC_TIME,
   });
 
   const { data: revenue, isLoading: rcLoading } = useQuery({
     queryKey: ["revenuecat", "overview", project.id],
-    queryFn: () => fetchOverview(project.id, project.id),
-    enabled: integrations.revenuecat,
+    queryFn: () => fetchOverview(project.id),
+    enabled: integrations.revenuecat.connected,
     staleTime: ANALYTICS_STALE_TIME,
     gcTime: ANALYTICS_GC_TIME,
   });
 
   const loading =
     intLoading || mpUsersLoading || mpEventsLoading || mpRetentionLoading || rcLoading;
-  const hasAny = integrations.mixpanel || integrations.revenuecat;
+  const hasAny = integrations.mixpanel.connected || integrations.revenuecat.connected;
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6">
@@ -118,19 +121,27 @@ function AnalyticsPage() {
             <MetricCard
               title="Daily Active Users"
               value={
-                integrations.mixpanel ? (activeUsers?.dau ?? 0).toLocaleString() : "—"
+                integrations.mixpanel.connected
+                  ? (activeUsers?.dau ?? 0).toLocaleString()
+                  : "—"
               }
-              description={integrations.mixpanel ? "From Mixpanel" : "Connect Mixpanel"}
+              description={
+                integrations.mixpanel.connected ? "From Mixpanel" : "Connect Mixpanel"
+              }
               icon={<Users className="size-4" />}
               loading={loading}
             />
             <MetricCard
               title="MRR"
               value={
-                integrations.revenuecat ? `$${(revenue?.mrr ?? 0).toLocaleString()}` : "—"
+                integrations.revenuecat.connected
+                  ? `$${(revenue?.mrr ?? 0).toLocaleString()}`
+                  : "—"
               }
               description={
-                integrations.revenuecat ? "From RevenueCat" : "Connect RevenueCat"
+                integrations.revenuecat.connected
+                  ? "From RevenueCat"
+                  : "Connect RevenueCat"
               }
               icon={<DollarSign className="size-4" />}
               loading={loading}
@@ -138,12 +149,14 @@ function AnalyticsPage() {
             <MetricCard
               title="Churn Rate"
               value={
-                integrations.revenuecat
+                integrations.revenuecat.connected
                   ? `${(revenue?.churn_rate ?? 0).toFixed(1)}%`
                   : "—"
               }
               description={
-                integrations.revenuecat ? "From RevenueCat" : "Connect RevenueCat"
+                integrations.revenuecat.connected
+                  ? "From RevenueCat"
+                  : "Connect RevenueCat"
               }
               icon={<TrendingDown className="size-4" />}
               loading={loading}
@@ -151,12 +164,14 @@ function AnalyticsPage() {
             <MetricCard
               title="Active Subscriptions"
               value={
-                integrations.revenuecat
+                integrations.revenuecat.connected
                   ? (revenue?.active_subscribers ?? 0).toLocaleString()
                   : "—"
               }
               description={
-                integrations.revenuecat ? "From RevenueCat" : "Connect RevenueCat"
+                integrations.revenuecat.connected
+                  ? "From RevenueCat"
+                  : "Connect RevenueCat"
               }
               icon={<Activity className="size-4" />}
               loading={loading}
@@ -170,12 +185,12 @@ function AnalyticsPage() {
           </div>
 
           {/* Top Events */}
-          {integrations.mixpanel && (
+          {integrations.mixpanel.connected && (
             <TopEventsTable events={topEvents} loading={loading} />
           )}
 
           {/* Retention Heatmap */}
-          {integrations.mixpanel && (
+          {integrations.mixpanel.connected && (
             <RetentionHeatmap data={retention} loading={loading} />
           )}
         </>
