@@ -1,20 +1,39 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Activity, DollarSign, Settings, TrendingDown, Users } from "lucide-react";
+import {
+  Activity,
+  DollarSign,
+  MessageSquare,
+  Settings,
+  Star,
+  TrendingDown,
+  Users,
+} from "lucide-react";
 
 import { ActiveUsersChart } from "@/components/analytics/active-users-chart";
 import { MetricCard } from "@/components/analytics/metric-card";
+import { RatingsBreakdown } from "@/components/analytics/ratings-breakdown";
 import { RetentionHeatmap } from "@/components/analytics/retention-heatmap";
 import { RevenueChart } from "@/components/analytics/revenue-chart";
+import { ReviewsFeed } from "@/components/analytics/reviews-feed";
 import { TopEventsTable } from "@/components/analytics/top-events-table";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { useProject } from "@/hooks/use-project";
+import {
+  fetchAppStoreRatings,
+  fetchAppStoreReviews,
+} from "@/services/analytics/appstore";
 import { getIntegrationStatus } from "@/services/analytics/integrations";
 import {
   fetchActiveUsers,
   fetchRetention,
   fetchTopEvents,
 } from "@/services/analytics/mixpanel";
+import {
+  fetchPlayStoreRatings,
+  fetchPlayStoreReviews,
+} from "@/services/analytics/playstore";
 import { fetchOverview } from "@/services/analytics/revenuecat";
 
 export const Route = createFileRoute("/$projectSlug/analytics")({
@@ -34,6 +53,8 @@ function AnalyticsPage() {
     initialData: {
       mixpanel: { connected: false, metadata: {} },
       revenuecat: { connected: false, metadata: {} },
+      appstore: { connected: false, metadata: {} },
+      playstore: { connected: false, metadata: {} },
     },
   });
 
@@ -78,9 +99,54 @@ function AnalyticsPage() {
     gcTime: ANALYTICS_GC_TIME,
   });
 
+  // ── Store queries ────────────────────────────────────────────────────
+  const { data: iosRatings, isLoading: iosRatingsLoading } = useQuery({
+    queryKey: ["appstore", "ratings", project.id],
+    queryFn: () => fetchAppStoreRatings(project.id),
+    enabled: integrations.appstore.connected,
+    staleTime: ANALYTICS_STALE_TIME,
+    gcTime: ANALYTICS_GC_TIME,
+  });
+
+  const { data: iosReviews = [], isLoading: iosReviewsLoading } = useQuery({
+    queryKey: ["appstore", "reviews", project.id],
+    queryFn: () => fetchAppStoreReviews(project.id),
+    enabled: integrations.appstore.connected,
+    staleTime: ANALYTICS_STALE_TIME,
+    gcTime: ANALYTICS_GC_TIME,
+  });
+
+  const { data: androidRatings, isLoading: androidRatingsLoading } = useQuery({
+    queryKey: ["playstore", "ratings", project.id],
+    queryFn: () => fetchPlayStoreRatings(project.id),
+    enabled: integrations.playstore.connected,
+    staleTime: ANALYTICS_STALE_TIME,
+    gcTime: ANALYTICS_GC_TIME,
+  });
+
+  const { data: androidReviews = [], isLoading: androidReviewsLoading } = useQuery({
+    queryKey: ["playstore", "reviews", project.id],
+    queryFn: () => fetchPlayStoreReviews(project.id),
+    enabled: integrations.playstore.connected,
+    staleTime: ANALYTICS_STALE_TIME,
+    gcTime: ANALYTICS_GC_TIME,
+  });
+
   const loading =
-    intLoading || mpUsersLoading || mpEventsLoading || mpRetentionLoading || rcLoading;
-  const hasAny = integrations.mixpanel.connected || integrations.revenuecat.connected;
+    intLoading ||
+    mpUsersLoading ||
+    mpEventsLoading ||
+    mpRetentionLoading ||
+    rcLoading ||
+    iosRatingsLoading ||
+    iosReviewsLoading ||
+    androidRatingsLoading ||
+    androidReviewsLoading;
+  const hasAny =
+    integrations.mixpanel.connected ||
+    integrations.revenuecat.connected ||
+    integrations.appstore.connected ||
+    integrations.playstore.connected;
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6">
@@ -104,8 +170,8 @@ function AnalyticsPage() {
           <Activity className="mb-4 size-10 text-muted-foreground/50" />
           <h2 className="text-lg font-semibold">No integrations connected</h2>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Connect Mixpanel and/or RevenueCat in project settings to see live analytics
-            data.
+            Connect Mixpanel, RevenueCat, App Store Connect, or Google Play in project
+            settings to see live analytics data.
           </p>
           <Button className="mt-4" asChild>
             <Link to="/$projectSlug/settings" params={{ projectSlug: project.slug }}>
@@ -192,6 +258,98 @@ function AnalyticsPage() {
           {/* Retention Heatmap */}
           {integrations.mixpanel.connected && (
             <RetentionHeatmap data={retention} loading={loading} />
+          )}
+
+          {/* ── Stores Section ──────────────────────────────────────── */}
+          {(integrations.appstore.connected || integrations.playstore.connected) && (
+            <>
+              <Separator />
+
+              <div>
+                <h2 className="text-lg font-semibold tracking-tight">App Stores</h2>
+                <p className="mt-0.5 text-sm text-muted-foreground">
+                  Ratings and reviews from the App Store and Google Play.
+                </p>
+              </div>
+
+              {/* Store KPI Cards */}
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <MetricCard
+                  title="iOS Rating"
+                  value={
+                    integrations.appstore.connected
+                      ? `${iosRatings?.average ?? "—"} ★`
+                      : "—"
+                  }
+                  description={
+                    integrations.appstore.connected
+                      ? `${iosRatings?.total ?? 0} ratings`
+                      : "Connect App Store"
+                  }
+                  icon={<Star className="size-4" />}
+                  loading={loading}
+                />
+                <MetricCard
+                  title="Android Rating"
+                  value={
+                    integrations.playstore.connected
+                      ? `${androidRatings?.average ?? "—"} ★`
+                      : "—"
+                  }
+                  description={
+                    integrations.playstore.connected
+                      ? `${androidRatings?.total ?? 0} ratings`
+                      : "Connect Google Play"
+                  }
+                  icon={<Star className="size-4" />}
+                  loading={loading}
+                />
+                <MetricCard
+                  title="iOS Reviews"
+                  value={
+                    integrations.appstore.connected
+                      ? iosReviews.length.toLocaleString()
+                      : "—"
+                  }
+                  description={
+                    integrations.appstore.connected
+                      ? "Recent reviews"
+                      : "Connect App Store"
+                  }
+                  icon={<MessageSquare className="size-4" />}
+                  loading={loading}
+                />
+                <MetricCard
+                  title="Android Reviews"
+                  value={
+                    integrations.playstore.connected
+                      ? androidReviews.length.toLocaleString()
+                      : "—"
+                  }
+                  description={
+                    integrations.playstore.connected
+                      ? "Recent reviews"
+                      : "Connect Google Play"
+                  }
+                  icon={<MessageSquare className="size-4" />}
+                  loading={loading}
+                />
+              </div>
+
+              {/* Ratings & Reviews */}
+              <div className="grid gap-4 lg:grid-cols-2">
+                <RatingsBreakdown
+                  ios={iosRatings?.distribution ?? null}
+                  android={androidRatings?.distribution ?? null}
+                  loading={loading}
+                />
+                <ReviewsFeed
+                  iosReviews={iosReviews}
+                  androidReviews={androidReviews}
+                  loading={loading}
+                />
+              </div>
+            </>
           )}
         </>
       )}

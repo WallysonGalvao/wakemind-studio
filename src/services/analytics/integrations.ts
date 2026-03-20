@@ -1,8 +1,10 @@
 import { supabase } from "@/lib/supabase";
 
+export type IntegrationProvider = "mixpanel" | "revenuecat" | "appstore" | "playstore";
+
 export async function saveIntegration(
   projectId: string,
-  provider: "mixpanel" | "revenuecat",
+  provider: IntegrationProvider,
   token: string,
   metadata?: Record<string, string>,
 ): Promise<void> {
@@ -18,9 +20,16 @@ export interface IntegrationInfo {
   metadata: Record<string, string>;
 }
 
+export interface IntegrationStatusMap {
+  mixpanel: IntegrationInfo;
+  revenuecat: IntegrationInfo;
+  appstore: IntegrationInfo;
+  playstore: IntegrationInfo;
+}
+
 export async function getIntegrationStatus(
   projectId: string,
-): Promise<{ mixpanel: IntegrationInfo; revenuecat: IntegrationInfo }> {
+): Promise<IntegrationStatusMap> {
   const { data, error } = await supabase
     .from("project_integrations")
     .select("provider, metadata")
@@ -28,18 +37,23 @@ export async function getIntegrationStatus(
 
   if (error) throw new Error(error.message);
 
-  const rows = data ?? [];
-  const mp = rows.find((d) => d.provider === "mixpanel");
-  const rc = rows.find((d) => d.provider === "revenuecat");
+  const rows = (data ?? []) as unknown as Array<{
+    provider: string;
+    metadata: Record<string, string> | null;
+  }>;
+
+  function info(provider: string): IntegrationInfo {
+    const row = rows.find((d) => d.provider === provider);
+    return {
+      connected: !!row,
+      metadata: (row?.metadata as Record<string, string>) ?? {},
+    };
+  }
 
   return {
-    mixpanel: {
-      connected: !!mp,
-      metadata: (mp?.metadata as Record<string, string>) ?? {},
-    },
-    revenuecat: {
-      connected: !!rc,
-      metadata: (rc?.metadata as Record<string, string>) ?? {},
-    },
+    mixpanel: info("mixpanel"),
+    revenuecat: info("revenuecat"),
+    appstore: info("appstore"),
+    playstore: info("playstore"),
   };
 }

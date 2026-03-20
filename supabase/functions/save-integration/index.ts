@@ -33,7 +33,7 @@ Deno.serve(async (req: Request) => {
     // ── Parse request ────────────────────────────────────────────────────
     const { projectId, provider, token, metadata } = (await req.json()) as {
       projectId: string;
-      provider: "mixpanel" | "revenuecat";
+      provider: "mixpanel" | "revenuecat" | "appstore" | "playstore";
       token: string;
       metadata?: Record<string, string>;
     };
@@ -42,7 +42,7 @@ Deno.serve(async (req: Request) => {
       return jsonError("Missing projectId, provider, or token", 400);
     }
 
-    if (!["mixpanel", "revenuecat"].includes(provider)) {
+    if (!["mixpanel", "revenuecat", "appstore", "playstore"].includes(provider)) {
       return jsonError("Invalid provider", 400);
     }
 
