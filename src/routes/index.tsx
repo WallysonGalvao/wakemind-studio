@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { Folders, Plus, Settings, Trash2 } from "lucide-react";
 import * as React from "react";
@@ -20,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { queryClient } from "@/configs/react-query";
 import {
   createProject,
   deleteProject,
@@ -42,32 +44,37 @@ function HubOverview() {
   const [createOpen, setCreateOpen] = React.useState(false);
   const [newName, setNewName] = React.useState("");
   const [newSlug, setNewSlug] = React.useState("");
-  const [creating, setCreating] = React.useState(false);
 
-  async function handleCreate(e: React.FormEvent) {
-    e.preventDefault();
-    if (!newName.trim() || !newSlug.trim()) return;
-    setCreating(true);
-    try {
-      await createProject(
+  const createMutation = useMutation({
+    mutationFn: () =>
+      createProject(
         newName.trim(),
         newSlug
           .trim()
           .toLowerCase()
           .replace(/[^a-z0-9-]/g, "-"),
-      );
+      ),
+    onSuccess: () => {
       setNewName("");
       setNewSlug("");
       setCreateOpen(false);
-      await router.invalidate();
-    } finally {
-      setCreating(false);
-    }
-  }
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      router.invalidate();
+    },
+  });
 
-  async function handleDelete(id: string) {
-    await deleteProject(id);
-    await router.invalidate();
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteProject(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      router.invalidate();
+    },
+  });
+
+  function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newName.trim() || !newSlug.trim()) return;
+    createMutation.mutate();
   }
 
   return (
@@ -149,7 +156,7 @@ function HubOverview() {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    handleDelete(project.id);
+                    deleteMutation.mutate(project.id);
                   }}
                 >
                   <Trash2 className="size-3" />
@@ -201,9 +208,9 @@ function HubOverview() {
             </div>
             <Button
               type="submit"
-              disabled={creating || !newName.trim() || !newSlug.trim()}
+              disabled={createMutation.isPending || !newName.trim() || !newSlug.trim()}
             >
-              {creating ? "Creating…" : "Create Project"}
+              {createMutation.isPending ? "Creating…" : "Create Project"}
             </Button>
           </form>
         </DialogContent>

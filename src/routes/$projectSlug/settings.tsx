@@ -1,3 +1,4 @@
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, Eye, EyeOff, Loader2, UserCircle } from "lucide-react";
 import * as React from "react";
@@ -12,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { queryClient } from "@/configs/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useProject } from "@/hooks/use-project";
 import { getIntegrationStatus, saveIntegration } from "@/services/analytics/integrations";
@@ -82,32 +84,26 @@ function IntegrationCard({
   placeholder: string;
 }) {
   const [token, setToken] = React.useState("");
-  const [saving, setSaving] = React.useState(false);
-  const [connected, setConnected] = React.useState(false);
   const [showToken, setShowToken] = React.useState(false);
-  const [loaded, setLoaded] = React.useState(false);
 
-  React.useEffect(() => {
-    getIntegrationStatus(projectId).then((status) => {
-      setConnected(status[provider]);
-      setLoaded(true);
-    });
-  }, [projectId, provider]);
+  const { data: status, isLoading } = useQuery({
+    queryKey: ["integrations", projectId],
+    queryFn: () => getIntegrationStatus(projectId),
+  });
 
-  async function handleSave() {
-    if (!token.trim()) return;
-    setSaving(true);
-    try {
-      await saveIntegration(projectId, provider, token.trim());
-      setConnected(true);
+  const connected = status?.[provider] ?? false;
+
+  const saveMutation = useMutation({
+    mutationFn: () => saveIntegration(projectId, provider, token.trim()),
+    onSuccess: () => {
       setToken("");
       toast.success(`${title} connected successfully`);
-    } catch (err) {
+      queryClient.invalidateQueries({ queryKey: ["integrations", projectId] });
+    },
+    onError: (err) => {
       toast.error(err instanceof Error ? err.message : "Failed to save integration");
-    } finally {
-      setSaving(false);
-    }
-  }
+    },
+  });
 
   return (
     <Card>
@@ -124,7 +120,7 @@ function IntegrationCard({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        {loaded && (
+        {!isLoading && (
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Input
@@ -142,8 +138,11 @@ function IntegrationCard({
                 {showToken ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>
             </div>
-            <Button onClick={handleSave} disabled={saving || !token.trim()}>
-              {saving && <Loader2 className="size-4 animate-spin" />}
+            <Button
+              onClick={() => saveMutation.mutate()}
+              disabled={saveMutation.isPending || !token.trim()}
+            >
+              {saveMutation.isPending && <Loader2 className="size-4 animate-spin" />}
               {connected ? "Update" : "Connect"}
             </Button>
           </div>
