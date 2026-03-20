@@ -10,6 +10,7 @@ const SIGNED_URL_TTL = 3600; // 1 hour
 /** Upload a base64-encoded image to Supabase Storage. Returns the storage path. */
 export async function uploadAssetFile(
   userId: string,
+  projectId: string,
   assetId: string,
   b64: string,
   mimeType: string,
@@ -22,7 +23,7 @@ export async function uploadAssetFile(
   }
   const blob = new Blob([byteArray], { type: mimeType });
 
-  const path = `${userId}/${assetId}.${format}`;
+  const path = `${userId}/${projectId}/${assetId}.${format}`;
   const { error } = await supabase.storage.from(BUCKET).upload(path, blob, {
     contentType: mimeType,
     upsert: false,

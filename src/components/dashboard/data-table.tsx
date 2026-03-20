@@ -138,6 +138,7 @@ export function DataTable({
   data: GeneratedAsset[];
   onDelete?: (id: string) => Promise<void> | void;
 }) {
+  "use no memo";
   const [data, setData] = React.useState<GeneratedAsset[]>(() => initialData);
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -267,6 +268,7 @@ export function DataTable({
     [data],
   );
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
@@ -301,6 +303,26 @@ export function DataTable({
         return arrayMove(data, oldIndex, newIndex);
       });
     }
+  }
+
+  function handlePageSizeChange(value: string) {
+    table.setPageSize(Number(value));
+  }
+
+  function handleFirstPage() {
+    table.setPageIndex(0);
+  }
+
+  function handlePreviousPage() {
+    table.previousPage();
+  }
+
+  function handleNextPage() {
+    table.nextPage();
+  }
+
+  function handleLastPage() {
+    table.setPageIndex(table.getPageCount() - 1);
   }
 
   return (

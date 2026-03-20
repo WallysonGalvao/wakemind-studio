@@ -36,6 +36,12 @@ export async function fetchTopEvents(
   return (data ?? []) as MixpanelTopEvent[];
 }
 
+export interface MixpanelRetentionCohort {
+  date: string;
+  size: number;
+  retention: number[];
+}
+
 export async function fetchRetention(
   projectId: string,
   fromDate: string,
@@ -50,5 +56,5 @@ export async function fetchRetention(
   });
 
   if (error) throw new Error(error.message);
-  return data as Record<string, unknown>;
+  return (data ?? []) as MixpanelRetentionCohort[];
 }

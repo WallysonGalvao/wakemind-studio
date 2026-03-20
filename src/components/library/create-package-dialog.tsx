@@ -41,6 +41,7 @@ export function CreatePackageDialog({
   onCreated,
   projectId,
 }: CreatePackageDialogProps) {
+  "use no memo";
   const {
     register,
     handleSubmit,
@@ -54,6 +55,7 @@ export function CreatePackageDialog({
     defaultValues: { name: "", description: "", color: PACKAGE_COLOR_PRESETS[0] },
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const selectedColor = watch("color");
 
   const handleOpenChange = React.useCallback(

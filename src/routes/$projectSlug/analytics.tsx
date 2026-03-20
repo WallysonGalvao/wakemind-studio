@@ -4,12 +4,17 @@ import { Activity, DollarSign, Settings, TrendingDown, Users } from "lucide-reac
 
 import { ActiveUsersChart } from "@/components/analytics/active-users-chart";
 import { MetricCard } from "@/components/analytics/metric-card";
+import { RetentionHeatmap } from "@/components/analytics/retention-heatmap";
 import { RevenueChart } from "@/components/analytics/revenue-chart";
 import { TopEventsTable } from "@/components/analytics/top-events-table";
 import { Button } from "@/components/ui/button";
 import { useProject } from "@/hooks/use-project";
 import { getIntegrationStatus } from "@/services/analytics/integrations";
-import { fetchActiveUsers, fetchTopEvents } from "@/services/analytics/mixpanel";
+import {
+  fetchActiveUsers,
+  fetchRetention,
+  fetchTopEvents,
+} from "@/services/analytics/mixpanel";
 import { fetchOverview } from "@/services/analytics/revenuecat";
 
 export const Route = createFileRoute("/$projectSlug/analytics")({
@@ -37,13 +42,29 @@ function AnalyticsPage() {
     enabled: integrations.mixpanel,
   });
 
+  const { data: retention = [], isLoading: mpRetentionLoading } = useQuery({
+    queryKey: ["mixpanel", "retention", project.id],
+    queryFn: () => {
+      const to = new Date();
+      const from = new Date(to);
+      from.setDate(from.getDate() - 56);
+      return fetchRetention(
+        project.id,
+        from.toISOString().slice(0, 10),
+        to.toISOString().slice(0, 10),
+      );
+    },
+    enabled: integrations.mixpanel,
+  });
+
   const { data: revenue, isLoading: rcLoading } = useQuery({
     queryKey: ["revenuecat", "overview", project.id],
     queryFn: () => fetchOverview(project.id, project.id),
     enabled: integrations.revenuecat,
   });
 
-  const loading = intLoading || mpUsersLoading || mpEventsLoading || rcLoading;
+  const loading =
+    intLoading || mpUsersLoading || mpEventsLoading || mpRetentionLoading || rcLoading;
   const hasAny = integrations.mixpanel || integrations.revenuecat;
 
   return (
@@ -139,6 +160,11 @@ function AnalyticsPage() {
           {/* Top Events */}
           {integrations.mixpanel && (
             <TopEventsTable events={topEvents} loading={loading} />
+          )}
+
+          {/* Retention Heatmap */}
+          {integrations.mixpanel && (
+            <RetentionHeatmap data={retention} loading={loading} />
           )}
         </>
       )}

@@ -1,43 +1,48 @@
-# Wakemind Studio — Roadmap
+# Fenrir — Roadmap
 
 > Documento vivo. Atualizar conforme decisões forem tomadas.
 
-**Wakemind Studio** é a ferramenta de criação e gestão do ecossistema Wakemind. Permite que desenvolvedores e criadores gerem assets de imagem e som com qualidade de jogo usando IA, gerenciem uma biblioteca de ícones de conquistas e configurem os blocos de construção do sistema de recompensas que roda dentro do app mobile Wakemind. O Studio é a interface de _criação_; o app é a interface de _execução_.
+**Fenrir** é o Hub multi-projeto da Three Wolves. Reúne criação de assets (imagem e som com IA) e analytics de produto (Mixpanel + RevenueCat) em um workspace unificado por projeto.
 
 ---
 
-## Estado atual (Março 2026)
+## Estado atual
 
-| Rota / Feature                             | Status                       |
-| ------------------------------------------ | ---------------------------- |
-| Dashboard (KPIs + gráfico)                 | ✅ Implementado (dados mock) |
-| Geração de imagem (OpenAI)                 | ✅ Implementado              |
-| Biblioteca de conquistas (41 achievements) | ✅ Implementado              |
-| Settings (API key)                         | ✅ Implementado              |
-| Geração de som                             | 🚧 Placeholder               |
-| About                                      | ✅ Implementado              |
-| Backend / Auth                             | ❌ Não iniciado              |
-| Progresso de conquistas                    | ❌ Não iniciado              |
-| Sistema de créditos                        | ❌ Não iniciado              |
+| Feature                                    | Status          |
+| ------------------------------------------ | --------------- |
+| Hub overview (lista de projetos)           | ✅ Implementado |
+| Projeto: Dashboard (KPIs + gráfico)        | ✅ Implementado |
+| Projeto: Geração de imagem (OpenAI)        | ✅ Implementado |
+| Projeto: Geração de som (OpenAI TTS)       | ✅ Implementado |
+| Projeto: Biblioteca de conquistas          | ✅ Implementado |
+| Projeto: Analytics (Mixpanel + RevenueCat) | ✅ Implementado |
+| Projeto: Settings / Integrações (Vault)    | ✅ Implementado |
+| Auth (Supabase)                            | ✅ Implementado |
+| Storage (Supabase)                         | ✅ Implementado |
+| Edge Functions (5 deployed)                | ✅ Implementado |
+| React Query (server state)                 | ✅ Implementado |
+| React Compiler                             | ✅ Habilitado   |
+| Retenção cohort (heatmap)                  | ✅ Implementado |
+| Sistema de créditos                        | ❌ Não iniciado |
+| Progresso de conquistas                    | ❌ Não iniciado |
 
 ---
 
-## Fase 1 — Fechar o MVP
+## Fase 1 — ✅ MVP (Concluído)
 
-> **Objetivo:** ter todas as rotas com conteúdo real e a experiência básica funcionando do início ao fim.  
-> **Horizonte estimado:** curto prazo
+> Todas as rotas com conteúdo real e a experiência básica funcionando do início ao fim.
 
-### 1.1 Sound Generation (`/generate/sound`)
+### 1.1 Sound Generation (`/$projectSlug/generate/sound`) ✅
 
-Implementar a geração de áudio seguindo o mesmo padrão arquitetural do `generate/image.tsx`:
+Implementado com OpenAI TTS (gpt-4o-mini-tts / tts-1 / tts-1-hd):
 
-- Criar `src/services/openai/sound.ts` (ou ElevenLabs como provider alternativo)
-- Criar `src/lib/library/sound/presets.ts` com presets de estilo (ambient, 8-bit, SFX, etc.)
-- Rota com campos: nome, descrição, preset de estilo, duração, formato (mp3/wav)
-- Preview no browser com `<audio>` nativo
-- Download do arquivo gerado
-
-**Decisão pendente:** OpenAI TTS, ElevenLabs, fal.ai ou outro provider?
+- Edge Function `generate-sound` chamando `/v1/audio/speech`
+- 7 presets de voz (Narrator, Friendly NPC, Mysterious NPC, Announcer, 8-bit Character, Villain, Custom)
+- 9 vozes OpenAI (alloy, ash, coral, echo, fable, onyx, nova, sage, shimmer)
+- Controle de velocidade (0.25x – 4.0x), instruções de tom (gpt-4o-mini-tts)
+- Formatos: MP3, Opus, AAC, FLAC, WAV
+- Preview com `<audio>` nativo + download
+- Assets salvos em Supabase Storage + DB
 
 ---
 
@@ -112,13 +117,12 @@ O `BASIC_ACHIEVEMENT_PACKAGE` já é uma estrutura exportável. Evoluir para:
 
 ## Decisões em Aberto
 
-| Decisão                          | Opções                              | Impacto        |
-| -------------------------------- | ----------------------------------- | -------------- |
-| Backend provider                 | Supabase, Firebase, custom Node/Bun | Fase 3 inteira |
-| Sound generation provider        | OpenAI TTS, ElevenLabs, fal.ai      | Fase 1.1       |
-| ~~O app mobile já existe?~~      | ✅ Sim — `wakemind` repo confirmado | Fase 5 elevada |
-| Persistência local (pré-backend) | IndexedDB vs localStorage           | Fase 1.3       |
-| Modelo de créditos               | Por geração, por mês, por plano     | Fase 4.1       |
+| Decisão                       | Opções                              | Impacto        |
+| ----------------------------- | ----------------------------------- | -------------- |
+| ~~Backend provider~~          | ✅ Supabase (implementado)          | —              |
+| ~~Sound generation provider~~ | ✅ OpenAI TTS (implementado)        | —              |
+| ~~O app mobile já existe?~~   | ✅ Sim — `wakemind` repo confirmado | Fase 5 elevada |
+| Modelo de créditos            | Por geração, por mês, por plano     | Fase 4.1       |
 
 ---
 
@@ -128,32 +132,41 @@ O `BASIC_ACHIEVEMENT_PACKAGE` já é uma estrutura exportável. Evoluir para:
 src/
 ├── routes/                        # File-based routing (TanStack Router)
 │   ├── __root.tsx                 # Layout: sidebar + header
-│   ├── index.tsx                  # Dashboard ✅
-│   ├── about.tsx                  # About ✅
-│   ├── library.tsx                # Conquistas ✅
-│   ├── settings.tsx               # API key ✅
-│   └── generate/
-│       ├── image.tsx              # Geração de imagem ✅
-│       └── sound.tsx              # Placeholder
+│   ├── index.tsx                  # Hub overview (projetos) ✅
+│   └── $projectSlug/
+│       ├── dashboard.tsx          # KPIs, charts, data table ✅
+│       ├── analytics.tsx          # Mixpanel + RevenueCat ✅
+│       ├── library.tsx            # Conquistas ✅
+│       ├── settings.tsx           # Integrações (Vault) ✅
+│       └── generate/
+│           ├── image.tsx          # Geração de imagem ✅
+│           └── sound.tsx          # Geração de som ✅
 ├── services/
-│   └── openai/
-│       └── image.ts               # Chamada à API (axios)
+│   ├── supabase/                  # DB, storage, edge functions
+│   └── analytics/                 # Mixpanel + RevenueCat proxies
+├── hooks/
+│   ├── use-generation.ts          # Image generation hook
+│   ├── use-sound-generation.ts    # Sound generation hook
+│   ├── use-auth.tsx               # Auth hook
+│   └── use-settings.ts            # Config
 ├── lib/library/
 │   ├── achievements/packages/     # Pacotes de conquistas
-│   └── image/styles.ts            # Config de estilo e buildPrompt
-├── hooks/
-│   ├── use-settings.ts            # Leitura/escrita de config (localStorage)
-│   └── use-mobile.tsx
-├── constants/achievements.ts      # 41 conquistas definidas
-├── types/achievements.ts          # Enums e tipos
+│   ├── image/styles.ts            # Config de estilo e buildPrompt
+│   └── sound/presets.ts           # Voice presets (7 presets)
+├── configs/
+│   └── react-query.ts             # QueryClient centralizado
+├── constants/                     # achievements, brand, packages
+├── types/                         # TypeScript interfaces
 └── components/
+    ├── analytics/                 # metric-card, charts, heatmap
     ├── dashboard/                 # KPIs, gráfico, tabela
+    ├── generation/                # generate-button, options, preview, style-editor
     ├── layout/                    # Sidebar, header, nav-user
-    └── ui/                        # 20+ componentes shadcn/ui
+    └── ui/                        # 25+ componentes shadcn/ui
 ```
 
-**Stack principal:** React 19 · TanStack Router · Tailwind CSS v4 · Radix UI · Recharts · axios · Zod · sonner · Vite 7
+**Stack:** React 19 · React Compiler · TanStack Router · @tanstack/react-query · Tailwind CSS v4 · Radix UI · Recharts · Supabase · Zod · sonner · Vite
 
 ---
 
-_Última atualização: Março 2026_
+_Última atualização: Julho 2025_

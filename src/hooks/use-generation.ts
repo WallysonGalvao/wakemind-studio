@@ -84,7 +84,14 @@ export function useGeneration({
 
       const assetId = crypto.randomUUID();
       const mimeType = `image/${fmt}`;
-      const storagePath = await uploadAssetFile(user.id, assetId, b64, mimeType, fmt);
+      const storagePath = await uploadAssetFile(
+        user.id,
+        projectId ?? "",
+        assetId,
+        b64,
+        mimeType,
+        fmt,
+      );
 
       const asset: GeneratedAsset = {
         id: assetId,
