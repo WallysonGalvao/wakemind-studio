@@ -24,6 +24,10 @@ export const Route = createFileRoute("/$projectSlug/analytics")({
 function AnalyticsPage() {
   const project = useProject();
 
+  // Analytics data changes slowly — cache for 10 min, keep in memory for 30 min
+  const ANALYTICS_STALE_TIME = 1000 * 60 * 10;
+  const ANALYTICS_GC_TIME = 1000 * 60 * 30;
+
   const { data: integrations, isLoading: intLoading } = useQuery({
     queryKey: ["integrations", project.id],
     queryFn: () => getIntegrationStatus(project.id),
@@ -34,12 +38,16 @@ function AnalyticsPage() {
     queryKey: ["mixpanel", "activeUsers", project.id],
     queryFn: () => fetchActiveUsers(project.id),
     enabled: integrations.mixpanel,
+    staleTime: ANALYTICS_STALE_TIME,
+    gcTime: ANALYTICS_GC_TIME,
   });
 
   const { data: topEvents = [], isLoading: mpEventsLoading } = useQuery({
     queryKey: ["mixpanel", "topEvents", project.id],
     queryFn: () => fetchTopEvents(project.id),
     enabled: integrations.mixpanel,
+    staleTime: ANALYTICS_STALE_TIME,
+    gcTime: ANALYTICS_GC_TIME,
   });
 
   const { data: retention = [], isLoading: mpRetentionLoading } = useQuery({
@@ -55,12 +63,16 @@ function AnalyticsPage() {
       );
     },
     enabled: integrations.mixpanel,
+    staleTime: ANALYTICS_STALE_TIME,
+    gcTime: ANALYTICS_GC_TIME,
   });
 
   const { data: revenue, isLoading: rcLoading } = useQuery({
     queryKey: ["revenuecat", "overview", project.id],
     queryFn: () => fetchOverview(project.id, project.id),
     enabled: integrations.revenuecat,
+    staleTime: ANALYTICS_STALE_TIME,
+    gcTime: ANALYTICS_GC_TIME,
   });
 
   const loading =

@@ -4,12 +4,13 @@ import type { GenerationOptions } from "@/types/generation";
 export async function generateImageViaEdge(
   prompt: string,
   options: GenerationOptions,
+  projectId?: string,
 ): Promise<{ b64: string; format: string }> {
   const { data, error } = await supabase.functions.invoke<{
     b64: string;
     format: string;
   }>("generate-image", {
-    body: { prompt, options },
+    body: { prompt, options, projectId },
   });
 
   if (error) throw new Error(error.message);

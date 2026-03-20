@@ -55,7 +55,7 @@ export function useSoundGeneration({ projectId }: UseSoundGenerationProps = {}) 
     setResult(null);
 
     try {
-      const { b64, format: fmt } = await generateSoundViaEdge(input, options);
+      const { b64, format: fmt } = await generateSoundViaEdge(input, options, projectId);
       setResult({ b64, format: fmt, name, input });
 
       const {

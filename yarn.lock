@@ -2531,6 +2531,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:5.91.2":
+  version: 5.91.2
+  resolution: "@tanstack/query-core@npm:5.91.2"
+  checksum: 415ed176f5229344c8b37dd2483f23b57fe52ff505fd2149da06a5e401663652b88cf171ffc095b28442d02a52f0df99120511b89dd91d84ef710199dae512c2
+  languageName: node
+  linkType: hard
+
 "@tanstack/react-devtools@latest":
   version: 0.10.0
   resolution: "@tanstack/react-devtools@npm:0.10.0"
@@ -2542,6 +2549,17 @@ __metadata:
     react: ">=16.8"
     react-dom: ">=16.8"
   checksum: cd16f88ab786c2f7c8436ca0daa273eb659c9f16f47e0e21075dea352b1ef84d1abf623d48279fe5bd30d58f14c2985ab64eb7b39035c0056a80a93a1fe4d369
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.91.3":
+  version: 5.91.3
+  resolution: "@tanstack/react-query@npm:5.91.3"
+  dependencies:
+    "@tanstack/query-core": 5.91.2
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: 42873cd05b3a787501b979fe545d1f8c49b0b854d1de71dad8a94326e427c1cbaab70f46e9105bd26d605f87338b901a9d20c70774fa0168c8ba967941b293c9
   languageName: node
   linkType: hard
 
@@ -8140,6 +8158,7 @@ __metadata:
     "@tailwindcss/vite": ^4.1.18
     "@tanstack/devtools-vite": latest
     "@tanstack/react-devtools": latest
+    "@tanstack/react-query": ^5.91.3
     "@tanstack/react-router": latest
     "@tanstack/react-router-devtools": latest
     "@tanstack/react-table": ^8.21.3

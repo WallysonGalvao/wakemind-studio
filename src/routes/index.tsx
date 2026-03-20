@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { Folders, Plus, Settings, Trash2 } from "lucide-react";
 import * as React from "react";
 
@@ -164,16 +164,16 @@ function HubOverview() {
                   variant="ghost"
                   size="sm"
                   className="h-7 px-2 text-xs"
-                  asChild
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate({
+                      to: "/$projectSlug/settings",
+                      params: { projectSlug: project.slug },
+                    });
+                  }}
                 >
-                  <Link
-                    to="/$projectSlug/settings"
-                    params={{ projectSlug: project.slug }}
-                  >
-                    <Settings className="size-3" />
-                    Settings
-                  </Link>
+                  <Settings className="size-3" />
+                  Settings
                 </Button>
                 <Button
                   variant="ghost"

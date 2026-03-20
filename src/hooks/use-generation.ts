@@ -74,7 +74,7 @@ export function useGeneration({
     setResult(null);
 
     try {
-      const { b64, format: fmt } = await generateImageViaEdge(prompt, options);
+      const { b64, format: fmt } = await generateImageViaEdge(prompt, options, projectId);
       setResult({ b64, format: fmt, prompt, name });
 
       const {
