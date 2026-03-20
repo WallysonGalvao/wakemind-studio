@@ -207,8 +207,8 @@ function SettingsPage() {
         </p>
       </div>
 
-      <div className="flex max-w-xl flex-col gap-4">
-        <Card>
+      <div className="flex flex-col gap-6">
+        <Card className="max-w-xl">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
               <UserCircle className="size-4" />
@@ -222,9 +222,11 @@ function SettingsPage() {
           </CardHeader>
         </Card>
 
-        {ANALYTICS_CARDS.map((c) => (
-          <IntegrationCard key={c.provider} config={c} projectId={project.id} />
-        ))}
+        <div className="grid gap-4 md:grid-cols-2">
+          {ANALYTICS_CARDS.map((c) => (
+            <IntegrationCard key={c.provider} config={c} projectId={project.id} />
+          ))}
+        </div>
 
         <Separator />
 
@@ -235,9 +237,11 @@ function SettingsPage() {
           </p>
         </div>
 
-        {STORE_CARDS.map((c) => (
-          <IntegrationCard key={c.provider} config={c} projectId={project.id} />
-        ))}
+        <div className="grid gap-4 md:grid-cols-2">
+          {STORE_CARDS.map((c) => (
+            <IntegrationCard key={c.provider} config={c} projectId={project.id} />
+          ))}
+        </div>
       </div>
     </div>
   );
