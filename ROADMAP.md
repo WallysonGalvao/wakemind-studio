@@ -23,6 +23,10 @@
 | React Query (server state)                 | ✅ Implementado |
 | React Compiler                             | ✅ Habilitado   |
 | Retenção cohort (heatmap)                  | ✅ Implementado |
+| Repositórios por projeto                   | ✅ Implementado |
+| Breadcrumb dinâmico (slug-aware)           | ✅ Implementado |
+| About page reescrita                       | ✅ Implementado |
+| Sidebar collapsed mode                     | ✅ Implementado |
 | Sistema de créditos                        | ❌ Não iniciado |
 | Progresso de conquistas                    | ❌ Não iniciado |
 
@@ -43,6 +47,55 @@ Implementado com OpenAI TTS (gpt-4o-mini-tts / tts-1 / tts-1-hd):
 - Formatos: MP3, Opus, AAC, FLAC, WAV
 - Preview com `<audio>` nativo + download
 - Assets salvos em Supabase Storage + DB
+
+---
+
+## Fase 2 — ✅ Refinamento (Concluído)
+
+> Limpeza de placeholders, UX refinements e configuração por projeto.
+
+### 2.1 Limpeza da UI ✅
+
+- Removidos itens placeholder do nav-user (Billing, Notifications, Account)
+- Language toggle com bandeiras (🇧🇷 / 🇺🇸)
+- Sidebar footer com comportamento correto em modo collapsed
+- About page reescrita com features reais do produto
+
+### 2.2 Repositórios por Projeto ✅
+
+- Migration `004_project_repositories.sql` — coluna `repositories jsonb` na tabela `projects`
+- Tipo `ProjectRepository` (`{ label, url }`) em `types/project.ts`
+- Service `updateProjectRepositories()` em `services/supabase/projects.ts`
+- Header mostra dropdown de repos quando o projeto tem repositórios configurados
+- Settings com card para gerenciar repositórios do projeto
+
+### 2.3 Breadcrumb Dinâmico ✅
+
+- Breadcrumb agora strip o `$projectSlug` do pathname antes de buscar labels
+- Labels corretos para `/dashboard`, `/analytics` e demais rotas dentro de projeto
+- Rota `/` mostra "Projects" em vez de "Dashboard"
+
+---
+
+## Fase 3 — Polimento & DX
+
+> **Objetivo:** remover código morto, sincronizar tipos e garantir qualidade de build.
+
+### 3.1 Knip — Dead Code Cleanup
+
+- Rodar `npx knip` e remover exports/arquivos não utilizados
+- Garantir que `knip.json` ignora apenas o necessário
+
+### 3.2 Supabase Types Sync
+
+- Aplicar migration `004_project_repositories.sql` com `npx supabase db push`
+- Regenerar tipos com `npx supabase gen types typescript --local > src/types/supabase.ts`
+- Remover casts `as unknown as` temporários em `services/supabase/projects.ts`
+
+### 3.3 Testes & CI
+
+- Adicionar Vitest com cobertura básica para hooks e services
+- Lint + type-check no CI
 
 ---
 

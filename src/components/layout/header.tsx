@@ -33,18 +33,23 @@ export function SiteHeader() {
   const { t } = useTranslation();
   const matches = useMatches();
   const currentMatch = matches[matches.length - 1];
-  const currentPath = currentMatch?.pathname ?? "/";
+  const rawPath = currentMatch?.pathname ?? "/";
 
   // Extract project from route context (available inside /$projectSlug)
   const projectMatch = matches.find((m) => (m.context as { project?: Project })?.project);
   const project = (projectMatch?.context as { project?: Project })?.project;
   const repos: ProjectRepository[] = project?.repositories ?? [];
 
+  // Strip project slug prefix so route labels match (e.g. /wakemind/dashboard → /dashboard)
+  const currentPath = project ? rawPath.replace(`/${project.slug}`, "") || "/" : rawPath;
+
   const routeLabels: Record<string, string> = {
-    "/": t("nav.dashboard"),
+    "/": t("nav.projects"),
+    "/dashboard": t("nav.dashboard"),
     "/generate/image": t("nav.generateImage"),
     "/generate/sound": t("nav.generateSound"),
     "/library": t("nav.library"),
+    "/analytics": t("nav.analytics"),
     "/settings": t("nav.settings"),
     "/about": t("nav.about"),
   };

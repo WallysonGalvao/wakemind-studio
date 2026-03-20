@@ -121,6 +121,27 @@ export type Database = {
           },
         ];
       };
+      profiles: {
+        Row: {
+          avatar_url: string | null;
+          id: string;
+          name: string;
+          updated_at: string;
+        };
+        Insert: {
+          avatar_url?: string | null;
+          id: string;
+          name?: string;
+          updated_at?: string;
+        };
+        Update: {
+          avatar_url?: string | null;
+          id?: string;
+          name?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       project_integrations: {
         Row: {
           created_at: string;
@@ -161,7 +182,7 @@ export type Database = {
           created_at: string;
           id: string;
           name: string;
-          repositories: Json;
+          repositories: Json | null;
           slug: string;
           updated_at: string;
           user_id: string;
@@ -170,7 +191,7 @@ export type Database = {
           created_at?: string;
           id?: string;
           name: string;
-          repositories?: Json;
+          repositories?: Json | null;
           slug: string;
           updated_at?: string;
           user_id: string;
@@ -179,31 +200,10 @@ export type Database = {
           created_at?: string;
           id?: string;
           name?: string;
-          repositories?: Json;
+          repositories?: Json | null;
           slug?: string;
           updated_at?: string;
           user_id?: string;
-        };
-        Relationships: [];
-      };
-      profiles: {
-        Row: {
-          avatar_url: string | null;
-          id: string;
-          name: string;
-          updated_at: string;
-        };
-        Insert: {
-          avatar_url?: string | null;
-          id: string;
-          name?: string;
-          updated_at?: string;
-        };
-        Update: {
-          avatar_url?: string | null;
-          id?: string;
-          name?: string;
-          updated_at?: string;
         };
         Relationships: [];
       };
@@ -212,7 +212,17 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      vault_create_secret: {
+        Args: { new_name?: string; new_secret: string };
+        Returns: string;
+      };
+      vault_decrypt_secret: {
+        Args: { secret_id: string };
+        Returns: {
+          decrypted_secret: string;
+        }[];
+      };
+      vault_delete_secret: { Args: { secret_id: string }; Returns: undefined };
     };
     Enums: {
       [_ in never]: never;
