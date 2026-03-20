@@ -30,51 +30,6 @@
 
 ---
 
-## Fase 1 — ✅ MVP (Concluído)
-
-> Todas as rotas com conteúdo real e a experiência básica funcionando do início ao fim.
-
-### 1.1 Sound Generation (`/$projectSlug/generate/sound`) ✅
-
-Implementado com OpenAI TTS (gpt-4o-mini-tts / tts-1 / tts-1-hd):
-
-- Edge Function `generate-sound` chamando `/v1/audio/speech`
-- 7 presets de voz (Narrator, Friendly NPC, Mysterious NPC, Announcer, 8-bit Character, Villain, Custom)
-- 9 vozes OpenAI (alloy, ash, coral, echo, fable, onyx, nova, sage, shimmer)
-- Controle de velocidade (0.25x – 4.0x), instruções de tom (gpt-4o-mini-tts)
-- Formatos: MP3, Opus, AAC, FLAC, WAV
-- Preview com `<audio>` nativo + download
-- Assets salvos em Supabase Storage + DB
-
----
-
-## Fase 2 — ✅ Refinamento (Concluído)
-
-> Limpeza de placeholders, UX refinements e configuração por projeto.
-
-### 2.1 Limpeza da UI ✅
-
-- Removidos itens placeholder do nav-user (Billing, Notifications, Account)
-- Language toggle com bandeiras (🇧🇷 / 🇺🇸)
-- Sidebar footer com comportamento correto em modo collapsed
-- About page reescrita com features reais do produto
-
-### 2.2 Repositórios por Projeto ✅
-
-- Migration `004_project_repositories.sql` — coluna `repositories jsonb` na tabela `projects`
-- Tipo `ProjectRepository` (`{ label, url }`) em `types/project.ts`
-- Service `updateProjectRepositories()` em `services/supabase/projects.ts`
-- Header mostra dropdown de repos quando o projeto tem repositórios configurados
-- Settings com card para gerenciar repositórios do projeto
-
-### 2.3 Breadcrumb Dinâmico ✅
-
-- Breadcrumb agora strip o `$projectSlug` do pathname antes de buscar labels
-- Labels corretos para `/dashboard`, `/analytics` e demais rotas dentro de projeto
-- Rota `/` mostra "Projects" em vez de "Dashboard"
-
----
-
 ## Fase 3 — Polimento & DX
 
 > **Objetivo:** remover código morto, sincronizar tipos e garantir qualidade de build.
@@ -122,17 +77,6 @@ O `BASIC_ACHIEVEMENT_PACKAGE` já é uma estrutura exportável. Evoluir para:
 
 ---
 
-## Decisões em Aberto
-
-| Decisão                       | Opções                              | Impacto        |
-| ----------------------------- | ----------------------------------- | -------------- |
-| ~~Backend provider~~          | ✅ Supabase (implementado)          | —              |
-| ~~Sound generation provider~~ | ✅ OpenAI TTS (implementado)        | —              |
-| ~~O app mobile já existe?~~   | ✅ Sim — `wakemind` repo confirmado | Fase 4 elevada |
-| ~~Monetização~~               | ✅ Descartada — projeto interno     | —              |
-
----
-
 ## Arquitetura Atual (referência)
 
 ```
@@ -176,4 +120,4 @@ src/
 
 ---
 
-_Última atualização: Julho 2025_
+_Última atualização: Março 2026_
