@@ -27,8 +27,6 @@
 | Breadcrumb dinâmico (slug-aware)           | ✅ Implementado |
 | About page reescrita                       | ✅ Implementado |
 | Sidebar collapsed mode                     | ✅ Implementado |
-| Sistema de créditos                        | ❌ Não iniciado |
-| Progresso de conquistas                    | ❌ Não iniciado |
 
 ---
 
@@ -99,66 +97,22 @@ Implementado com OpenAI TTS (gpt-4o-mini-tts / tts-1 / tts-1-hd):
 
 ---
 
-## Fase 4 — Monetização & Escala
-
-> **Objetivo:** ativar o modelo de negócio que já está desenhado no código.  
-> **Horizonte estimado:** longo prazo
-
-### 4.1 Sistema de Créditos
-
-O dashboard já exibe "Generation Credits (450)" como KPI — implementar de fato:
-
-- Cada geração de imagem/som consome créditos
-- Créditos associados a um plano mensal
-- UI de saldo no header ou sidebar
-- Alerta quando créditos estão baixos
-
-### 4.2 Premium Achievements
-
-19 das 41 conquistas já estão marcadas como `isPremium: true`. Implementar o gate:
-
-- Conquistas premium visíveis na biblioteca mas marcadas com badge "Pro"
-- Progresso bloqueado para plano gratuito
-- CTA para upgrade ao tentar desbloquear
-
-### 4.3 Planos de Assinatura
-
-| Plano      | Créditos/mês | Achievements     | Assets salvos |
-| ---------- | ------------ | ---------------- | ------------- |
-| Free       | 50           | 22 (não-premium) | 20            |
-| Studio Pro | 500          | 41 (todos)       | Ilimitado     |
-| Team       | Custom       | 41 + white-label | Ilimitado     |
-
-### 4.4 Marketplace de Assets
-
-- Usuários podem publicar assets gerados para a comunidade
-- Curadoria por categoria (ícones, sons, backgrounds)
-- Download gratuito de assets da comunidade (consome créditos ou não?)
-
-### 4.5 Multi-Provider de Geração
-
-- Abstrair o provider em `src/services/generation/` com interface comum
-- Suporte a: OpenAI, Stability AI, fal.ai (imagem); OpenAI TTS, ElevenLabs (som)
-- Usuário escolhe o provider nas Settings por categoria
-
----
-
-## Fase 5 — Mobile & Companion App
+## Fase 4 — Mobile & Companion App
 
 > **Objetivo:** conectar o Studio ao app mobile que usa o sistema de conquistas.  
 > **Horizonte estimado:** médio prazo (o app mobile já existe — ver repos `wakemind` e `wakemindapp`)
 
-### 5.1 Contexto
+### 4.1 Contexto
 
-O app mobile companion **já existe** (`github.com/WallysonGalvao/wakemind`). O Studio é a interface de **criação e gestão**; o app é a interface de **execução e unlock**. Isso eleva a prioridade do SDK de conquistas (5.3) e da sincronização (5.2) — não são nice-to-haves, são parte central do produto.
+O app mobile companion **já existe** (`github.com/WallysonGalvao/wakemind`). O Studio é a interface de **criação e gestão**; o app é a interface de **execução e unlock**. Isso eleva a prioridade do SDK de conquistas (4.3) e da sincronização (4.2) — não são nice-to-haves, são parte central do produto.
 
-### 5.2 Sincronização Studio ↔ App
+### 4.2 Sincronização Studio ↔ App
 
 - Assets gerados no Studio ficam disponíveis no app (via CDN ou Supabase Storage)
 - Conquistas desbloqueadas no app aparecem no Studio com timestamp e dados do evento
 - Webhooks ou Realtime (Supabase) para atualização ao vivo
 
-### 5.3 SDK de Conquistas
+### 4.3 SDK de Conquistas
 
 O `BASIC_ACHIEVEMENT_PACKAGE` já é uma estrutura exportável. Evoluir para:
 
@@ -174,8 +128,8 @@ O `BASIC_ACHIEVEMENT_PACKAGE` já é uma estrutura exportável. Evoluir para:
 | ----------------------------- | ----------------------------------- | -------------- |
 | ~~Backend provider~~          | ✅ Supabase (implementado)          | —              |
 | ~~Sound generation provider~~ | ✅ OpenAI TTS (implementado)        | —              |
-| ~~O app mobile já existe?~~   | ✅ Sim — `wakemind` repo confirmado | Fase 5 elevada |
-| Modelo de créditos            | Por geração, por mês, por plano     | Fase 4.1       |
+| ~~O app mobile já existe?~~   | ✅ Sim — `wakemind` repo confirmado | Fase 4 elevada |
+| ~~Monetização~~               | ✅ Descartada — projeto interno     | —              |
 
 ---
 
