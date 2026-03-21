@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { Eye, EyeOff } from "lucide-react";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -22,18 +23,7 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
-const loginSchema = z.object({
-  email: z.email("Enter a valid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number")
-    .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
-});
-
-type LoginFields = z.infer<typeof loginSchema>;
+type LoginFields = { email: string; password: string };
 
 function LoginPage() {
   const { t } = useTranslation();
@@ -41,13 +31,40 @@ function LoginPage() {
   const [mode, setMode] = React.useState<"signin" | "signup">("signin");
   const [serverError, setServerError] = React.useState("");
   const [message, setMessage] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const signInSchema = React.useMemo(
+    () =>
+      z.object({
+        email: z.email(t("auth.emailInvalid")),
+        password: z.string().min(1, t("auth.passwordMinLength")),
+      }),
+    [t],
+  );
+
+  const signUpSchema = React.useMemo(
+    () =>
+      z.object({
+        email: z.email(t("auth.emailInvalid")),
+        password: z
+          .string()
+          .min(8, t("auth.passwordMinLength"))
+          .regex(/[A-Z]/, t("auth.passwordUppercase"))
+          .regex(/[a-z]/, t("auth.passwordLowercase"))
+          .regex(/[0-9]/, t("auth.passwordNumber"))
+          .regex(/[^A-Za-z0-9]/, t("auth.passwordSpecial")),
+      }),
+    [t],
+  );
+
+  const schema = mode === "signin" ? signInSchema : signUpSchema;
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginFields>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(schema),
   });
 
   async function onSubmit({ email, password }: LoginFields) {
@@ -143,14 +160,32 @@ function LoginPage() {
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="password">{t("auth.password")}</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder={t("auth.passwordPlaceholder")}
-              autoComplete={mode === "signin" ? "current-password" : "new-password"}
-              aria-invalid={!!errors.password}
-              {...register("password")}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder={t("auth.passwordPlaceholder")}
+                autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                aria-invalid={!!errors.password}
+                className="pr-10"
+                {...register("password")}
+              />
+              <button
+                type="button"
+                className="absolute top-0 right-0 flex h-full items-center px-3 text-muted-foreground hover:text-foreground"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={
+                  showPassword ? t("auth.hidePassword") : t("auth.showPassword")
+                }
+                tabIndex={-1}
+              >
+                {showPassword ? (
+                  <EyeOff className="size-4" />
+                ) : (
+                  <Eye className="size-4" />
+                )}
+              </button>
+            </div>
             {errors.password && (
               <p className="text-xs text-destructive">{errors.password.message}</p>
             )}
