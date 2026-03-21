@@ -3,14 +3,12 @@
 // Set the secret: supabase secrets set OPENAI_API_KEY=sk-...
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { getCorsHeaders } from "../_shared/cors.ts";
 import { checkRateLimit } from "../_shared/rate-limit.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
 Deno.serve(async (req: Request) => {
+  const corsHeaders = getCorsHeaders(req);
+
   // Preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
