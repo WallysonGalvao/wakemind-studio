@@ -2,6 +2,7 @@
   "name": "fenrir",
   "private": true,
   "type": "module",
+  "packageManager": "yarn@3.6.4",
   "imports": {
     "#/*": "./src/*"
   },
