@@ -24,7 +24,13 @@ export const Route = createFileRoute("/login")({
 
 const loginSchema = z.object({
   email: z.email("Enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
 });
 
 type LoginFields = z.infer<typeof loginSchema>;
@@ -223,12 +229,16 @@ function LoginPage() {
 
         {/* Studio Signature */}
         <div className="mt-12 flex flex-col items-center gap-2 opacity-40 transition-opacity hover:opacity-100">
-          <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-muted-foreground">
+          <span className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground uppercase">
             A tool by
           </span>
           <div className="flex items-center gap-2">
             <div className="flex size-6 items-center justify-center rounded bg-white p-0.5 shadow-sm ring-1 ring-border/50">
-              <img src={studioLogo} alt="Three Wolves" className="size-full object-contain" />
+              <img
+                src={studioLogo}
+                alt="Three Wolves"
+                className="size-full object-contain"
+              />
             </div>
             <span className="text-xs font-bold tracking-tight text-foreground">
               Three Wolves

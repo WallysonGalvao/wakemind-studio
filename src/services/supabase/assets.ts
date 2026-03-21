@@ -4,6 +4,7 @@ import type { Json } from "@/types/supabase";
 
 const BUCKET = "assets";
 const SIGNED_URL_TTL = 3600; // 1 hour
+const MAX_UPLOAD_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
 
 // ── Storage helpers ───────────────────────────────────────────────────────────
 
@@ -21,6 +22,25 @@ export async function uploadAssetFile(
   for (let i = 0; i < byteChars.length; i++) {
     byteArray[i] = byteChars.charCodeAt(i);
   }
+
+  if (byteArray.length > MAX_UPLOAD_SIZE_BYTES) {
+    throw new Error(`File exceeds maximum upload size of 50 MB`);
+  }
+
+  const allowedMimeTypes = [
+    "image/png",
+    "image/jpeg",
+    "image/webp",
+    "audio/mpeg",
+    "audio/wav",
+    "audio/opus",
+    "audio/aac",
+    "audio/flac",
+  ];
+  if (!allowedMimeTypes.includes(mimeType)) {
+    throw new Error(`Unsupported file type: ${mimeType}`);
+  }
+
   const blob = new Blob([byteArray], { type: mimeType });
 
   const path = `${userId}/${projectId}/${assetId}.${format}`;

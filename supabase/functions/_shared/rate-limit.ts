@@ -7,7 +7,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 /**
  * Check rate limit for a generation request.
  * Returns a 429 Response if rate-limited, or null if allowed.
- * Fail-open: if the check itself errors, the request is allowed.
+ * Fail-closed: if the check itself errors, a 503 is returned.
  */
 export async function checkRateLimit(
   userId: string,
@@ -25,9 +25,22 @@ export async function checkRateLimit(
   });
 
   if (error) {
-    // Fail-open: allow the request if rate limit check fails
+    // Fail-closed: reject the request if rate limit check fails
     console.error("Rate limit check failed:", error.message);
-    return null;
+    return new Response(
+      JSON.stringify({
+        error: "Service temporarily unavailable. Please try again later.",
+        code: "RATE_LIMIT_UNAVAILABLE",
+      }),
+      {
+        status: 503,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+          "Retry-After": "30",
+        },
+      },
+    );
   }
 
   const result = data as {

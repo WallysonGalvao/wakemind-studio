@@ -50,7 +50,7 @@ Deno.serve(async (req: Request) => {
     );
     if (rateLimitResponse) return rateLimitResponse;
 
-    // ── Parse request ────────────────────────────────────────────────────
+    // ── Parse & validate request ─────────────────────────────────────────────
     const { input, options } = (await req.json()) as {
       input: string;
       options: {
@@ -67,6 +67,79 @@ Deno.serve(async (req: Request) => {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    const ALLOWED_MODELS = ["tts-1", "tts-1-hd", "gpt-4o-mini-tts"];
+    const ALLOWED_VOICES = [
+      "alloy",
+      "ash",
+      "ballad",
+      "coral",
+      "echo",
+      "fable",
+      "nova",
+      "onyx",
+      "sage",
+      "shimmer",
+    ];
+    const ALLOWED_FORMATS = ["mp3", "opus", "aac", "flac", "wav"];
+    const MAX_INPUT_LENGTH = 4096;
+    const MAX_INSTRUCTIONS_LENGTH = 1000;
+    const MIN_SPEED = 0.25;
+    const MAX_SPEED = 4.0;
+
+    if (input.length > MAX_INPUT_LENGTH) {
+      return new Response(
+        JSON.stringify({
+          error: `Input exceeds maximum length of ${MAX_INPUT_LENGTH} characters`,
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (!ALLOWED_MODELS.includes(options.model)) {
+      return new Response(
+        JSON.stringify({ error: `Invalid model. Allowed: ${ALLOWED_MODELS.join(", ")}` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (!ALLOWED_VOICES.includes(options.voice)) {
+      return new Response(
+        JSON.stringify({ error: `Invalid voice. Allowed: ${ALLOWED_VOICES.join(", ")}` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (!ALLOWED_FORMATS.includes(options.format)) {
+      return new Response(
+        JSON.stringify({
+          error: `Invalid format. Allowed: ${ALLOWED_FORMATS.join(", ")}`,
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (
+      typeof options.speed !== "number" ||
+      options.speed < MIN_SPEED ||
+      options.speed > MAX_SPEED
+    ) {
+      return new Response(
+        JSON.stringify({
+          error: `Speed must be a number between ${MIN_SPEED} and ${MAX_SPEED}`,
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (options.instructions && options.instructions.length > MAX_INSTRUCTIONS_LENGTH) {
+      return new Response(
+        JSON.stringify({
+          error: `Instructions exceed maximum length of ${MAX_INSTRUCTIONS_LENGTH} characters`,
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
     }
 
     // ── Call OpenAI TTS ──────────────────────────────────────────────────

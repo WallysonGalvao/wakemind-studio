@@ -51,7 +51,7 @@ Deno.serve(async (req: Request) => {
     );
     if (rateLimitResponse) return rateLimitResponse;
 
-    // ── Parse request ────────────────────────────────────────────────────────
+    // ── Parse & validate request ─────────────────────────────────────────────
     const { prompt, options } = (await req.json()) as {
       prompt: string;
       options: {
@@ -68,6 +68,63 @@ Deno.serve(async (req: Request) => {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    const ALLOWED_MODELS = ["dall-e-2", "dall-e-3", "gpt-image-1"];
+    const ALLOWED_SIZES = ["256x256", "512x512", "1024x1024", "1024x1792", "1792x1024"];
+    const ALLOWED_QUALITIES = ["standard", "hd", "low", "medium", "high", "auto"];
+    const ALLOWED_FORMATS = ["png", "jpeg", "webp"];
+    const ALLOWED_BACKGROUNDS = ["transparent", "opaque", "auto"];
+    const MAX_PROMPT_LENGTH = 4000;
+
+    if (prompt.length > MAX_PROMPT_LENGTH) {
+      return new Response(
+        JSON.stringify({
+          error: `Prompt exceeds maximum length of ${MAX_PROMPT_LENGTH} characters`,
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (!ALLOWED_MODELS.includes(options.model)) {
+      return new Response(
+        JSON.stringify({ error: `Invalid model. Allowed: ${ALLOWED_MODELS.join(", ")}` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (!ALLOWED_SIZES.includes(options.size)) {
+      return new Response(
+        JSON.stringify({ error: `Invalid size. Allowed: ${ALLOWED_SIZES.join(", ")}` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (!ALLOWED_QUALITIES.includes(options.quality)) {
+      return new Response(
+        JSON.stringify({
+          error: `Invalid quality. Allowed: ${ALLOWED_QUALITIES.join(", ")}`,
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (!ALLOWED_FORMATS.includes(options.format)) {
+      return new Response(
+        JSON.stringify({
+          error: `Invalid format. Allowed: ${ALLOWED_FORMATS.join(", ")}`,
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (!ALLOWED_BACKGROUNDS.includes(options.background)) {
+      return new Response(
+        JSON.stringify({
+          error: `Invalid background. Allowed: ${ALLOWED_BACKGROUNDS.join(", ")}`,
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
     }
 
     // ── Call OpenAI ──────────────────────────────────────────────────────────
