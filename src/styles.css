@@ -47,7 +47,7 @@
 
 @layer base {
   :root {
-    /* WakeMind Light Palette */
+    /* Fenrir Light Palette */
     --background: hsl(240 20% 97%);
     --foreground: hsl(222.2 84% 4.9%);
     --card: hsl(0 0% 100%);

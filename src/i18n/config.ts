@@ -11,7 +11,7 @@ const isBrowser = typeof window !== "undefined";
 // Detect the user's preferred language before loading any resources
 function detectInitialLang(): SupportedLang {
   if (!isBrowser) return DEFAULT_LANG;
-  const stored = localStorage.getItem("wakemind-privacy-lang");
+  const stored = localStorage.getItem("fenrir-privacy-lang");
   if (stored && SUPPORTED_LANGS.includes(stored as SupportedLang)) {
     return stored as SupportedLang;
   }
@@ -60,7 +60,7 @@ const i18nConfig = {
   detection: {
     order: isBrowser ? ["localStorage", "navigator"] : [],
     caches: isBrowser ? ["localStorage"] : [],
-    lookupLocalStorage: "wakemind-privacy-lang",
+    lookupLocalStorage: "fenrir-privacy-lang",
   },
   react: {
     useSuspense: false,
