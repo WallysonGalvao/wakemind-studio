@@ -1,0 +1,19 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "entry": [
+    "src/router.tsx"
+  ],
+  "project": [
+    "src/**/*.{ts,tsx}"
+  ],
+  "ignore": [
+    "src/i18n/locales/**"
+  ],
+  "ignoreDependencies": [
+    "tailwindcss",
+    "tailwindcss-animate",
+    "@tailwindcss/typography",
+    "@testing-library/dom",
+    "@testing-library/react"
+  ]
+}

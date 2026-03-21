@@ -1,87 +1,295 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { useMutation } from "@tanstack/react-query";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
+import { Folders, Plus, Settings, Trash2 } from "lucide-react";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
-export const Route = createFileRoute('/')({ component: App })
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RouteErrorFallback } from "@/components/ui/route-error-fallback";
+import { Skeleton } from "@/components/ui/skeleton";
+import { queryClient } from "@/configs/react-query";
+import {
+  createProject,
+  deleteProject,
+  getAllProjects,
+} from "@/services/supabase/projects";
+import type { Project } from "@/types/project";
 
-function App() {
+export const Route = createFileRoute("/")({
+  loader: async () => {
+    const projects = await getAllProjects();
+    return { projects };
+  },
+  component: HubOverview,
+  errorComponent: RouteErrorFallback,
+  pendingComponent: ProjectsSkeleton,
+});
+
+function ProjectsSkeleton() {
   return (
-    <main className="page-wrap px-4 pb-8 pt-14">
-      <section className="island-shell rise-in relative overflow-hidden rounded-[2rem] px-6 py-10 sm:px-10 sm:py-14">
-        <div className="pointer-events-none absolute -left-20 -top-24 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(79,184,178,0.32),transparent_66%)]" />
-        <div className="pointer-events-none absolute -bottom-20 -right-20 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(47,106,74,0.18),transparent_66%)]" />
-        <p className="island-kicker mb-3">TanStack Start Base Template</p>
-        <h1 className="display-title mb-5 max-w-3xl text-4xl leading-[1.02] font-bold tracking-tight text-[var(--sea-ink)] sm:text-6xl">
-          Start simple, ship quickly.
-        </h1>
-        <p className="mb-8 max-w-2xl text-base text-[var(--sea-ink-soft)] sm:text-lg">
-          This base starter intentionally keeps things light: two routes, clean
-          structure, and the essentials you need to build from scratch.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <a
-            href="/about"
-            className="rounded-full border border-[rgba(50,143,151,0.3)] bg-[rgba(79,184,178,0.14)] px-5 py-2.5 text-sm font-semibold text-[var(--lagoon-deep)] no-underline transition hover:-translate-y-0.5 hover:bg-[rgba(79,184,178,0.24)]"
-          >
-            About This Starter
-          </a>
-          <a
-            href="https://tanstack.com/router"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-full border border-[rgba(23,58,64,0.2)] bg-white/50 px-5 py-2.5 text-sm font-semibold text-[var(--sea-ink)] no-underline transition hover:-translate-y-0.5 hover:border-[rgba(23,58,64,0.35)]"
-          >
-            Router Guide
-          </a>
+    <div className="flex flex-col gap-6 p-4 md:p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="mt-2 h-4 w-56" />
         </div>
-      </section>
-
-      <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          [
-            'Type-Safe Routing',
-            'Routes and links stay in sync across every page.',
-          ],
-          [
-            'Server Functions',
-            'Call server code from your UI without creating API boilerplate.',
-          ],
-          [
-            'Streaming by Default',
-            'Ship progressively rendered responses for faster experiences.',
-          ],
-          [
-            'Tailwind Native',
-            'Design quickly with utility-first styling and reusable tokens.',
-          ],
-        ].map(([title, desc], index) => (
-          <article
-            key={title}
-            className="island-shell feature-card rise-in rounded-2xl p-5"
-            style={{ animationDelay: `${index * 90 + 80}ms` }}
-          >
-            <h2 className="mb-2 text-base font-semibold text-[var(--sea-ink)]">
-              {title}
-            </h2>
-            <p className="m-0 text-sm text-[var(--sea-ink-soft)]">{desc}</p>
-          </article>
+        <Skeleton className="h-9 w-32" />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Skeleton key={i} className="h-36 rounded-xl" />
         ))}
-      </section>
+      </div>
+    </div>
+  );
+}
 
-      <section className="island-shell mt-8 rounded-2xl p-6">
-        <p className="island-kicker mb-2">Quick Start</p>
-        <ul className="m-0 list-disc space-y-2 pl-5 text-sm text-[var(--sea-ink-soft)]">
-          <li>
-            Edit <code>src/routes/index.tsx</code> to customize the home page.
-          </li>
-          <li>
-            Update <code>src/components/Header.tsx</code> and{' '}
-            <code>src/components/Footer.tsx</code> for brand links.
-          </li>
-          <li>
-            Add routes in <code>src/routes</code> and tweak visual tokens in{' '}
-            <code>src/styles.css</code>.
-          </li>
-        </ul>
-      </section>
-    </main>
-  )
+function HubOverview() {
+  const { t } = useTranslation();
+  const { projects } = Route.useLoaderData();
+  const router = useRouter();
+  const navigate = useNavigate();
+  const [createOpen, setCreateOpen] = React.useState(false);
+  const [newName, setNewName] = React.useState("");
+  const [newSlug, setNewSlug] = React.useState("");
+
+  const createMutation = useMutation({
+    mutationFn: () => {
+      const name = newName.trim();
+      const slug = newSlug
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, "-");
+      return createProject(name, slug);
+    },
+    onMutate: async () => {
+      setCreateOpen(false);
+      const name = newName.trim();
+      const slug = newSlug
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, "-");
+      setNewName("");
+      setNewSlug("");
+      return { name, slug };
+    },
+    onSuccess: () => {
+      toast.success(t("toast.projectCreated"));
+    },
+    onError: (_err, _vars, context) => {
+      if (context) {
+        setNewName(context.name);
+        setNewSlug(context.slug);
+        setCreateOpen(true);
+      }
+      toast.error(t("toast.projectCreateFailed"));
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      router.invalidate();
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteProject(id),
+    onSuccess: () => {
+      toast.success(t("toast.projectDeleted"));
+    },
+    onError: () => {
+      toast.error(t("toast.projectDeleteFailed"));
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      router.invalidate();
+    },
+  });
+
+  function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newName.trim() || !newSlug.trim()) return;
+    createMutation.mutate();
+  }
+
+  function handleOpenCreate() {
+    setCreateOpen(true);
+  }
+
+  function handleNavigateProject(slug: string) {
+    navigate({
+      to: "/$projectSlug/dashboard",
+      params: { projectSlug: slug },
+    });
+  }
+
+  function handleDeleteProject(e: React.MouseEvent, id: string) {
+    e.preventDefault();
+    e.stopPropagation();
+    deleteMutation.mutate(id);
+  }
+
+  function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setNewName(e.target.value);
+    setNewSlug(
+      e.target.value
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-"),
+    );
+  }
+
+  function handleSlugChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setNewSlug(e.target.value);
+  }
+
+  return (
+    <div className="flex flex-col gap-6 p-4 md:p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {t("pages.projects.title")}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("pages.projects.subtitle")}
+          </p>
+        </div>
+        <Button onClick={handleOpenCreate}>
+          <Plus className="size-4" />
+          {t("pages.projects.newProject")}
+        </Button>
+      </div>
+
+      {projects.length === 0 ? (
+        <Card className="flex flex-col items-center justify-center py-16">
+          <Folders className="size-12 text-muted-foreground/40" />
+          <p className="mt-4 text-lg font-medium">{t("pages.projects.emptyTitle")}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("pages.projects.emptyDescription")}
+          </p>
+          <Button className="mt-6" onClick={handleOpenCreate}>
+            <Plus className="size-4" />
+            {t("pages.projects.createProject")}
+          </Button>
+        </Card>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {projects.map((project: Project) => (
+            <Card
+              key={project.id}
+              className="cursor-pointer transition-shadow hover:shadow-md"
+              onClick={() => handleNavigateProject(project.slug)}
+            >
+              <CardHeader className="pb-2">
+                <div className="flex items-start justify-between">
+                  <CardTitle className="text-base">{project.name}</CardTitle>
+                  <Badge variant="secondary" className="text-[10px]">
+                    {project.slug}
+                  </Badge>
+                </div>
+                <CardDescription>
+                  {t("pages.projects.created")}{" "}
+                  {new Date(project.created_at).toLocaleDateString(undefined, {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate({
+                      to: "/$projectSlug/settings",
+                      params: { projectSlug: project.slug },
+                    });
+                  }}
+                >
+                  <Settings className="size-3" />
+                  {t("pages.projects.settingsBtn")}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs text-destructive hover:text-destructive"
+                  onClick={(e) => handleDeleteProject(e, project.id)}
+                >
+                  <Trash2 className="size-3" />
+                  {t("pages.projects.deleteBtn")}
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("pages.projects.createDialog.title")}</DialogTitle>
+            <DialogDescription>
+              {t("pages.projects.createDialog.description")}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleCreate} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="proj-name">
+                {t("pages.projects.createDialog.nameLabel")}
+              </Label>
+              <Input
+                id="proj-name"
+                placeholder={t("pages.projects.createDialog.namePlaceholder")}
+                value={newName}
+                onChange={handleNameChange}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="proj-slug">
+                {t("pages.projects.createDialog.slugLabel")}
+              </Label>
+              <Input
+                id="proj-slug"
+                placeholder={t("pages.projects.createDialog.slugPlaceholder")}
+                value={newSlug}
+                onChange={handleSlugChange}
+              />
+              <p className="text-xs text-muted-foreground">
+                {t("pages.projects.createDialog.slugHelper", {
+                  slug: newSlug || "my-project",
+                })}
+              </p>
+            </div>
+            <Button
+              type="submit"
+              disabled={createMutation.isPending || !newName.trim() || !newSlug.trim()}
+            >
+              {createMutation.isPending
+                ? t("pages.projects.createDialog.creating")
+                : t("pages.projects.createDialog.createBtn")}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 }

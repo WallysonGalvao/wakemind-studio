@@ -1,0 +1,8 @@
+dist/
+build/
+.yarn/
+node_modules/
+*.min.js
+*.min.css
+public/
+src/routeTree.gen.ts

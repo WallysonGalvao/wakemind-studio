@@ -1,28 +1,77 @@
-import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
+import "../styles.css";
 
-import '../styles.css'
+import { TanStackDevtools } from "@tanstack/react-devtools";
+import {
+  createRootRoute,
+  Outlet,
+  redirect,
+  useRouterState,
+} from "@tanstack/react-router";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import * as React from "react";
+import { Toaster } from "sonner";
+
+import { AppSidebar } from "@/components/layout/app-sidebar";
+import { SiteHeader } from "@/components/layout/header";
+import { RouteErrorFallback } from "@/components/ui/route-error-fallback";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AuthProvider } from "@/hooks/use-auth";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createRootRoute({
+  beforeLoad: async ({ location }) => {
+    if (location.pathname === "/login") return;
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) throw redirect({ to: "/login" });
+  },
   component: RootComponent,
-})
+  errorComponent: RouteErrorFallback,
+});
 
 function RootComponent() {
+  const { location } = useRouterState();
+
+  if (location.pathname === "/login") {
+    return (
+      <AuthProvider>
+        <Outlet />
+        <Toaster richColors closeButton />
+        <TanStackDevtools
+          config={{ position: "bottom-right" }}
+          plugins={[{ name: "TanStack Router", render: <TanStackRouterDevtoolsPanel /> }]}
+        />
+      </AuthProvider>
+    );
+  }
+
   return (
-    <>
-      <Outlet />
-      <TanStackDevtools
-        config={{
-          position: 'bottom-right',
-        }}
-        plugins={[
+    <AuthProvider>
+      <SidebarProvider
+        style={
           {
-            name: 'TanStack Router',
-            render: <TanStackRouterDevtoolsPanel />,
-          },
-        ]}
+            "--sidebar-width": "18rem",
+            "--header-height": "3rem",
+          } as React.CSSProperties
+        }
+      >
+        <AppSidebar variant="inset" />
+        <SidebarInset>
+          <SiteHeader />
+          <div className="flex flex-1 flex-col overflow-auto">
+            <div className="@container/main flex flex-1 flex-col gap-2">
+              <Outlet />
+            </div>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+
+      <Toaster richColors closeButton />
+      <TanStackDevtools
+        config={{ position: "bottom-right" }}
+        plugins={[{ name: "TanStack Router", render: <TanStackRouterDevtoolsPanel /> }]}
       />
-    </>
-  )
+    </AuthProvider>
+  );
 }
