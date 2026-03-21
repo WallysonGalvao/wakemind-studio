@@ -1,4 +1,5 @@
 import { Download, ImageIcon, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,11 +19,14 @@ export function GenerationPreview({
   compact,
 }: GenerationPreviewProps) {
   const imageSrc = result ? `data:image/${result.format};base64,${result.b64}` : null;
+  const { t } = useTranslation();
 
   if (compact) {
     return (
       <div className="flex flex-col gap-2">
-        <p className="text-xs font-medium text-muted-foreground">Preview</p>
+        <p className="text-xs font-medium text-muted-foreground">
+          {t("components.preview.title")}
+        </p>
         <div className="flex aspect-square w-full items-center justify-center rounded-lg border border-border bg-muted/50">
           {loading && <Loader2 className="size-6 animate-spin text-muted-foreground" />}
           {imageSrc && !loading && (
@@ -54,14 +58,16 @@ export function GenerationPreview({
   return (
     <Card className="flex flex-col gap-0 overflow-hidden">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base">Preview</CardTitle>
+        <CardTitle className="text-base">{t("components.preview.title")}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col items-center gap-4">
         <div className="flex aspect-square w-full items-center justify-center rounded-lg border border-border bg-muted/50">
           {loading && (
             <div className="flex flex-col items-center gap-3 text-center">
               <Loader2 className="size-8 animate-spin text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">Generating image…</p>
+              <p className="text-sm text-muted-foreground">
+                {t("components.preview.loading")}
+              </p>
             </div>
           )}
           {imageSrc && !loading && (
@@ -74,7 +80,9 @@ export function GenerationPreview({
           {!imageSrc && !loading && (
             <div className="flex flex-col items-center gap-2">
               <ImageIcon className="size-12 text-muted-foreground/40" />
-              <p className="text-xs text-muted-foreground">Your image will appear here</p>
+              <p className="text-xs text-muted-foreground">
+                {t("components.preview.empty")}
+              </p>
             </div>
           )}
         </div>

@@ -1,6 +1,6 @@
 import { Link, useMatches } from "@tanstack/react-router";
-import type { LucideIcon } from "lucide-react";
-import { Globe, Monitor, Smartphone } from "lucide-react";
+import { ExternalLink } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import {
   Breadcrumb,
@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import type { Project, ProjectRepository } from "@/types/project";
 
 function GitHubIcon({ className }: { className?: string }) {
   return (
@@ -28,38 +29,32 @@ function GitHubIcon({ className }: { className?: string }) {
   );
 }
 
-const routeLabels: Record<string, string> = {
-  "/": "Dashboard",
-  "/generate/image": "Generate Image",
-  "/generate/sound": "Generate Sound",
-  "/library": "Library",
-  "/settings": "Settings",
-  "/about": "About",
-};
-
-const repos: { label: string; href: string; icon: LucideIcon }[] = [
-  {
-    label: "Mobile",
-    href: "https://github.com/WallysonGalvao/wakemind",
-    icon: Smartphone,
-  },
-  {
-    label: "LP",
-    href: "https://github.com/WallysonGalvao/wakemindapp",
-    icon: Globe,
-  },
-  {
-    label: "Studio",
-    href: "https://github.com/WallysonGalvao/wakemind-studio",
-    icon: Monitor,
-  },
-];
-
 export function SiteHeader() {
+  const { t } = useTranslation();
   const matches = useMatches();
   const currentMatch = matches[matches.length - 1];
-  const currentPath = currentMatch?.pathname ?? "/";
-  const pageLabel = routeLabels[currentPath] ?? "Page";
+  const rawPath = currentMatch?.pathname ?? "/";
+
+  // Extract project from route context (available inside /$projectSlug)
+  const projectMatch = matches.find((m) => (m.context as { project?: Project })?.project);
+  const project = (projectMatch?.context as { project?: Project })?.project;
+  const repos: ProjectRepository[] = project?.repositories ?? [];
+
+  // Strip project slug prefix so route labels match (e.g. /wakemind/dashboard → /dashboard)
+  const currentPath = project ? rawPath.replace(`/${project.slug}`, "") || "/" : rawPath;
+
+  const routeLabels: Record<string, string> = {
+    "/": t("nav.projects"),
+    "/dashboard": t("nav.dashboard"),
+    "/generate/image": t("nav.generateImage"),
+    "/generate/sound": t("nav.generateSound"),
+    "/library": t("nav.library"),
+    "/analytics": t("nav.analytics"),
+    "/settings": t("nav.settings"),
+    "/about": t("nav.about"),
+  };
+
+  const pageLabel = routeLabels[currentPath] ?? currentPath;
 
   // Detect package detail pages: /packages/$packageId
   const isPackageDetail = currentPath.startsWith("/packages/");
@@ -82,12 +77,12 @@ export function SiteHeader() {
               <>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link to="/library">Library</Link>
+                    <Link to="/library">{t("nav.library")}</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{packageName ?? "Package"}</BreadcrumbPage>
+                  <BreadcrumbPage>{packageName ?? t("nav.package")}</BreadcrumbPage>
                 </BreadcrumbItem>
               </>
             ) : (
@@ -97,36 +92,34 @@ export function SiteHeader() {
             )}
           </BreadcrumbList>
         </Breadcrumb>
-        <div className="ml-auto flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="hidden sm:flex">
+        {repos.length > 0 && (
+          <div className="ml-auto flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="hidden sm:flex">
+                  <GitHubIcon className="size-4" />
+                  {t("nav.repos")}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {repos.map((repo) => (
+                  <DropdownMenuItem key={repo.url} asChild>
+                    <a href={repo.url} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="size-4" />
+                      {repo.label}
+                    </a>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button variant="ghost" size="icon" className="sm:hidden" asChild>
+              <a href={repos[0].url} target="_blank" rel="noopener noreferrer">
                 <GitHubIcon className="size-4" />
-                GitHub
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {repos.map((repo) => (
-                <DropdownMenuItem key={repo.label} asChild>
-                  <a href={repo.href} target="_blank" rel="noopener noreferrer">
-                    <repo.icon className="size-4" />
-                    {repo.label}
-                  </a>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button variant="ghost" size="icon" className="sm:hidden" asChild>
-            <a
-              href="https://github.com/WallysonGalvao/wakemind-studio"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <GitHubIcon className="size-4" />
-              <span className="sr-only">GitHub</span>
-            </a>
-          </Button>
-        </div>
+                <span className="sr-only">{t("nav.repos")}</span>
+              </a>
+            </Button>
+          </div>
+        )}
       </div>
     </header>
   );

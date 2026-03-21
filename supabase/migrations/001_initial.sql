@@ -1,5 +1,5 @@
 -- ─────────────────────────────────────────────────────────────
--- WakeMind Studio — Initial Schema
+-- Fenrir — Initial Schema
 -- Run this in: Supabase Dashboard → SQL Editor → New Query
 -- ─────────────────────────────────────────────────────────────
 

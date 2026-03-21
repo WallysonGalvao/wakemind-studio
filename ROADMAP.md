@@ -1,157 +1,73 @@
-# Wakemind Studio — Roadmap
+# Fenrir — Roadmap
 
 > Documento vivo. Atualizar conforme decisões forem tomadas.
 
-**Wakemind Studio** é a ferramenta de criação e gestão do ecossistema Wakemind. Permite que desenvolvedores e criadores gerem assets de imagem e som com qualidade de jogo usando IA, gerenciem uma biblioteca de ícones de conquistas e configurem os blocos de construção do sistema de recompensas que roda dentro do app mobile Wakemind. O Studio é a interface de _criação_; o app é a interface de _execução_.
+**Fenrir** é o Hub multi-projeto da Three Wolves. Reúne criação de assets (imagem e som com IA) e analytics de produto (Mixpanel + RevenueCat) em um workspace unificado por projeto.
 
 ---
 
-## Estado atual (Março 2026)
+## Estado atual
 
-| Rota / Feature                             | Status                       |
-| ------------------------------------------ | ---------------------------- |
-| Dashboard (KPIs + gráfico)                 | ✅ Implementado (dados mock) |
-| Geração de imagem (OpenAI)                 | ✅ Implementado              |
-| Biblioteca de conquistas (41 achievements) | ✅ Implementado              |
-| Settings (API key)                         | ✅ Implementado              |
-| Geração de som                             | 🚧 Placeholder               |
-| About                                      | ✅ Implementado              |
-| Backend / Auth                             | ❌ Não iniciado              |
-| Progresso de conquistas                    | ❌ Não iniciado              |
-| Sistema de créditos                        | ❌ Não iniciado              |
-
----
-
-## Fase 1 — Fechar o MVP
-
-> **Objetivo:** ter todas as rotas com conteúdo real e a experiência básica funcionando do início ao fim.  
-> **Horizonte estimado:** curto prazo
-
-### 1.1 Sound Generation (`/generate/sound`)
-
-Implementar a geração de áudio seguindo o mesmo padrão arquitetural do `generate/image.tsx`:
-
-- Criar `src/services/openai/sound.ts` (ou ElevenLabs como provider alternativo)
-- Criar `src/lib/library/sound/presets.ts` com presets de estilo (ambient, 8-bit, SFX, etc.)
-- Rota com campos: nome, descrição, preset de estilo, duração, formato (mp3/wav)
-- Preview no browser com `<audio>` nativo
-- Download do arquivo gerado
-
-**Decisão pendente:** OpenAI TTS, ElevenLabs, fal.ai ou outro provider?
+| Feature                                    | Status          |
+| ------------------------------------------ | --------------- |
+| Hub overview (lista de projetos)           | ✅ Implementado |
+| Projeto: Dashboard (KPIs + gráfico)        | ✅ Implementado |
+| Projeto: Geração de imagem (OpenAI)        | ✅ Implementado |
+| Projeto: Geração de som (OpenAI TTS)       | ✅ Implementado |
+| Projeto: Biblioteca de conquistas          | ✅ Implementado |
+| Projeto: Analytics (Mixpanel + RevenueCat) | ✅ Implementado |
+| Projeto: Settings / Integrações (Vault)    | ✅ Implementado |
+| Auth (Supabase)                            | ✅ Implementado |
+| Storage (Supabase)                         | ✅ Implementado |
+| Edge Functions (5 deployed)                | ✅ Implementado |
+| React Query (server state)                 | ✅ Implementado |
+| React Compiler                             | ✅ Habilitado   |
+| Retenção cohort (heatmap)                  | ✅ Implementado |
+| Repositórios por projeto                   | ✅ Implementado |
+| Breadcrumb dinâmico (slug-aware)           | ✅ Implementado |
+| About page reescrita                       | ✅ Implementado |
+| Sidebar collapsed mode                     | ✅ Implementado |
 
 ---
 
-## Fase 2 — Configuração & Exportação de Conquistas
+## Fase 3 — Polimento & DX
 
-> **Objetivo:** aprofundar as ferramentas de visualização e exportação de pacotes — o Studio é responsável pela _criação_ e configuração; o tracking e unlock acontecem no app mobile.  
-> **Horizonte estimado:** médio prazo
+> **Objetivo:** remover código morto, sincronizar tipos e garantir qualidade de build.
 
-### 2.1 Export de Pacote
+### 3.1 Knip — Dead Code Cleanup
 
-- Exportar o pacote de conquistas em JSON padronizado
-- Útil para importar no app mobile ou compartilhar configurações entre projetos
-- Botão "Export Package" na aba de conquistas da biblioteca
+- Rodar `npx knip` e remover exports/arquivos não utilizados
+- Garantir que `knip.json` ignora apenas o necessário
 
----
+### 3.2 Supabase Types Sync
 
-## Fase 3 — Autenticação & Backend
+- Aplicar migration `004_project_repositories.sql` com `npx supabase db push`
+- Regenerar tipos com `npx supabase gen types typescript --local > src/types/supabase.ts`
+- Remover casts `as unknown as` temporários em `services/supabase/projects.ts`
 
-> **Objetivo:** sair do modo localStorage-only; ter usuários, dados persistidos e API key segura.  
-> **Horizonte estimado:** médio prazo
+### 3.3 Testes & CI
 
-### 3.1 Autenticação
-
-**Provider sugerido:** Supabase Auth (ou Clerk)
-
-- Login com email/senha e OAuth (Google)
-- Sessão persistida; `nav-user.tsx` já tem o slot de avatar/email pronto
-- Rota `/login` e proteção de rotas autenticadas
-
-### 3.2 Proxy de API Key
-
-Em vez de armazenar a OpenAI key no browser do usuário:
-
-- Backend Edge Function (Supabase ou Cloudflare Worker) que faz a chamada à OpenAI
-- O cliente envia apenas o prompt + opções; o servidor injeta a key
-- Remove a necessidade de cada usuário ter sua própria key
-- Habilita rate limiting e consumo de créditos por conta
-
-### 3.3 Perfis & Progresso Sincronizado
-
-- Progresso de conquistas salvo no banco, não no browser
-- Histórico de assets gerados por usuário
-- Configurações sincronizadas entre dispositivos
-
-### 3.4 Dashboard Real
-
-Com backend:
-
-- KPIs vindos de queries reais (assets gerados, conquistas desbloqueadas, créditos consumidos)
-- Gráfico mostrando atividade real do usuário (geração por dia, streaks)
-- Dados da tabela (`data.json`) substituídos por listagem de atividade real
+- Adicionar Vitest com cobertura básica para hooks e services
+- Lint + type-check no CI
 
 ---
 
-## Fase 4 — Monetização & Escala
-
-> **Objetivo:** ativar o modelo de negócio que já está desenhado no código.  
-> **Horizonte estimado:** longo prazo
-
-### 4.1 Sistema de Créditos
-
-O dashboard já exibe "Generation Credits (450)" como KPI — implementar de fato:
-
-- Cada geração de imagem/som consome créditos
-- Créditos associados a um plano mensal
-- UI de saldo no header ou sidebar
-- Alerta quando créditos estão baixos
-
-### 4.2 Premium Achievements
-
-19 das 41 conquistas já estão marcadas como `isPremium: true`. Implementar o gate:
-
-- Conquistas premium visíveis na biblioteca mas marcadas com badge "Pro"
-- Progresso bloqueado para plano gratuito
-- CTA para upgrade ao tentar desbloquear
-
-### 4.3 Planos de Assinatura
-
-| Plano      | Créditos/mês | Achievements     | Assets salvos |
-| ---------- | ------------ | ---------------- | ------------- |
-| Free       | 50           | 22 (não-premium) | 20            |
-| Studio Pro | 500          | 41 (todos)       | Ilimitado     |
-| Team       | Custom       | 41 + white-label | Ilimitado     |
-
-### 4.4 Marketplace de Assets
-
-- Usuários podem publicar assets gerados para a comunidade
-- Curadoria por categoria (ícones, sons, backgrounds)
-- Download gratuito de assets da comunidade (consome créditos ou não?)
-
-### 4.5 Multi-Provider de Geração
-
-- Abstrair o provider em `src/services/generation/` com interface comum
-- Suporte a: OpenAI, Stability AI, fal.ai (imagem); OpenAI TTS, ElevenLabs (som)
-- Usuário escolhe o provider nas Settings por categoria
-
----
-
-## Fase 5 — Mobile & Companion App
+## Fase 4 — Mobile & Companion App
 
 > **Objetivo:** conectar o Studio ao app mobile que usa o sistema de conquistas.  
 > **Horizonte estimado:** médio prazo (o app mobile já existe — ver repos `wakemind` e `wakemindapp`)
 
-### 5.1 Contexto
+### 4.1 Contexto
 
-O app mobile companion **já existe** (`github.com/WallysonGalvao/wakemind`). O Studio é a interface de **criação e gestão**; o app é a interface de **execução e unlock**. Isso eleva a prioridade do SDK de conquistas (5.3) e da sincronização (5.2) — não são nice-to-haves, são parte central do produto.
+O app mobile companion **já existe** (`github.com/WallysonGalvao/wakemind`). O Studio é a interface de **criação e gestão**; o app é a interface de **execução e unlock**. Isso eleva a prioridade do SDK de conquistas (4.3) e da sincronização (4.2) — não são nice-to-haves, são parte central do produto.
 
-### 5.2 Sincronização Studio ↔ App
+### 4.2 Sincronização Studio ↔ App
 
 - Assets gerados no Studio ficam disponíveis no app (via CDN ou Supabase Storage)
 - Conquistas desbloqueadas no app aparecem no Studio com timestamp e dados do evento
 - Webhooks ou Realtime (Supabase) para atualização ao vivo
 
-### 5.3 SDK de Conquistas
+### 4.3 SDK de Conquistas
 
 O `BASIC_ACHIEVEMENT_PACKAGE` já é uma estrutura exportável. Evoluir para:
 
@@ -161,49 +77,46 @@ O `BASIC_ACHIEVEMENT_PACKAGE` já é uma estrutura exportável. Evoluir para:
 
 ---
 
-## Decisões em Aberto
-
-| Decisão                          | Opções                              | Impacto        |
-| -------------------------------- | ----------------------------------- | -------------- |
-| Backend provider                 | Supabase, Firebase, custom Node/Bun | Fase 3 inteira |
-| Sound generation provider        | OpenAI TTS, ElevenLabs, fal.ai      | Fase 1.1       |
-| ~~O app mobile já existe?~~      | ✅ Sim — `wakemind` repo confirmado | Fase 5 elevada |
-| Persistência local (pré-backend) | IndexedDB vs localStorage           | Fase 1.3       |
-| Modelo de créditos               | Por geração, por mês, por plano     | Fase 4.1       |
-
----
-
 ## Arquitetura Atual (referência)
 
 ```
 src/
 ├── routes/                        # File-based routing (TanStack Router)
 │   ├── __root.tsx                 # Layout: sidebar + header
-│   ├── index.tsx                  # Dashboard ✅
-│   ├── about.tsx                  # About ✅
-│   ├── library.tsx                # Conquistas ✅
-│   ├── settings.tsx               # API key ✅
-│   └── generate/
-│       ├── image.tsx              # Geração de imagem ✅
-│       └── sound.tsx              # Placeholder
+│   ├── index.tsx                  # Hub overview (projetos) ✅
+│   └── $projectSlug/
+│       ├── dashboard.tsx          # KPIs, charts, data table ✅
+│       ├── analytics.tsx          # Mixpanel + RevenueCat ✅
+│       ├── library.tsx            # Conquistas ✅
+│       ├── settings.tsx           # Integrações (Vault) ✅
+│       └── generate/
+│           ├── image.tsx          # Geração de imagem ✅
+│           └── sound.tsx          # Geração de som ✅
 ├── services/
-│   └── openai/
-│       └── image.ts               # Chamada à API (axios)
+│   ├── supabase/                  # DB, storage, edge functions
+│   └── analytics/                 # Mixpanel + RevenueCat proxies
+├── hooks/
+│   ├── use-generation.ts          # Image generation hook
+│   ├── use-sound-generation.ts    # Sound generation hook
+│   ├── use-auth.tsx               # Auth hook
+│   └── use-settings.ts            # Config
 ├── lib/library/
 │   ├── achievements/packages/     # Pacotes de conquistas
-│   └── image/styles.ts            # Config de estilo e buildPrompt
-├── hooks/
-│   ├── use-settings.ts            # Leitura/escrita de config (localStorage)
-│   └── use-mobile.tsx
-├── constants/achievements.ts      # 41 conquistas definidas
-├── types/achievements.ts          # Enums e tipos
+│   ├── image/styles.ts            # Config de estilo e buildPrompt
+│   └── sound/presets.ts           # Voice presets (7 presets)
+├── configs/
+│   └── react-query.ts             # QueryClient centralizado
+├── constants/                     # achievements, brand, packages
+├── types/                         # TypeScript interfaces
 └── components/
+    ├── analytics/                 # metric-card, charts, heatmap
     ├── dashboard/                 # KPIs, gráfico, tabela
+    ├── generation/                # generate-button, options, preview, style-editor
     ├── layout/                    # Sidebar, header, nav-user
-    └── ui/                        # 20+ componentes shadcn/ui
+    └── ui/                        # 25+ componentes shadcn/ui
 ```
 
-**Stack principal:** React 19 · TanStack Router · Tailwind CSS v4 · Radix UI · Recharts · axios · Zod · sonner · Vite 7
+**Stack:** React 19 · React Compiler · TanStack Router · @tanstack/react-query · Tailwind CSS v4 · Radix UI · Recharts · Supabase · Zod · sonner · Vite
 
 ---
 

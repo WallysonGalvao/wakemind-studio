@@ -20,3 +20,38 @@ export const DEFAULT_GENERATION_OPTIONS: GenerationOptions = {
   format: "png",
   background: "transparent",
 };
+
+// ── Sound generation types ────────────────────────────────────────────────────
+
+export type SoundVoice =
+  | "alloy"
+  | "ash"
+  | "coral"
+  | "echo"
+  | "fable"
+  | "onyx"
+  | "nova"
+  | "sage"
+  | "shimmer";
+
+export interface SoundGenerationOptions {
+  model: string;
+  voice: SoundVoice;
+  speed: number;
+  format: string;
+  instructions?: string;
+}
+
+export interface SoundGenerationResult {
+  b64: string;
+  format: string;
+  name: string;
+  input: string;
+}
+
+export const DEFAULT_SOUND_OPTIONS: SoundGenerationOptions = {
+  model: "gpt-4o-mini-tts",
+  voice: "alloy",
+  speed: 1.0,
+  format: "mp3",
+};

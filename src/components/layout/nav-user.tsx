@@ -1,5 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
-import { Bell, CreditCard, LogOut, MoreVertical, UserCircle } from "lucide-react";
+import { Globe, LogOut, MoreVertical } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -29,8 +30,14 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const { t, i18n } = useTranslation();
   const { signOut } = useAuth();
   const navigate = useNavigate();
+
+  function handleToggleLanguage() {
+    const next = i18n.language === "pt" ? "en" : "pt";
+    i18n.changeLanguage(next);
+  }
 
   async function handleSignOut() {
     await signOut();
@@ -95,23 +102,15 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <UserCircle />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
+              <DropdownMenuItem onClick={handleToggleLanguage}>
+                <Globe />
+                {t("userMenu.language")}: {i18n.language === "pt" ? "🇧🇷 PT-BR" : "🇺🇸 EN"}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut}>
               <LogOut />
-              Log out
+              {t("userMenu.logOut")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

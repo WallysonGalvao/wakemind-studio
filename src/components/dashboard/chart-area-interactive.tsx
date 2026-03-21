@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import {
@@ -26,16 +27,26 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { DailyActivity } from "@/types/asset";
 
-const chartConfig = {
-  images: {
-    label: "Images",
-    color: "var(--primary)",
-  },
-  sounds: {
-    label: "Sounds",
-    color: "var(--chart-2)",
-  },
-} satisfies ChartConfig;
+function formatDateShort(value: string) {
+  return new Date(value).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function useChartConfig() {
+  const { t } = useTranslation();
+  return {
+    images: {
+      label: t("pages.dashboard.chart.images"),
+      color: "var(--primary)",
+    },
+    sounds: {
+      label: t("pages.dashboard.chart.sounds"),
+      color: "var(--chart-2)",
+    },
+  } satisfies ChartConfig;
+}
 
 interface ChartAreaInteractiveProps {
   data: DailyActivity[];
@@ -43,6 +54,8 @@ interface ChartAreaInteractiveProps {
 
 export function ChartAreaInteractive({ data }: ChartAreaInteractiveProps) {
   const isMobile = useIsMobile();
+  const { t } = useTranslation();
+  const chartConfig = useChartConfig();
   const [timeRange, setTimeRange] = React.useState("90d");
 
   React.useEffect(() => {
@@ -57,10 +70,14 @@ export function ChartAreaInteractive({ data }: ChartAreaInteractiveProps) {
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Generation Activity</CardTitle>
+        <CardTitle>{t("pages.dashboard.chart.title")}</CardTitle>
         <CardDescription>
-          <span className="hidden @[540px]/card:block">Assets generated over time</span>
-          <span className="@[540px]/card:hidden">Activity</span>
+          <span className="hidden @[540px]/card:block">
+            {t("pages.dashboard.chart.descriptionDesktop")}
+          </span>
+          <span className="@[540px]/card:hidden">
+            {t("pages.dashboard.chart.descriptionMobile")}
+          </span>
         </CardDescription>
         <CardAction>
           <ToggleGroup
@@ -70,26 +87,32 @@ export function ChartAreaInteractive({ data }: ChartAreaInteractiveProps) {
             variant="outline"
             className="hidden *:data-[slot=toggle-group-item]:px-4! @[767px]/card:flex"
           >
-            <ToggleGroupItem value="90d">Last 3 months</ToggleGroupItem>
-            <ToggleGroupItem value="30d">Last 30 days</ToggleGroupItem>
-            <ToggleGroupItem value="7d">Last 7 days</ToggleGroupItem>
+            <ToggleGroupItem value="90d">
+              {t("pages.dashboard.chart.last3Months")}
+            </ToggleGroupItem>
+            <ToggleGroupItem value="30d">
+              {t("pages.dashboard.chart.last30Days")}
+            </ToggleGroupItem>
+            <ToggleGroupItem value="7d">
+              {t("pages.dashboard.chart.last7Days")}
+            </ToggleGroupItem>
           </ToggleGroup>
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger
               className="flex h-8 w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden"
               aria-label="Select a value"
             >
-              <SelectValue placeholder="Last 3 months" />
+              <SelectValue placeholder={t("pages.dashboard.chart.last3Months")} />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
               <SelectItem value="90d" className="rounded-lg">
-                Last 3 months
+                {t("pages.dashboard.chart.last3Months")}
               </SelectItem>
               <SelectItem value="30d" className="rounded-lg">
-                Last 30 days
+                {t("pages.dashboard.chart.last30Days")}
               </SelectItem>
               <SelectItem value="7d" className="rounded-lg">
-                Last 7 days
+                {t("pages.dashboard.chart.last7Days")}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -115,26 +138,12 @@ export function ChartAreaInteractive({ data }: ChartAreaInteractiveProps) {
               axisLine={false}
               tickMargin={8}
               minTickGap={32}
-              tickFormatter={(value: string) => {
-                const date = new Date(value);
-                return date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                });
-              }}
+              tickFormatter={formatDateShort}
             />
             <ChartTooltip
               cursor={false}
               content={
-                <ChartTooltipContent
-                  labelFormatter={(value: string) => {
-                    return new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    });
-                  }}
-                  indicator="dot"
-                />
+                <ChartTooltipContent labelFormatter={formatDateShort} indicator="dot" />
               }
             />
             <Area

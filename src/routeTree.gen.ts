@@ -13,10 +13,18 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as ProjectSlugRouteImport } from './routes/$projectSlug'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PackagesPackageIdRouteImport } from './routes/packages/$packageId'
 import { Route as GenerateSoundRouteImport } from './routes/generate/sound'
 import { Route as GenerateImageRouteImport } from './routes/generate/image'
+import { Route as ProjectSlugSettingsRouteImport } from './routes/$projectSlug/settings'
+import { Route as ProjectSlugLibraryRouteImport } from './routes/$projectSlug/library'
+import { Route as ProjectSlugDashboardRouteImport } from './routes/$projectSlug/dashboard'
+import { Route as ProjectSlugAnalyticsRouteImport } from './routes/$projectSlug/analytics'
+import { Route as ProjectSlugPackagesPackageIdRouteImport } from './routes/$projectSlug/packages/$packageId'
+import { Route as ProjectSlugGenerateSoundRouteImport } from './routes/$projectSlug/generate/sound'
+import { Route as ProjectSlugGenerateImageRouteImport } from './routes/$projectSlug/generate/image'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -36,6 +44,11 @@ const LibraryRoute = LibraryRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectSlugRoute = ProjectSlugRouteImport.update({
+  id: '/$projectSlug',
+  path: '/$projectSlug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -58,73 +71,160 @@ const GenerateImageRoute = GenerateImageRouteImport.update({
   path: '/generate/image',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProjectSlugSettingsRoute = ProjectSlugSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => ProjectSlugRoute,
+} as any)
+const ProjectSlugLibraryRoute = ProjectSlugLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => ProjectSlugRoute,
+} as any)
+const ProjectSlugDashboardRoute = ProjectSlugDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => ProjectSlugRoute,
+} as any)
+const ProjectSlugAnalyticsRoute = ProjectSlugAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => ProjectSlugRoute,
+} as any)
+const ProjectSlugPackagesPackageIdRoute =
+  ProjectSlugPackagesPackageIdRouteImport.update({
+    id: '/packages/$packageId',
+    path: '/packages/$packageId',
+    getParentRoute: () => ProjectSlugRoute,
+  } as any)
+const ProjectSlugGenerateSoundRoute =
+  ProjectSlugGenerateSoundRouteImport.update({
+    id: '/generate/sound',
+    path: '/generate/sound',
+    getParentRoute: () => ProjectSlugRoute,
+  } as any)
+const ProjectSlugGenerateImageRoute =
+  ProjectSlugGenerateImageRouteImport.update({
+    id: '/generate/image',
+    path: '/generate/image',
+    getParentRoute: () => ProjectSlugRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$projectSlug': typeof ProjectSlugRouteWithChildren
   '/about': typeof AboutRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
+  '/$projectSlug/analytics': typeof ProjectSlugAnalyticsRoute
+  '/$projectSlug/dashboard': typeof ProjectSlugDashboardRoute
+  '/$projectSlug/library': typeof ProjectSlugLibraryRoute
+  '/$projectSlug/settings': typeof ProjectSlugSettingsRoute
   '/generate/image': typeof GenerateImageRoute
   '/generate/sound': typeof GenerateSoundRoute
   '/packages/$packageId': typeof PackagesPackageIdRoute
+  '/$projectSlug/generate/image': typeof ProjectSlugGenerateImageRoute
+  '/$projectSlug/generate/sound': typeof ProjectSlugGenerateSoundRoute
+  '/$projectSlug/packages/$packageId': typeof ProjectSlugPackagesPackageIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$projectSlug': typeof ProjectSlugRouteWithChildren
   '/about': typeof AboutRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
+  '/$projectSlug/analytics': typeof ProjectSlugAnalyticsRoute
+  '/$projectSlug/dashboard': typeof ProjectSlugDashboardRoute
+  '/$projectSlug/library': typeof ProjectSlugLibraryRoute
+  '/$projectSlug/settings': typeof ProjectSlugSettingsRoute
   '/generate/image': typeof GenerateImageRoute
   '/generate/sound': typeof GenerateSoundRoute
   '/packages/$packageId': typeof PackagesPackageIdRoute
+  '/$projectSlug/generate/image': typeof ProjectSlugGenerateImageRoute
+  '/$projectSlug/generate/sound': typeof ProjectSlugGenerateSoundRoute
+  '/$projectSlug/packages/$packageId': typeof ProjectSlugPackagesPackageIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$projectSlug': typeof ProjectSlugRouteWithChildren
   '/about': typeof AboutRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
+  '/$projectSlug/analytics': typeof ProjectSlugAnalyticsRoute
+  '/$projectSlug/dashboard': typeof ProjectSlugDashboardRoute
+  '/$projectSlug/library': typeof ProjectSlugLibraryRoute
+  '/$projectSlug/settings': typeof ProjectSlugSettingsRoute
   '/generate/image': typeof GenerateImageRoute
   '/generate/sound': typeof GenerateSoundRoute
   '/packages/$packageId': typeof PackagesPackageIdRoute
+  '/$projectSlug/generate/image': typeof ProjectSlugGenerateImageRoute
+  '/$projectSlug/generate/sound': typeof ProjectSlugGenerateSoundRoute
+  '/$projectSlug/packages/$packageId': typeof ProjectSlugPackagesPackageIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$projectSlug'
     | '/about'
     | '/library'
     | '/login'
     | '/settings'
+    | '/$projectSlug/analytics'
+    | '/$projectSlug/dashboard'
+    | '/$projectSlug/library'
+    | '/$projectSlug/settings'
     | '/generate/image'
     | '/generate/sound'
     | '/packages/$packageId'
+    | '/$projectSlug/generate/image'
+    | '/$projectSlug/generate/sound'
+    | '/$projectSlug/packages/$packageId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/$projectSlug'
     | '/about'
     | '/library'
     | '/login'
     | '/settings'
+    | '/$projectSlug/analytics'
+    | '/$projectSlug/dashboard'
+    | '/$projectSlug/library'
+    | '/$projectSlug/settings'
     | '/generate/image'
     | '/generate/sound'
     | '/packages/$packageId'
+    | '/$projectSlug/generate/image'
+    | '/$projectSlug/generate/sound'
+    | '/$projectSlug/packages/$packageId'
   id:
     | '__root__'
     | '/'
+    | '/$projectSlug'
     | '/about'
     | '/library'
     | '/login'
     | '/settings'
+    | '/$projectSlug/analytics'
+    | '/$projectSlug/dashboard'
+    | '/$projectSlug/library'
+    | '/$projectSlug/settings'
     | '/generate/image'
     | '/generate/sound'
     | '/packages/$packageId'
+    | '/$projectSlug/generate/image'
+    | '/$projectSlug/generate/sound'
+    | '/$projectSlug/packages/$packageId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ProjectSlugRoute: typeof ProjectSlugRouteWithChildren
   AboutRoute: typeof AboutRoute
   LibraryRoute: typeof LibraryRoute
   LoginRoute: typeof LoginRoute
@@ -164,6 +264,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$projectSlug': {
+      id: '/$projectSlug'
+      path: '/$projectSlug'
+      fullPath: '/$projectSlug'
+      preLoaderRoute: typeof ProjectSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -192,11 +299,85 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GenerateImageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$projectSlug/settings': {
+      id: '/$projectSlug/settings'
+      path: '/settings'
+      fullPath: '/$projectSlug/settings'
+      preLoaderRoute: typeof ProjectSlugSettingsRouteImport
+      parentRoute: typeof ProjectSlugRoute
+    }
+    '/$projectSlug/library': {
+      id: '/$projectSlug/library'
+      path: '/library'
+      fullPath: '/$projectSlug/library'
+      preLoaderRoute: typeof ProjectSlugLibraryRouteImport
+      parentRoute: typeof ProjectSlugRoute
+    }
+    '/$projectSlug/dashboard': {
+      id: '/$projectSlug/dashboard'
+      path: '/dashboard'
+      fullPath: '/$projectSlug/dashboard'
+      preLoaderRoute: typeof ProjectSlugDashboardRouteImport
+      parentRoute: typeof ProjectSlugRoute
+    }
+    '/$projectSlug/analytics': {
+      id: '/$projectSlug/analytics'
+      path: '/analytics'
+      fullPath: '/$projectSlug/analytics'
+      preLoaderRoute: typeof ProjectSlugAnalyticsRouteImport
+      parentRoute: typeof ProjectSlugRoute
+    }
+    '/$projectSlug/packages/$packageId': {
+      id: '/$projectSlug/packages/$packageId'
+      path: '/packages/$packageId'
+      fullPath: '/$projectSlug/packages/$packageId'
+      preLoaderRoute: typeof ProjectSlugPackagesPackageIdRouteImport
+      parentRoute: typeof ProjectSlugRoute
+    }
+    '/$projectSlug/generate/sound': {
+      id: '/$projectSlug/generate/sound'
+      path: '/generate/sound'
+      fullPath: '/$projectSlug/generate/sound'
+      preLoaderRoute: typeof ProjectSlugGenerateSoundRouteImport
+      parentRoute: typeof ProjectSlugRoute
+    }
+    '/$projectSlug/generate/image': {
+      id: '/$projectSlug/generate/image'
+      path: '/generate/image'
+      fullPath: '/$projectSlug/generate/image'
+      preLoaderRoute: typeof ProjectSlugGenerateImageRouteImport
+      parentRoute: typeof ProjectSlugRoute
+    }
   }
 }
 
+interface ProjectSlugRouteChildren {
+  ProjectSlugAnalyticsRoute: typeof ProjectSlugAnalyticsRoute
+  ProjectSlugDashboardRoute: typeof ProjectSlugDashboardRoute
+  ProjectSlugLibraryRoute: typeof ProjectSlugLibraryRoute
+  ProjectSlugSettingsRoute: typeof ProjectSlugSettingsRoute
+  ProjectSlugGenerateImageRoute: typeof ProjectSlugGenerateImageRoute
+  ProjectSlugGenerateSoundRoute: typeof ProjectSlugGenerateSoundRoute
+  ProjectSlugPackagesPackageIdRoute: typeof ProjectSlugPackagesPackageIdRoute
+}
+
+const ProjectSlugRouteChildren: ProjectSlugRouteChildren = {
+  ProjectSlugAnalyticsRoute: ProjectSlugAnalyticsRoute,
+  ProjectSlugDashboardRoute: ProjectSlugDashboardRoute,
+  ProjectSlugLibraryRoute: ProjectSlugLibraryRoute,
+  ProjectSlugSettingsRoute: ProjectSlugSettingsRoute,
+  ProjectSlugGenerateImageRoute: ProjectSlugGenerateImageRoute,
+  ProjectSlugGenerateSoundRoute: ProjectSlugGenerateSoundRoute,
+  ProjectSlugPackagesPackageIdRoute: ProjectSlugPackagesPackageIdRoute,
+}
+
+const ProjectSlugRouteWithChildren = ProjectSlugRoute._addFileChildren(
+  ProjectSlugRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ProjectSlugRoute: ProjectSlugRouteWithChildren,
   AboutRoute: AboutRoute,
   LibraryRoute: LibraryRoute,
   LoginRoute: LoginRoute,

@@ -1,9 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+
+import { getAllProjects } from "@/services/supabase/projects";
 
 export const Route = createFileRoute("/generate/sound")({
-  component: RouteComponent,
+  beforeLoad: async () => {
+    const projects = await getAllProjects();
+    if (projects.length > 0) {
+      throw redirect({
+        to: "/$projectSlug/generate/sound",
+        params: { projectSlug: projects[0].slug },
+      });
+    }
+    throw redirect({ to: "/" });
+  },
 });
-
-function RouteComponent() {
-  return <div>Hello "/generate/sound"!</div>;
-}

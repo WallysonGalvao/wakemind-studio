@@ -9,9 +9,11 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import * as React from "react";
+import { Toaster } from "sonner";
 
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/header";
+import { RouteErrorFallback } from "@/components/ui/route-error-fallback";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AuthProvider } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
@@ -25,6 +27,7 @@ export const Route = createRootRoute({
     if (!session) throw redirect({ to: "/login" });
   },
   component: RootComponent,
+  errorComponent: RouteErrorFallback,
 });
 
 function RootComponent() {
@@ -34,6 +37,7 @@ function RootComponent() {
     return (
       <AuthProvider>
         <Outlet />
+        <Toaster richColors closeButton />
         <TanStackDevtools
           config={{ position: "bottom-right" }}
           plugins={[{ name: "TanStack Router", render: <TanStackRouterDevtoolsPanel /> }]}
@@ -63,6 +67,7 @@ function RootComponent() {
         </SidebarInset>
       </SidebarProvider>
 
+      <Toaster richColors closeButton />
       <TanStackDevtools
         config={{ position: "bottom-right" }}
         plugins={[{ name: "TanStack Router", render: <TanStackRouterDevtoolsPanel /> }]}

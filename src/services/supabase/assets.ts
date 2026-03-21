@@ -4,12 +4,14 @@ import type { Json } from "@/types/supabase";
 
 const BUCKET = "assets";
 const SIGNED_URL_TTL = 3600; // 1 hour
+const MAX_UPLOAD_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
 
 // ── Storage helpers ───────────────────────────────────────────────────────────
 
 /** Upload a base64-encoded image to Supabase Storage. Returns the storage path. */
 export async function uploadAssetFile(
   userId: string,
+  projectId: string,
   assetId: string,
   b64: string,
   mimeType: string,
@@ -20,9 +22,28 @@ export async function uploadAssetFile(
   for (let i = 0; i < byteChars.length; i++) {
     byteArray[i] = byteChars.charCodeAt(i);
   }
+
+  if (byteArray.length > MAX_UPLOAD_SIZE_BYTES) {
+    throw new Error(`File exceeds maximum upload size of 50 MB`);
+  }
+
+  const allowedMimeTypes = [
+    "image/png",
+    "image/jpeg",
+    "image/webp",
+    "audio/mpeg",
+    "audio/wav",
+    "audio/opus",
+    "audio/aac",
+    "audio/flac",
+  ];
+  if (!allowedMimeTypes.includes(mimeType)) {
+    throw new Error(`Unsupported file type: ${mimeType}`);
+  }
+
   const blob = new Blob([byteArray], { type: mimeType });
 
-  const path = `${userId}/${assetId}.${format}`;
+  const path = `${userId}/${projectId}/${assetId}.${format}`;
   const { error } = await supabase.storage.from(BUCKET).upload(path, blob, {
     contentType: mimeType,
     upsert: false,
@@ -54,7 +75,10 @@ export async function getDownloadUrl(
 
 // ── DB helpers ────────────────────────────────────────────────────────────────
 
-export async function saveAsset(asset: Omit<GeneratedAsset, "imageUrl">): Promise<void> {
+export async function saveAsset(
+  asset: Omit<GeneratedAsset, "imageUrl">,
+  projectId: string,
+): Promise<void> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -65,6 +89,7 @@ export async function saveAsset(asset: Omit<GeneratedAsset, "imageUrl">): Promis
     name: asset.name,
     type: asset.type,
     package_id: asset.packageId ?? null,
+    project_id: projectId,
     model: asset.model,
     prompt: asset.prompt,
     settings: asset.settings as Json,
@@ -77,10 +102,11 @@ export async function saveAsset(asset: Omit<GeneratedAsset, "imageUrl">): Promis
   if (error) throw error;
 }
 
-export async function getAllAssets(): Promise<GeneratedAsset[]> {
+export async function getAllAssets(projectId: string): Promise<GeneratedAsset[]> {
   const { data, error } = await supabase
     .from("assets")
     .select("*")
+    .eq("project_id", projectId)
     .order("created_at", { ascending: false });
   if (error) throw error;
 

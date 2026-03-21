@@ -1,52 +1,80 @@
-Welcome to your new TanStack Start app!
+# Fenrir
 
-# Getting Started
+> Multi-project Hub for **Three Wolves** — manage game asset creation and product analytics in one place.
 
-To run this application:
+## Overview
+
+Fenrir is an internal tool that brings together two capabilities under a unified project-based workspace:
+
+- **Asset Creation** — Generate images (OpenAI gpt-image-1 / DALL-E) and sounds (OpenAI TTS) for games. Organize assets in packages with configurable style presets, preview in-browser, and download.
+- **Product Analytics** — Connect Mixpanel and RevenueCat integrations per project to visualize active users, top events, revenue, and retention cohort heatmaps.
+
+Each project lives under its own slug (`/:projectSlug/…`), so multiple games can coexist in the same workspace.
+
+## Tech Stack
+
+- **React 19** + **TanStack Router** (file-based routing) + **Vite**
+- **Supabase** — Auth, PostgreSQL, Storage, Edge Functions, Vault
+- **@tanstack/react-query** — Server state management
+- **Tailwind CSS v4** + **Radix UI** (shadcn/ui) + **Recharts**
+- **React Compiler** enabled project-wide
+
+## Getting Started
 
 ```bash
-yarn install
-yarn run dev
+# Install dependencies
+pnpm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Fill VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
+
+# Start dev server
+pnpm dev
 ```
 
-# Building For Production
+## Project Structure
 
-To build this application for production:
+```
+src/
+├── routes/                        # File-based routing
+│   ├── __root.tsx                 # Layout: sidebar + header
+│   ├── index.tsx                  # Hub overview (all projects)
+│   └── $projectSlug/
+│       ├── dashboard.tsx          # KPIs, charts, data table
+│       ├── analytics.tsx          # Mixpanel + RevenueCat dashboards
+│       ├── library.tsx            # Achievement packages
+│       ├── settings.tsx           # Integrations (API keys via Vault)
+│       └── generate/
+│           ├── image.tsx          # Image generation (OpenAI)
+│           └── sound.tsx          # Sound generation (OpenAI TTS)
+├── services/
+│   ├── supabase/                  # DB, storage, edge-function callers
+│   └── analytics/                 # Mixpanel + RevenueCat proxies
+├── hooks/                         # useGeneration, useSoundGeneration, useAuth…
+├── lib/library/                   # Style configs, sound presets, prompt builders
+├── components/                    # UI, layout, dashboard, analytics, generation
+└── types/                         # TypeScript interfaces
+supabase/
+├── functions/                     # Edge Functions (generate-image, generate-sound, analytics-*, save-integration)
+└── migrations/                    # SQL migrations
+```
+
+## Edge Functions
+
+| Function               | Purpose                                       |
+| ---------------------- | --------------------------------------------- |
+| `generate-image`       | Proxies OpenAI image generation via Vault key |
+| `generate-sound`       | Proxies OpenAI TTS API via Vault key          |
+| `analytics-mixpanel`   | Proxies Mixpanel data export API              |
+| `analytics-revenuecat` | Proxies RevenueCat overview API               |
+| `save-integration`     | Stores integration secrets in Supabase Vault  |
+
+## Building for Production
 
 ```bash
-yarn run build
+pnpm build
 ```
-
-## Testing
-
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
-
-```bash
-yarn run test
-```
-
-## Styling
-
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `yarn add @tailwindcss/vite tailwindcss --dev`
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
 
 Now that you have two routes you can use a `Link` component to navigate between them.
 

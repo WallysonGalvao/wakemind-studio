@@ -30,11 +30,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setState({ session, user: session?.user ?? null, loading: false });
+
+      // If the token refresh failed or the user was signed out remotely, clear state
+      if (event === "TOKEN_REFRESHED" && !session) {
+        setState({ session: null, user: null, loading: false });
+      }
+
+      if (event === "SIGNED_OUT") {
+        setState({ session: null, user: null, loading: false });
+      }
     });
 
-    return () => subscription.unsubscribe();
+    // Periodically verify session is still valid (every 10 minutes)
+    const refreshInterval = setInterval(
+      async () => {
+        const { data, error } = await supabase.auth.getSession();
+        if (error || !data.session) {
+          setState({ session: null, user: null, loading: false });
+        }
+      },
+      10 * 60 * 1000,
+    );
+
+    return () => {
+      subscription.unsubscribe();
+      clearInterval(refreshInterval);
+    };
   }, []);
 
   async function signOut() {

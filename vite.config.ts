@@ -8,6 +8,7 @@ import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 const config = defineConfig({
+  base: process.env.GITHUB_ACTIONS ? "/fenrir/" : "/",
   plugins: [
     devtools(),
     tsconfigPaths({ projects: ["./tsconfig.json"] }),
@@ -15,6 +16,10 @@ const config = defineConfig({
     tanstackRouter({ target: "react", autoCodeSplitting: true }),
     viteReact(),
   ],
+  test: {
+    globals: true,
+    environment: "jsdom",
+  },
 });
 
 export default config;

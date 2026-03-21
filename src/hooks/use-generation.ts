@@ -13,9 +13,13 @@ import {
 
 interface UseGenerationProps {
   initialStyleConfig?: Record<string, unknown>;
+  projectId?: string;
 }
 
-export function useGeneration({ initialStyleConfig }: UseGenerationProps = {}) {
+export function useGeneration({
+  initialStyleConfig,
+  projectId,
+}: UseGenerationProps = {}) {
   const [options, setOptions] = React.useState<GenerationOptions>(
     DEFAULT_GENERATION_OPTIONS,
   );
@@ -70,7 +74,7 @@ export function useGeneration({ initialStyleConfig }: UseGenerationProps = {}) {
     setResult(null);
 
     try {
-      const { b64, format: fmt } = await generateImageViaEdge(prompt, options);
+      const { b64, format: fmt } = await generateImageViaEdge(prompt, options, projectId);
       setResult({ b64, format: fmt, prompt, name });
 
       const {
@@ -80,7 +84,14 @@ export function useGeneration({ initialStyleConfig }: UseGenerationProps = {}) {
 
       const assetId = crypto.randomUUID();
       const mimeType = `image/${fmt}`;
-      const storagePath = await uploadAssetFile(user.id, assetId, b64, mimeType, fmt);
+      const storagePath = await uploadAssetFile(
+        user.id,
+        projectId ?? "",
+        assetId,
+        b64,
+        mimeType,
+        fmt,
+      );
 
       const asset: GeneratedAsset = {
         id: assetId,
@@ -100,7 +111,7 @@ export function useGeneration({ initialStyleConfig }: UseGenerationProps = {}) {
         mimeType,
         createdAt: Date.now(),
       };
-      await saveAsset(asset);
+      await saveAsset(asset, projectId ?? "");
       return asset;
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unknown error");
