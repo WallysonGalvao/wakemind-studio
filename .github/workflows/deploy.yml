@@ -20,17 +20,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: yarn
 
-      - name: Enable Corepack & Install
-        run: |
-          corepack enable
-          corepack prepare yarn@3.6.4 --activate
-          yarn install --immutable
+      - name: Install
+        run: yarn install --immutable
 
       - name: Build
         run: yarn build
